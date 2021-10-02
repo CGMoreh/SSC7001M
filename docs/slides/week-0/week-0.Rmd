@@ -8,21 +8,21 @@ output:
   xaringan::moon_reader:
     # self_contained: true ## create self-contained slides (https://yihui.org/en/2021/06/self-contained-xaringan/)
     # seal: false ## hide the deck-title slide
-    css:
-      - assets/css/tachyons.min.css
-      - assets/css/animate.css
-      - assets/css/moffitt-xaringan.css
-      - assets/css/moffitt-colors.css
+    css: [default, metropolis, metropolis-fonts]
+     # - assets/css/tachyons.min.css
+     # - assets/css/animate.css
+     # - assets/css/moffitt-xaringan.css
+     #  - assets/css/moffitt-colors.css
     lib_dir: libs
     nature:
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
-      titleSlideClass: ["bottom", "left"]
-      ratio: "16:9"
+      titleSlideClass: ["middle", "left"]
+      # ratio: "16:9"
 ---
 
-class: inverse, center
+class: center, middle
 
 ```{r setup, include=FALSE} 
 knitr::opts_chunk$set(
@@ -34,6 +34,8 @@ knitr::opts_chunk$set(
 ```{r required-packages, eval=FALSE, include=FALSE}
 devtools::install_github("gadenbuie/metathis@05f8ba1f")
 devtools::install_github("gadenbuie/countdown@5c895d980")
+# install.packages("moffitdocs")        #<< must have installed
+# install.packages("xaringanthemer")  #<< must have installed
 ```
 
 <b> The lecture slides for this week will be available on Monday</b><br>
