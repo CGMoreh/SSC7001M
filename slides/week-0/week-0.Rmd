@@ -1,0 +1,80 @@
+---
+title: "![](figures/logo.png){width=55%} <br><b><b>SSC7001M - Advanced Research Methods 1</b>"
+subtitle: ""
+author: "Dr. Chris Moreh"
+institute: "York St. John University"
+date: "2021"
+output:
+  xaringan::moon_reader:
+    # self_contained: true ## create self-contained slides (https://yihui.org/en/2021/06/self-contained-xaringan/)
+    # seal: false ## hide the deck-title slide
+    css: [default, metropolis, metropolis-fonts]
+     # - assets/css/tachyons.min.css
+     # - assets/css/animate.css
+     # - assets/css/moffitt-xaringan.css
+     #  - assets/css/moffitt-colors.css
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["middle", "left"]
+      # ratio: "16:9"
+---
+
+class: center, middle
+
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(
+  fig.width = 10, fig.height = 6, fig.retina = 2,
+  warning = FALSE, message = FALSE
+)
+```  
+
+```{r required-packages, eval=FALSE, include=FALSE}
+devtools::install_github("gadenbuie/metathis@05f8ba1f")
+devtools::install_github("gadenbuie/countdown@5c895d980")
+# install.packages("moffitdocs")        #<< must have installed
+# install.packages("xaringanthemer")  #<< must have installed
+```
+
+<b> The lecture slides for this week will be available on Monday</b><br>
+<br>Until then, check out something cool! <br>
+![](figures/ab.gif)
+<br>What do you think these graphs are telling us?
+
+---
+class: inverse
+### To find out, read the article by Schwemmer and Wieczorek (2020) (‘The Methodological Divide of Sociology: Evidence from Two Decades of Journal Publications’, Sociology, 54(1), pp. 3–21) to find out. <br> <br>
+
+--
+
+### It's on the reading list for Week 1.<br><br>
+
+--
+
+### The charts on the previous slide replicate some of the findings in this article using updated data.
+
+---
+.pull-right[<img src="figures/ab.gif" width="100%" align="middle"/>]
+.pull-left[
+To find out, read the article by Schwemmer and Wieczorek (2020) (‘The Methodological Divide of Sociology: Evidence from Two Decades of Journal Publications’, Sociology, 54(1), pp. 3–21) to find out. <br> <br>
+
+It's on the reading list for Week 1.<br><br>
+
+The charts on the previous slide replicate some of the findings in this article using updated data.
+]
+
+???
+What now? Don't get this
+
+
+
+
+
+
+
+
+
+
+
