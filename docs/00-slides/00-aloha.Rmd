@@ -1,4 +1,5 @@
 ---
+name: aloha
 title: ".center[![](figures/logo.png){width=65%} <br>]"
 subtitle: ""
 author: "Dr. Chris Moreh<br> York St. John University"
