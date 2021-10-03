@@ -1,6 +1,6 @@
 ---
-title: ".center[![](figures/logo.png){width=65%} <br>]"
-subtitle: ""
+title: "Advanced social research methods 1"
+subtitle: "SSC7001M"
 author: "Dr. Chris Moreh<br> York St. John University"
 #institute: "York St. John University"
 date: "2021"
@@ -8,7 +8,7 @@ output:
   xaringan::moon_reader:
     # self_contained: true ## create self-contained slides (https://yihui.org/en/2021/06/self-contained-xaringan/)
     # seal: false ## hide the deck-title slide
-    css: css/xaringan-themer.css
+    css: ["css/rutgers-rmarkdown.css", "css/rutgers-fonts_og.css"]
      # [default, metropolis, metropolis-fonts]
      # - assets/css/tachyons.min.css
      # - assets/css/animate.css
@@ -19,7 +19,7 @@ output:
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
-      titleSlideClass: ["middle", "right"]
+      # titleSlideClass: ["middle", "right"]
       ratio: "16:9"
 ---
 class: top, left

@@ -49,4 +49,21 @@ ggplot(logo_data, aes(x, y)) +
   scale_x_continuous(breaks=seq(1.5, 9.5, 0.5)) +
   scale_y_continuous(breaks=seq(1.5, 5.5, 0.5))
 
+### Front slide logo
+
+ggplot(logo_data, aes(x, y)) +
+  theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
+  geom_point(aes(color = group), shape = 15, size = 15, show.legend = F) +
+  scale_color_manual(values = c("#C4961A", "#FC4E07", "#D16103", "#52854C", "#293352")) +
+  geom_text(aes(label=a), size=12, 
+            colour = ifelse(logo_data$group=="c" | logo_data$group=="e", "white", "black"),
+            fontface = 2) + 
+  expand_limits(x=c(-10.1, 9.1), y=c(-5, 5.2)) +
+  scale_x_continuous(breaks=seq(-10, 10, 1)) +
+  scale_y_continuous(breaks=seq(-10, 6, 1))
+
+
+
 ggsave("logo2.png")
+
+
