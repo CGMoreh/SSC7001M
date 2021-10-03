@@ -25,8 +25,8 @@ d-title {
 <br>
 
 <center>
-<img src="pics/logo.png" width="120%">
+<img src="pics/logo.png" width="100%">
 </center>
 
-## Welcome to **Advanced Research Methods 1**
+### Welcome to **Advanced Research Methods 1**
 This is a 10-week course on applied regression modelling for sociologists, first delivered at York St John University (UK) in 2021 autumn.
