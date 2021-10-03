@@ -1,0 +1,32 @@
+---
+title: "Module description"
+description: |
+  A 10-week course on applied regression modelling for sociologists
+output: distill::distill_article
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+# Learn more about creating websites with Distill at:
+# https://rstudio.github.io/distill/website.html
+
+# Learn more about publishing to GitHub Pages at:
+# https://rstudio.github.io/distill/publish_website.html#github-pages
+
+```
+
+```{css}
+d-title {
+    display: none;
+}
+```
+
+<br>
+
+<center>
+<img src="pics/logo.png" width="120%">
+</center>
+
+## Welcome to **Advanced Research Methods 1**
+This is a 10-week course on applied regression modelling for sociologists, first delivered at York St John University (UK) in 2021 autumn.
