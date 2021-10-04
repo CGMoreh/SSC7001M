@@ -214,7 +214,7 @@ thead, tfoot, tr:nth-child(even) { background: none; }
 
 /* Add padding to all slides for 16:9 aspect ratio */
 .remark-slide-content {
-  padding-left: 100px;  /* delete this for 4:3 aspect ratio */
+  padding-left: 60px;  /* delete this for 4:3 aspect ratio */
 }
 
 /* Color adjustments for text */
