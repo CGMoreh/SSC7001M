@@ -27,6 +27,9 @@ logo_data <- tibble(a, y, x, group)
 
 cols <- c("1" = "#333300", "2" = "#990000", "3" = "#003300", "4" = "#003333", "5" = "#000033")
 
+
+## Logo plots
+
 ggplot(logo_data, aes(x, y, label=a))  +
     geom_point(aes(color = group, fill = group),
     shape = 22,
@@ -62,6 +65,21 @@ ggplot(logo_data, aes(x, y)) +
   scale_x_continuous(breaks=seq(-10, 10, 1)) +
   scale_y_continuous(breaks=seq(-10, 6, 1))
 
+### Front slide logo2
+
+ggplot(logo_data, aes(x, y)) +
+  theme(axis.title.x = element_blank(), 
+        axis.title.y = element_blank(),
+        axis.text=element_blank(),
+        axis.ticks=element_blank()) +
+  geom_point(aes(color = group), shape = 15, size = 11, show.legend = F) +
+  scale_color_manual(values = c("#C4961A", "#FC4E07", "#D16103", "#52854C", "#293352")) +
+  geom_text(aes(label=a), size=9, 
+            colour = ifelse(logo_data$group=="c" | logo_data$group=="e", "white", "black"),
+            fontface = 2) + 
+  expand_limits(x=c(-11, 9), y=c(-10, 5.2)) +
+  scale_x_continuous(breaks=seq(-11, 9, 2)) +
+  scale_y_continuous(breaks=seq(-10, 6, 2))
 
 
 ggsave("logo2.png")

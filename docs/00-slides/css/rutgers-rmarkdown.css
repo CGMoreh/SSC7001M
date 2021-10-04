@@ -114,9 +114,9 @@ thead, tfoot, tr:nth-child(even) { background: none; }
 
 /* Add image and change bg color */
 .title-slide {
-  background-image: url('../figures/logo_large.png');
-  background-position: 5% 55%;
-  background-size: 1200px;
+  background-image: url('../figures/logo_large2.png');
+  background-position: 0% 50%;
+  background-size: 905px;
   background-color: #fff;
   padding-left: 100px;  /* delete this for 4:3 aspect ratio */
 }
@@ -126,7 +126,7 @@ thead, tfoot, tr:nth-child(even) { background: none; }
   color: #515151;
   padding-top: 250px;
   font-weight: normal;
-  font-size: 50px;
+  font-size: 45px;
   line-height: 0.05;
   text-align: left;
   text-shadow: none;
@@ -137,7 +137,7 @@ thead, tfoot, tr:nth-child(even) { background: none; }
 /* H2 fonts */
 .title-slide h2 {
   color: #cc0033;
-  font-size: 40px;
+  font-size: 35px;
   text-align: left;
   text-shadow: none;
   padding-top: 0px;
@@ -146,7 +146,7 @@ thead, tfoot, tr:nth-child(even) { background: none; }
 
 /* H3 fonts */
 .title-slide h3 {
-  font-size: 33px;
+  font-size: 30px;
   font-weight: normal;
   color: #666666;
   text-align: left;
@@ -232,6 +232,11 @@ strong {
 .blue {
   color: #0000CC;
   font-weight: bold;
+}
+
+/* Logo-Orange tag*/
+.orange {
+	color: #FC4E07;
 }
 
 /* Add grey tag */

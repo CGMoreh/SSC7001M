@@ -20,7 +20,7 @@ output:
       highlightLines: true
       countIncrementalSlides: false
       # titleSlideClass: ["middle", "right"]
-      ratio: "16:9"
+      # ratio: "16:9"
 ---
 class: top, left
 
@@ -55,45 +55,21 @@ install.packages("moffitdocs")        #<< no longer available?
 install.packages("xaringanthemer")  
 ```
 
-### The lecture slides for this week will be available on Monday
+## The lecture slides will be available later on Monday
 <br>Until then, check out something cool! <br>
+--
 .center[
 <img src="figures/ab.gif" width="60%" align="middle">
 ]
+
+--
+
 <br>What do you think these graphs are telling us?
 
----
-class: inverse
-### To find out, read the article by Schwemmer and Wieczorek (2020) (‘The Methodological Divide of Sociology: Evidence from Two Decades of Journal Publications’, Sociology, 54(1), pp. 3–21) to find out. <br> <br>
+--
+
+<br>To find out, read the article by Schwemmer and Wieczorek (2020) (‘The Methodological Divide of Sociology: Evidence from Two Decades of Journal Publications’, Sociology, 54(1), pp. 3–21)
 
 --
 
-### It's on the reading list for Week 1.<br><br>
-
---
-
-### The charts on the previous slide replicate some of the findings in this article using updated data.
-
----
-.pull-right[<img src="figures/ab.gif" width="100%" align="center"/>]
-.pull-left[
-To find out, read the article by Schwemmer and Wieczorek (2020) (‘The Methodological Divide of Sociology: Evidence from Two Decades of Journal Publications’, Sociology, 54(1), pp. 3–21) to find out. <br> <br>
-
-It's on the reading list for Week 1.<br><br>
-
-The charts on the previous slide replicate some of the findings in this article using updated data.
-]
-
-???
-What now? Don't get this
-
-
-
-
-
-
-
-
-
-
-
+<br> tip: It's on the reading list for Week 1!

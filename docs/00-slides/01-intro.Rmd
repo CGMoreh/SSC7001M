@@ -19,9 +19,9 @@ output:
       highlightLines: true
       countIncrementalSlides: false
       # titleSlideClass: ["middle", "right"]
-      ratio: "16:9"
+      # ratio: "16:9"
 ---
-class: top, left
+class: inverse, center, middle
 
 ```{r setup, include=FALSE} 
 knitr::opts_chunk$set(
@@ -54,4 +54,73 @@ install.packages("moffitdocs")        #<< no longer available?
 install.packages("xaringanthemer")  
 ```
 
-## Introduction to social statistics
+# .blue[Week 1]
+
+--
+
+## Welcome to the module!
+
+--
+
+### ... and an introduction to statistical modelling for social researchers
+
+---
+class: top, left
+
+# Session outline
+
+--
+
+## In the first half, I'll speak to you about:
+
+--
+
+### - Why quantitative sociology?
+
+--
+
+### - Why **R** and **RStudio**?
+
+--
+
+### - Why statistical modelling?
+
+--
+
+### - So what is this module about?
+
+--
+
+### - And what do I need to do to do well?
+
+--
+
+### - .orange[<b>cOFFeE bREaK!</b>]
+
+---
+
+class: top, left
+
+# Session outline
+## In the second half, I'll relax, read the news, check my Facebook, like some cat photos...
+--
+ while you:
+
+--
+
+### - Fire up **RStudio**
+--
+ .lightgrey[and make a list of error messages that we need to report to the IT team]
+
+--
+
+### - Practice some basic **R** coding
+--
+ .lightgrey[from the R4DS book]
+
+--
+
+### - Create an **Rmarkdown** document 
+--
+ .lightgrey[(tip: the automatic template created is actually a mini-tutorial)]
+
