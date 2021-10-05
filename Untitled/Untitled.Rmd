@@ -1,18 +1,26 @@
 ---
-title: Troubleshooting R in class
-author: "Dr. Chris Moreh<br> York St. John University"
-date: "Last compiled on `r format(Sys.time(), ' %A %d %B, %Y')`"
-output: 
-  html_document:
-    toc: true
-    toc_float: true
-    toc_depth: 3
+title: "A clean and uncluttered template"
+author: "[Yan Holtz](https://github.com/holtzy)"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+mail: "yan.holtz.data@gmail.com"
+linkedin: "yan-holtz-2477534a"
+twitter: "r_graph_gallery"
+github: "holtzy"
+home: "www.yan-holtz.com"
+# !!! You need to provide a logo image here !!! Or just delete the field for no logo
+logo: "logo_gallery.png"
+output:
+  epuRate::epurate:
+    toc: TRUE
+    number_sections: FALSE
+    code_folding: "hide"
 ---
+
 
 ```{r include=FALSE}
 knitr::opts_chunk$set(eval = FALSE, include = TRUE)
 ```
-
+<br>
 This is a live document that catalogues the various technical and programming issues that emerged during the computer labs and proposes solutions for them. Many of these issues emerge from a lack of administrator rights on campus computers, which makes direct troubleshooting more difficult. The issues identified here and the solutions proposed may, however, be useful more generally in the future as well.
 
 ### \#1 Installing packages requires administrator rights
