@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Dr. Chris Moreh  York St. John University" />
+
+
+<title>Troubleshooting R in class</title>
+
+<script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html"></a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Slides
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="./00-slides/01-intro.html">Lecture 1</a>
+    </li>
+    <li>
+      <a href="">Lecture 2</a>
+    </li>
+    <li class="dropdown-header">Lecture 3</li>
+    <li class="dropdown-header">Lecture 4</li>
+    <li class="dropdown-header">Lecture 5</li>
+    <li class="dropdown-header">Lecture 6</li>
+    <li class="dropdown-header">Lecture 7</li>
+    <li class="dropdown-header">Lecture 8</li>
+    <li class="dropdown-header">Lecture 9</li>
+    <li class="dropdown-header">Lecture 10</li>
+    <li class="dropdown-header">Lecture 11</li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Notes
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">Lecture notes 1</li>
+    <li class="dropdown-header">Lecture notes 2</li>
+    <li class="dropdown-header">Lecture notes 3</li>
+    <li class="dropdown-header">Lecture notes 4</li>
+    <li class="dropdown-header">Lecture notes 5</li>
+    <li class="dropdown-header">Lecture notes 6</li>
+    <li class="dropdown-header">Lecture notes 7</li>
+    <li class="dropdown-header">Lecture notes 8</li>
+    <li class="dropdown-header">Lecture notes 9</li>
+    <li class="dropdown-header">Lecture notes 10</li>
+    <li class="dropdown-header">Lecture notes 11</li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Exercises
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">Worksheet 1</li>
+    <li class="dropdown-header">Worksheet 2</li>
+    <li class="dropdown-header">Worksheet 3</li>
+    <li class="dropdown-header">Worksheet 4</li>
+    <li class="dropdown-header">Worksheet 5</li>
+    <li class="dropdown-header">Worksheet 6</li>
+    <li class="dropdown-header">Worksheet 7</li>
+    <li class="dropdown-header">Worksheet 8</li>
+    <li class="dropdown-header">Worksheet 9</li>
+    <li class="dropdown-header">Worksheet 10</li>
+    <li class="dropdown-header">Worksheet 11</li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a>
+    <span class=" fab ga_github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Troubleshooting R in class</h1>
+<h4 class="author">Dr. Chris Moreh<br> York St. John University</h4>
+<h4 class="date">Last compiled on Tuesday 05 October, 2021</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#installing-packages-requires-administrator-rights">#1 Installing packages requires administrator rights</a></li>
+</ul>
+</div>
+
+<p>This is a live document that catalogues the various technical and programming issues that emerged during the computer labs and proposes solutions for them. Many of these issues emerge from a lack of administrator rights on campus computers, which makes direct troubleshooting more difficult. The issues identified here and the solutions proposed may, however, be useful more generally in the future as well.</p>
+<div id="installing-packages-requires-administrator-rights" class="section level3">
+<h3>#1 Installing packages requires administrator rights</h3>
+<p>The first issue I ran into was an error when attempting to install <code>R</code> packages because I did not have the necessary file permissions to be able to write to the default R library folder stored on the C: drive. This is a documented issue on the Microsoft Windows support page (<a href="https://support.microsoft.com/en-us/topic/general-problem-installing-any-r-package-0bf1f9ba-ead2-6335-46ec-190f6af75e44">see here</a>) and it pops up often on the <a href="https://stackoverflow.com/tags">StackOverflow</a> tech user forum. Error messages can often be cryptic, but for this particular issue you would see something like this:</p>
+<!--# This is a comment -->
+<pre><code>The downloaded source packages are in
+?/tmp/Rtmph4YKLX/downloaded_packages?
+Updating HTML index of packages in &#39;.Library&#39;
+Warning in install.packages :
+cannot create file
+&#39;/opt/POC/lib64/Revo-7.3/R-3.1.1/lib64/R/doc/html/packages.html&#39;, reason
+&#39;Permission denied&#39;</code></pre>
+<p>One solution is to create a new folder on a directory available to you (e.g. the OneDrive directory) where to save the new packages. You can create a new folder manually, or directly in R. Say you want to store your R packages in a sub-folder called ‘myRlib’ within the folder ‘SSC7001M’ that you already created for this course on the institutional OneDrive. In R you can do this:</p>
+<pre class="r"><code>dir.create(&quot;C:/Users/c.moreh/OneDrive - York St John University/SSC7001M/myRlib&quot;) ## obviously, change the path to your own</code></pre>
+<p>If you have created the folder manually, you can skip the previous step. The next option step is to actually check where the default library is currently located, just to have an idea:</p>
+<pre class="r"><code>.libPaths() 
+## this command will list the paths to your default directories</code></pre>
+<p>To actually make the change from the default library to the one of your choice, these are the next steps:</p>
+<pre class="r"><code># Take the information about the path to the default library (i.e. the text generated by the &quot;.libPaths()&quot; commad) and save it as an object (say, one called &#39;myPaths&#39;) in your R environment so you can perform actions with it:
+
+myPaths &lt;- .libPaths()
+
+# Next, add another line to that text object with the path to your accessible folder:
+
+myPaths &lt;- c(&quot;C:/Users/c.moreh/OneDrive - York St John University/SSC7001M/myRlib&quot;, myPaths) ## obviously, change the path to your own
+
+# Finally, add this new information to &quot;.libPaths()&quot; to change it:
+.libPaths(myPaths)</code></pre>
+<p>Once this is done, you can install new packages and you will see your packages saved into your folder. That’s the folder from where <code>R</code> will also load the packages when you instruct it to do so. One problem to keep in mind is that this setting is only valid for your current <code>R</code> session; in other words, whenever you re-start <code>R</code> you will need to quickly change the default directory to your personal <em>myRlib</em> folder.</p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

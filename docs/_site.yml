@@ -8,9 +8,9 @@ navbar:
     - text: "Slides"
       menu:
         - text: "Lecture 1"
-          href: "./00-slides/00-aloha.html"
-        - text: "Lecture 2"
           href: "./00-slides/01-intro.html"
+        - text: "Lecture 2"
+          href: ""
         - text: "Lecture 3"
         - text: "Lecture 4"
         - text: "Lecture 5"
