@@ -50,5 +50,5 @@ navbar:
     - icon: fab ga_github
     
 output: 
-  distill::distill_article:
+  distill::distill_article
   #  css: custom.css
