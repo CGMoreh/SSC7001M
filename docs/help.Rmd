@@ -5,6 +5,7 @@ date: "Last compiled on `r format(Sys.time(), ' %A %d %B, %Y')`"
 output: 
   html_document:
     toc: true
+    toc_float: true
 ---
 
 ```{r include=FALSE}
