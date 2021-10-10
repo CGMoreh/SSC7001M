@@ -46,6 +46,8 @@ navbar:
         - text: "Worksheet 9"
         - text: "Worksheet 10"
         - text: "Worksheet 11"
+    - text: "Data"
+      href: "./data/data-documentation.html"
   right:
     - icon: fab ga_github
     
