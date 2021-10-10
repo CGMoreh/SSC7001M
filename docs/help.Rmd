@@ -2,17 +2,24 @@
 title: Troubleshooting R in class
 author: "Dr. Chris Moreh<br> York St. John University"
 date: "Last compiled on `r format(Sys.time(), ' %A %d %B, %Y')`"
-output: 
-  distill::distill_article:
-    self_contained: false
-    toc: true
-    toc_float: true
-    toc_depth: 3
-    css: custom.css
+output:
+  rmdformats::readthedown:
+      highlight: tango
 ---
 
 ```{r include=FALSE}
 knitr::opts_chunk$set(eval = FALSE, include = TRUE)
+```
+
+```{r include=FALSE}
+# cutout output options
+# output: 
+#   distill::distill_article:
+#     self_contained: false
+#     toc: true
+#     toc_float: true
+#     toc_depth: 3
+#     css: custom.css
 ```
 
 This is a live document that catalogues the various technical and programming issues that emerged during the computer labs and proposes solutions for them. Many of these issues emerge from a lack of administrator rights on campus computers, which makes direct troubleshooting more difficult. The issues identified here and the solutions proposed may, however, be useful more generally in the future as well.
