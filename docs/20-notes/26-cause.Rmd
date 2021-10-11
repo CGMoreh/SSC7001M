@@ -3,6 +3,8 @@ title: "Week 6: Prediction and causality"
 output:
   rmdformats::readthedown:
       highlight: tango
+      self_contained: false
+      lib_dir: site_libs
 ---
 ```{r include=FALSE}
 knitr::opts_chunk$set(eval=FALSE)
