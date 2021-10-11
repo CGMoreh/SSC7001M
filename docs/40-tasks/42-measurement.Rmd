@@ -10,7 +10,7 @@ output:
 
 <br>
 
-## Exercise 1: Describe survey measurements (\~30 minutes)
+## Exercise 1: Describe survey measurements
 
 The first task is to explore the online documentation of three cross-national surveys and note down how "trust" is conceptualised and measured. Use the table below to record your observations.
 
@@ -33,6 +33,6 @@ The first task is to explore the online documentation of three cross-national su
 
 The second task is to download the most recent datasets from cross-national surveys, import the files into `R` from their original formats, briefly explore the datasets as a whole, and export them to R's custom binary format called `.rds`.
 
-
+## Exercise 3: Describe variables in the three datasets
 
 
