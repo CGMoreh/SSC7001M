@@ -1,8 +1,30 @@
 ---
-title: "R Notebook"
+title: "Week 2: Measurement"
 output: 
   rmdformats::readthedown:
       highlight: tango
 ---
 
-# Week 2: Measurement
+## Measuring "trust"
+
+```{r get haven, eval=FALSE}
+## To import datasets stored in the format of other statistical programmes (e.g. SPSS, Stata and SAS) we can use the 'haven' package (see. R4DS Ch. 11.6)
+## Install 'haven' if not already installed:
+install.packages("haven") 
+```
+
+```{r use haven, eval=FALSE}
+## Once you have a package installed, there are two ways in which you can use the functions contained in the package:
+
+# 1. to only use a specific function in one instance, state the package name followed by two colons (::) followed by the function name; e.g.:
+haven::read_sav()
+
+# 2. to load the entire package and then use any function from the package for the duration of your R session; e.g.:
+library(haven)
+read_sav()
+```
+
+```{r import}
+haven::read_sav("")
+```
+

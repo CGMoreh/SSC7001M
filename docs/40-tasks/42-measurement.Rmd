@@ -1,8 +1,38 @@
 ---
 title: "Week 2: measurement exercises"
-output: html_notebook
+output: 
+  rmdformats::readthedown:
+    code_folding: hide
+    code_download: true
+    highlight: tango
+    number_sections: false
 ---
 
-## Task 1
+<br>
+
+## Exercise 1: Describe survey measurements (\~30 minutes)
+
+The first task is to explore the online documentation of three cross-national surveys and note down how "trust" is conceptualised and measured. Use the table below to record your observations.
+
+| Survey name | Variable | Label | Questionnaire question number | Questionnaire question |
+|-------------|----------|-------|-------------------------------|------------------------|
+|             |          |       |                               |                        |
+|             |          |       |                               |                        |
+|             |          |       |                               |                        |
+|             |          |       |                               |                        |
+|             |          |       |                               |                        |
+|             |          |       |                               |                        |
+|             |          |       |                               |                        |
+|             |          |       |                               |                        |
+|             |          |       |                               |                        |
+|             |          |       |                               |                        |
+
+: Measurements of trust in cross-national surveys
+
+## Exercise 2: Download, import, explore, export
+
+The second task is to download the most recent datasets from cross-national surveys, import the files into `R` from their original formats, briefly explore the datasets as a whole, and export them to R's custom binary format called `.rds`.
+
+
 
 
