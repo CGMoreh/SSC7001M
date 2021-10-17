@@ -1,0 +1,112 @@
+---
+title: "Advanced Social Research Methods 1"
+subtitle: "SSC7001M"
+author: "Dr. Chris Moreh<br> York St. John University"
+#institute: "York St. John University"
+date: "2021"
+output:
+  xaringan::moon_reader:
+    # self_contained: true ## create self-contained slides (https://yihui.org/en/2021/06/self-contained-xaringan/)
+    # seal: false ## hide the deck-title slide
+    css: ["css/rutgers-rmarkdown.css", "css/rutgers-fonts_og.css"]
+     # - assets/css/tachyons.min.css
+     # - assets/css/animate.css
+     # - assets/css/moffitt-xaringan.css
+     #  - assets/css/moffitt-colors.css
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      # titleSlideClass: ["middle", "right"]
+      # ratio: "16:9"
+---
+
+class: inverse, center, middle
+
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(
+  fig.width = 10, fig.height = 6, fig.retina = 2,
+  warning = FALSE, message = FALSE
+)
+```  
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_light(
+  base_color = "#293352",
+#  header_font_google = google_font("Josefin Sans"),
+#  text_font_google   = google_font("Montserrat", "300", "300i"),
+#  code_font_google   = google_font("Fira Mono")
+)
+# Course logo colour match
+# "#C4961A", "#FC4E07", "#D16103", "#52854C", "#293352"
+```
+
+```{r xaringanExtra, echo = FALSE}
+# devtools::install_github("gadenbuie/xaringanExtra")
+xaringanExtra::use_progress_bar(color = "#0051BA", location = "bottom")
+```
+  
+```{r required-packages, eval=FALSE, include=FALSE}
+devtools::install_github("gadenbuie/metathis@05f8ba1f")
+devtools::install_github("gadenbuie/countdown@5c895d980")
+devtools::install_github("gadenbuie/xaringanExtra")
+install.packages("moffitdocs")        #<< no longer available?
+install.packages("xaringanthemer")  
+```
+
+
+# .blue[Week 3]
+
+--
+
+## Simple linear regression
+
+
+---
+class: top, left
+
+# Session outline
+
+--
+
+## 1. The logic of regression
+--
+ .lightgrey[(...)]
+
+
+--
+
+## 2. ...
+--
+ .lightgrey[(on "trust")]
+--
+ and comparing measurements
+
+--
+## 3. ...
+
+--
+## 4. ...
+--
+ .lightgrey[(a bit of probability theory and probability distributions)]
+
+---
+# The purpose of regression analysis
+
+
+---
+# The logic of simple (ordinary least squares) regression
+
+---
+class: inverse, center, middle
+
+<br><br>
+# Coffee break!
+.center[
+<img src="figures/coffee.gif" width="50%" align="center">
+]
+--
+
+
