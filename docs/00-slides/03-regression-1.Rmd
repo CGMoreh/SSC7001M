@@ -1,5 +1,5 @@
 ---
-title: "Advanced Social Research Methods 1"
+title: "Advanced Research Methods 1"
 subtitle: "SSC7001M"
 author: "Dr. Chris Moreh<br> York St. John University"
 #institute: "York St. John University"
@@ -107,6 +107,14 @@ class: inverse, center, middle
 .center[
 <img src="figures/coffee.gif" width="50%" align="center">
 ]
+
+---
+# Applied regression
+
 --
+Using data from Österman (2021) "Can We Trust Education for Fostering Trust? Quasi-experimental Evidence on the Effect of Education and Tracking on Social Trust"
+
+--
+
 
 
