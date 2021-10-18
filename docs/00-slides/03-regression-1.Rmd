@@ -27,7 +27,7 @@ class: inverse, center, middle
 ```{r setup, include=FALSE} 
 knitr::opts_chunk$set(
   fig.width = 10, fig.height = 6, fig.retina = 2,
-  warning = FALSE, message = FALSE
+  warning = FALSE, message = FALSE, options(digits = 5)
 )
 ```  
 
@@ -111,10 +111,55 @@ class: inverse, center, middle
 ---
 # Applied regression
 
+```{r, include=FALSE}
+library(tidyverse)
+
+```
+
+
 --
 Using data from Österman (2021) "Can We Trust Education for Fostering Trust? Quasi-experimental Evidence on the Effect of Education and Tracking on Social Trust"
 
 --
+```{r import data, include=TRUE}
+## Load the Osterman data:
+data <- haven::read_dta("https://cgmoreh.github.io/SSC7001M/data/osterman.dta")
+```
+
+```{r, eval=FALSE, include=FALSE}
+## Convert to numeric
+## Columns neeing change
+i <- c("ppltrst", "pplfair", "pplhlp", "dscrgrp", "eduyrs25", "inst_trustindex5", "reform1_donly_7", "reform1_eonly_7", "reform1_d_7", "paredu_a_high", "ipudrst_rev")
+
+data[ , i] <- apply(data[ , i], 2,            # Specify own function within apply
+                    function(x) as.numeric(as.character(x)))
+```
+
+---
+
+```{css, echo = F}
+table {
+  font-size: 13px;     
+}
+```
+## Descriptive statistics
 
 
+```{r echo=FALSE}
+my.summary <- function(x, na.rm=TRUE){
+  result <- c(N=length(x[!is.na(x)]),
+              Mean=round(mean(x, na.rm=na.rm), 3),
+              SD=round(sd(x, na.rm=na.rm), 3),
+              Min=min(x, na.rm=na.rm),
+              Max=max(x, na.rm=na.rm))
+}
 
+
+sumtab <- data.frame(sapply(data, my.summary)) %>% select(-(cntry:dweight))
+
+knitr::kable(
+  data.frame(t(sumtab))
+)
+```
+
+Table 2 in the article
