@@ -19,8 +19,17 @@ knitr::opts_chunk$set(
   
 # Prediction
 
+Let's look at a dataset of Boris Johnson's public opinion approval before and after the COVID lockdowns. 
+We have a set of predictor variables: (1) COVID deaths over time and (2) the monthly unemployment rate.
 
+```{r}
+bj <- readRDS(url("https://cgmoreh.github.io/SSC7001M/data/BorisJohnson_Approval2.rds"))
+```
 
+## Fit a normal linear regression model
+
+mod <- lm(Net_Positive ~ Unemployment_Rate_Rounded + Monthly_Deaths_10k, data = bj)
+summary(mod)
 
 
 
