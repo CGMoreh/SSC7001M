@@ -139,7 +139,7 @@ data[ , i] <- apply(data[ , i], 2,            # Specify own function within appl
 
 ```{css, echo = F}
 table {
-  font-size: 13px;     
+  font-size: 12px;     
 }
 ```
 ## Descriptive statistics
@@ -157,9 +157,5 @@ my.summary <- function(x, na.rm=TRUE){
 
 sumtab <- data.frame(sapply(data, my.summary)) %>% select(-(cntry:dweight))
 
-knitr::kable(
-  data.frame(t(sumtab))
-)
+knitr::kable(data.frame(t(sumtab)), caption = "Table 2 in Österman (2021)")
 ```
-
-Table 2 in the article
