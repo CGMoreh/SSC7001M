@@ -22,7 +22,7 @@ d-title {
 }
 ```
 
-<br>
+<br><br>
 
 <center>
 <img src="pics/logo.png" width="100%">
