@@ -57,11 +57,14 @@ install.packages("xaringanthemer")
 ```
 
 
-# .blue[Week 3]
+# .blue[Week 4]
 
 --
 
-## Simple linear regression
+## Multiple linear regression 
+
+--
+### a.k.a. Linear regression with multiple predictors
 
 
 ---
@@ -71,10 +74,7 @@ class: top, left
 
 --
 
-## 1. The logic of regression
---
- .lightgrey[(...)]
-
+## 1. Review of bivariate regression
 
 --
 
@@ -93,20 +93,23 @@ class: top, left
  .lightgrey[(a bit of probability theory and probability distributions)]
 
 ---
-# The purpose of regression analysis
+# A brief review of simple regression
+### What is simple (bivariate) linear regression?
+- **Simple**: it involves one *response* (dependent; outcome) variable and only one *explanatory* (independent; predictor) variable
 
+- **Linear**: we assume that a one-unit change in the independent variable leads to a certain amount of increase or decrease in the dependent variable
+
+- **Regression**: what is the *best fitting* straight line to capture the relationship of two variables in a *scatter plot*? 
+--
+ See ROS Ch. 6.4 for a conceptual history of the term 'regression to the mean' 
+
+---
+### What are the aims of regression analysis?
+- fff
 
 ---
 # The logic of simple (ordinary least squares) regression
 
----
-class: inverse, center, middle
-
-<br><br>
-# Coffee break!
-.center[
-<img src="figures/coffee.gif" width="50%" align="center">
-]
 
 ---
 # Applied regression
@@ -159,3 +162,15 @@ sumtab <- data.frame(sapply(data, my.summary)) %>% select(-(cntry:dweight))
 
 knitr::kable(data.frame(t(sumtab)), caption = "Table 2 in Österman (2021)")
 ```
+
+
+
+
+---
+class: inverse, center, middle
+
+<br><br>
+# Coffee break!
+.center[
+<img src="figures/coffee.gif" width="50%" align="center">
+]
