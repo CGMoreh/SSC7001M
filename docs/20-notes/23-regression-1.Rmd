@@ -25,6 +25,7 @@ knitr::opts_chunk$set(
 library(tidyverse)
 library(mosaic)
 library(ggformula)
+library(kableExtra)
 ```
 
 ## Loading in data
@@ -33,15 +34,23 @@ library(ggformula)
 Let's look at a dataset of PM Boris Johnson's public approval before and after the COVID lockdowns. 
 We have a set of predictor variables: (1) COVID deaths over time and (2) the monthly unemployment rate. The main variables in the dataset are the following:
 
-| Name            | Description                                                                                                  |
-|-----------------|--------------------------------------------------------------------------------------------------------------|
-| `Poll_Date`     | Date of the poll (y-m-d)? |
-| `Sample_Size`   | The number of respondents                                               |
-| `Net_Positive`  | PM approval (based on a four-point Likert-scale)                                               |
-| `Unemployment_Rate_Rounded` | Unemployment rate before the month of the poll                                                  |
-| `Cumulative_Deaths_10k`       | Cumulative number of Covid deaths during the poll period                                                 |
-| `Monthly_Deaths_10k`          | Covid deaths in month before poll                                                          |
-| `Lockdown_Indicator`     | Indicator whether lockdown was in place during month of poll (0/1) |
+```{r bj_vardef, echo=FALSE}
+bj_vardef <- tribble(
+  ~variable, ~description,
+  "Poll_Date", "Date of the poll (y-m-d)",
+  "Sample_Size", "The number of respondents",
+  "Net_Positive", "PM approval (based on a four-point Likert-scale)", 
+  "Unemployment_Rate_Rounded", "Unemployment rate before the month of the poll",
+  "Cumulative_Deaths_10k", "Cumulative number of Covid deaths during the poll period",
+  "Monthly_Deaths_10k", "Covid deaths in month before poll",
+  "Lockdown_Indicator", "Indicator whether lockdown was in place during month of poll (0/1)"
+)
+bj_vardef %>%
+  kbl(linesep = "", booktabs = TRUE, caption = "Variables and their descriptions for the `bj` dataset",
+      col.names = c("Variable", "Description")) %>%
+  column_spec(1, width = "20em", monospace = TRUE, bold = FALSE, color = "red")
+```
+
 
 We can load the dataset directly from the online course data folder:
 
@@ -121,12 +130,12 @@ summary(m1)
 
 The same model coefficients are shown here, but there is also a lot more information about things like the $R^2$ value. 
 
-```{r better looking table}
+```{r better looking table, echo=FALSE}
 regtab1 <- coef(summary(m1))
-rownames(regtab1) <- c("$\\beta_0$", "$\\beta_1$")
-knitr::kable(regtab1)
+## regtab1_1 <- regtab1 %>% add_column(Notation = 1:2, .before = 1)
+## rownames(regtab1) <- c("$\\beta_0$", "$\\beta_1$")
+knitr::kable(regtab1) 
 ```
-
 
 ## Interpreting coefficients
 Let's interpret our model coefficients. Here are the generic sentences I prefer:
