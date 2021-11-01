@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
   warning = FALSE, message = FALSE, eval=T)
 ```
 
-```{r, include=TRUE}
+```{r message=FALSE, warning=FALSE}
 library(tidyverse)
 library(mosaic)
 library(ggformula)
