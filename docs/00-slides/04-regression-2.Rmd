@@ -99,7 +99,7 @@ install.packages("xaringanthemer")
 - A dataset normally contains a collection of values for $y$ and $x$ from a number $(N)$ of cases (e.g. survey respondents, or another unit of analysis)
 - For example, each row $i$ in a dataset containing $N=1\dots{n}$ cases/units/rows would store values for $y_i$ and $x_i$
 - so that: 
-<center>y<sub>i</sub> = b<sub>0i</sub> + b<sub>1i</sub> * x<sub>i</sub> + e<sub>i</sub></center>
+$$ y_i=b_0+b_1x_i + e_i $$
 
 ---
 # A brief review of simple regression
