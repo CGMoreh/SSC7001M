@@ -90,3 +90,34 @@ ggplot(aes(x = n, y = score)) +
 dta2 <- dta %>% 
   mutate_if(haven::is.labelled, haven::as_factor)
  ## some variables are mis-recognised as factors (e.g. those measuring responses in minutes)
+
+
+### Cut-outs from 25-interactions.Rmd:
+
+### Transforming data imported from other formats(e.g. SPSS, Stata, Excel, etc.)
+# 
+# This dataset was imported from a Stata `.dta` dataset using a function from the `haven` package. In the process of importing the data, `haven` creates a special data type called `haven_labelled` to store additional information about variable and value labels that Stata manages by default but `R` doesn't. We can use the imported variables as they are for most analyses, but occasionally we will encounter warning messages such as `Don't know how to automatically pick scale for object of type haven_labelled/vctrs_vctr/double. Defaulting to continuous` or even error messages. To avoid these, it is a good idea to transform the data further to a format more convenient for `R`, although some variables will still benefit from further individual manipulations later.
+# We can check whether a variable has a `haven_labelled` format with the command line:
+#   ```{r, eval=FALSE}
+# is.labelled(osterman$ppltrst) 
+# ## or adding haven:: in front of the command if the haven package is not loaded in the library()
+# ```
+# The command will print either a TRUE or FALSE message (i.e. whether the variable is or isn't `haven_labelled`). In this case the result is: `r is.labelled(osterman$ppltrst)`. It is particularly useful to convert categorical variables into so-called *factor* variables (`R`'s way of denoting categorical variables) using the command:
+#   ```{r}
+# osterman <- osterman %>% 
+#   mutate_if(haven::is.labelled, haven::as_factor)
+# ```
+# We can check again whether *ppltrst* still has a `haven_labelled` format:
+#   ```{r}
+# is.labelled(osterman$ppltrst) 
+# ```
+# 
+# We can also generate another 'data dictionary' to check the differences between the original and identify any variables that may need to be transformed further:
+#   ```{r}
+# data_dictionary2 <- labelled::generate_dictionary(osterman) 
+# ```
+# 
+# ``` {r, eval=FALSE}
+# # Let's view the data dictionary:
+# View(data_dictionary2)
+# ```

@@ -1,0 +1,159 @@
+---
+title: "Week 5: Linear regression with interaction terms"
+output:
+  rmdformats::readthedown:
+      code_download: true
+      highlight: tango
+---
+<br>
+# Preparations
+
+## Setup and packages
+
+```{r include=FALSE}
+# General settings for knitting
+knitr::opts_chunk$set(
+  fig.width = 10, fig.height = 6, fig.retina = 2,
+  warning = FALSE, message = FALSE, eval=T)
+```
+
+The following packages will be necessary to perform the analyses we learn today:
+
+```{r include=FALSE}
+# Load required package for the table below
+library(tibble)
+library(kableExtra)
+```
+
+```{r w5_packages, echo=FALSE}
+w5_packages <- tribble(
+  ~package, ~description,
+  "pacman", "An R package management tool that makes it easier to install and load missing packages",
+  "tidyverse", "Generic reproducible data management; contains several useful packages, such as haven, ggplot2, dplyr, tidyr, broom, forcats and a port to the %>% pipe operator", 
+  "kableExtra", "To build complex print tables using 'kable()' from 'knitr' and the piping syntax from 'magrittr'",
+  "ggformula", "Provides a formula interface to the 'ggplot2' graphics package, effectively making the production of graphs much easier",
+  "knitr", "A general-purpose tool for dynamic report generation; useful for creating good-looking printed tables and for 'knitting' the print version of the Rmd document",
+  "jtools", "Provides tools for more efficient presentation of regression analyses",
+  "interactions", "tools that pertain to the analysis and exploration of statistical interactions in the context of regression"
+)
+w5_packages %>%
+  kbl(linesep = "", booktabs = TRUE, caption = "",
+      col.names = c("Package", "Description")) %>%
+  column_spec(1, width = "20em", monospace = TRUE, bold = FALSE)
+```
+
+Some of these packages are convenience tools for presenting regression results in more convenient formats than what we have seen in previous weeks with `R`'s default output types. Some other packages here provide convenience tools for managing your workflow and manipulating data for statistical analysis. As we build up the skills required to undertake a whole data analysis project, these tools will become more and more relevant and important.
+
+We can first install the `pacman` package (if we don't already have it installed):
+```{r, eval=FALSE}
+install.packages("pacman")
+```
+Then using the function `p_load` from `pacman` we can list the needed packages - in the background the function checks whether we already have it installed, if not it installs them, then loads the packages:
+
+```{r}
+pacman::p_load(tidyverse, haven, kableExtra, knitr, ggformula, jtools, interactions)
+```
+
+This is basically just an easy and compact way of loading packages instead of repeating the `library()` command several times.
+
+## Data
+
+We will continue using the data from the Österman (2021) article "Can We Trust Education for Fostering Trust? Quasi-experimental Evidence on the Effect of Education and Tracking on Social Trust":
+
+```{r import data, include=TRUE}
+## Load the Osterman data:
+osterman <- read_dta("https://cgmoreh.github.io/SSC7001M/data/osterman.dta")
+
+# COMMENT: add haven:: in front of the 'read_dta' command if the package haven is not already loaded using library()
+```
+
+### Creating a "data dictionary"
+
+After importing the dataset, you can create a searchable data dictionary using a convenience function from the `labelled` package (already imported with the `tidyverse`) that allows easier identification of variable names and labels:
+
+```{r}
+# Create a searchable data dictionary:
+data_dictionary <- labelled::generate_dictionary(osterman) 
+
+# Some of the columns that are less relevant, so let's keep just three:
+data_dictionary <- data_dictionary %>% select(c("variable", "label", "value_labels"))
+
+# We can now view that data dictionary with the command:
+# 'View(data_dictionary)'
+
+# Or we can print it to our output document as a printed table  (!! this is just as example - for datasets with many variables this is impractical, and anyway it is more convenient to also use the search functionality available if we open and View the data_dictionary object itself):
+knitr::kable(data_dictionary)
+```
+
+### Descriptive statistics
+
+We can recreate Table 2 from the Osterman article for comparison:
+
+```{r, echo=FALSE}
+# This code is a custom-written function to build the table but it's not the most user-friendly way of doing it; there are user-written packages that can be used, so there is no reason to dissect this code
+
+my.summary <- function(x, na.rm=TRUE){
+  result <- c(N=length(x[!is.na(x)]),
+              Mean=round(mean(x, na.rm=na.rm), 3),
+              SD=round(sd(x, na.rm=na.rm), 3),
+              Min=min(x, na.rm=na.rm),
+              Max=max(x, na.rm=na.rm))
+}
+
+sumtab <- data.frame(sapply(osterman, my.summary)) %>% select(-(cntry:dweight))
+knitr::kable(data.frame(t(sumtab)), caption = "Table 2 in Österman (2021)")
+```
+
+<br>
+# Data analysis: The effect of education on trust
+
+## Model fitting and summary
+
+Let's start by fitting a model of social trust as a function of education while also accounting for age, gender, parental education and belonging to an ethnic minority group (Exercise 2 from last week):
+
+```{r}
+mod1 <- lm(trustindex3 ~ eduyrs25 + agea + female + paredu_a_high + blgetmg_d, data = osterman)
+```
+
+We already know how to print summmary results from the fitted model using base `R` functions and how to interpret the results:
+
+```{r}
+summary(mod1)
+```
+However, there are several packages that can be used to produce more nicely formatted summary results, including options to print the results as a table in an almost publisheable-ready format. Let's have a look at some functions from one such convenience package written by Jacob A. Long, called `jtools`. We have already loaded the `jtools`library in a previous step at the start, so there is no need to add 'jtools::' before the command we are using, but for sake of clarity, I'll follow that format. An alternative to the 'summary()' we used above would be:
+
+```{r}
+jtools::summ(mod1)
+```
+If we would like some more precision in the output, we can opt for more decimal points; we can also request 95% Confidence Intervals instead of the Standard Errors, which can be visually more useful than the p-value with respect to the information they provide:
+```{r}
+jtools::summ(mod1, confint = TRUE, digits = 3)
+```
+In the output table above we now see the lower and upper bounds of a 95% Confidence Interval.
+
+## Model interpretation
+
+Mathematically, we have fitted the following model:
+
+$$ trustindex3=\beta_0+\beta_1*eduyears25+\beta_2*agea+\beta_3*female+\beta_4*{paredu}+\beta_5*{blgetmg}+error $$
+We interpret the coefficients as follows (see ROS p. 135):
+
+- The intercept represents the predicted trust intex score for respondents whose score on each of the predictors equals 0 (i.e. someone with 0 education years, 0 age, male, parents with *no* higher education, and *not* belonging to an ethnic minority group). This is just a statistical baseline, so it doesn't mater that in most cases the 0 value do not make sense; we usually do not interpret the intercept for this reason. Intercepts, however, can be more interpretable if input variables are centered before including them as regression predictors.
+- The coefficients $\beta_1$ to $\beta_5$ represent the change in trustindex score if the respective variable increases by one unit *while holding constant* (or *accounting for*) the presence of the other variables in the model.
+
+The standard errors, confidence intervals, t-values and the p-value (corresponding to the t-test that resulted the t-values) are helpful for inferring from the model to the hypothesised wider population. What is being tested in each line is whether the parameter estimate may be equal to 0 in the wider population from which our data sample was drawn.
+The hypothesis that a parameter equals zero (or any other fixed value) can be directly tested by fitting the model that includes the parameter in question and examining the corresponding 95% interval. If the interval excludes zero (or the specified fixed value), then the hypothesis is said to be rejected at the 5% level.
+Testing whether two parameters are equal is equivalent to testing whether their difference equals
+zero. We can do this by including both parameters in the model and then examining the 95% interval for their difference. As with inference for a single parameter, the confidence interval is commonly of more interest than the hypothesis test. 
+The hypothesis of whether a parameter is positive is directly assessed via its confidence interval. Testing whether one parameter is greater than the other is equivalent to examining the confidence interval for their difference and testing for whether it is entirely positive.
+
+## Testing for interactions between variables
+
+In the linear regression model we assume that each variable has a linear effect on the outcome. However, there are often reasons to suspect that some effects are not linear across other variables. For example, we can test whether education years have a similar effect for men and women by including an *interaction* between gender and education:
+
+```{r}
+mod2 <- lm(trustindex3 ~ eduyrs25*female + agea + paredu_a_high + blgetmg_d, data = osterman)
+jtools::summ(mod2, digits = 3)
+```
+Now we have an additional coeficient, for the interaction between gender and education. We can interpret this as representing the difference in the slope for education, comparing females to males.
+
