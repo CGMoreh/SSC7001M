@@ -4,8 +4,10 @@ output:
   rmdformats::readthedown:
       code_download: true
       highlight: tango
+      number_sections: true
 ---
 <br>
+
 # Preparations
 
 ## Setup and packages
@@ -105,6 +107,7 @@ knitr::kable(data.frame(t(sumtab)), caption = "Table 2 in Österman (2021)")
 ```
 
 <br>
+
 # Data analysis: The effect of education on trust
 
 ## Model fitting and summary
@@ -122,11 +125,11 @@ summary(mod1)
 ```
 However, there are several packages that can be used to produce more nicely formatted summary results, including options to print the results as a table in an almost publisheable-ready format. Let's have a look at some functions from one such convenience package written by Jacob A. Long, called `jtools`. We have already loaded the `jtools`library in a previous step at the start, so there is no need to add 'jtools::' before the command we are using, but for sake of clarity, I'll follow that format. An alternative to the 'summary()' we used above would be:
 
-```{r}
+```{r, render=knitr::normal_print}
 jtools::summ(mod1)
 ```
 If we would like some more precision in the output, we can opt for more decimal points; we can also request 95% Confidence Intervals instead of the Standard Errors, which can be visually more useful than the p-value with respect to the information they provide:
-```{r}
+```{r, render=knitr::normal_print}
 jtools::summ(mod1, confint = TRUE, digits = 3)
 ```
 In the output table above we now see the lower and upper bounds of a 95% Confidence Interval.
@@ -152,7 +155,13 @@ The hypothesis of whether a parameter is positive is directly assessed via its c
 In the linear regression model we assume that each variable has a linear effect on the outcome. However, there are often reasons to suspect that some effects are not linear across other variables. For example, we can test whether education years have a similar effect for men and women by including an *interaction* between gender and education:
 
 ```{r}
+# Build the model and save it as an object; let's call the model object 'mod2':
+
 mod2 <- lm(trustindex3 ~ eduyrs25*female + agea + paredu_a_high + blgetmg_d, data = osterman)
+```
+```{r, render=knitr::normal_print}
+# Print out a summary of 'mod2' using the `summ` function from the `jtools` package:
+
 jtools::summ(mod2, digits = 3)
 ```
 Now we have an additional coeficient, for the interaction between gender and education. We can interpret this as representing the difference in the slope for education, comparing females to males.

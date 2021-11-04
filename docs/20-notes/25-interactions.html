@@ -209,11 +209,17 @@
     <h2><a href="#content">Week 5: Linear regression with interaction terms</a></h2>
     <div id="toc">
       <ul>
-      <li><a href="#setup-and-packages">Setup and packages</a></li>
-      <li><a href="#data">Data</a></li>
-      <li><a href="#model-fitting-and-summary">Model fitting and summary</a></li>
-      <li><a href="#model-interpretation">Model interpretation</a></li>
-      <li><a href="#testing-for-interactions-between-variables">Testing for interactions between variables</a></li>
+      <li><a href="#preparations"><span class="toc-section-number">1</span> Preparations</a>
+      <ul>
+      <li><a href="#setup-and-packages"><span class="toc-section-number">1.1</span> Setup and packages</a></li>
+      <li><a href="#data"><span class="toc-section-number">1.2</span> Data</a></li>
+      </ul></li>
+      <li><a href="#data-analysis-the-effect-of-education-on-trust"><span class="toc-section-number">2</span> Data analysis: The effect of education on trust</a>
+      <ul>
+      <li><a href="#model-fitting-and-summary"><span class="toc-section-number">2.1</span> Model fitting and summary</a></li>
+      <li><a href="#model-interpretation"><span class="toc-section-number">2.2</span> Model interpretation</a></li>
+      <li><a href="#testing-for-interactions-between-variables"><span class="toc-section-number">2.3</span> Testing for interactions between variables</a></li>
+      </ul></li>
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
@@ -226,9 +232,11 @@
    
 <!-- Don't indent these lines or it will mess pre blocks indentation --> 
 <div id="main">
-<p><br> # Preparations</p>
-<div id="setup-and-packages" class="section level2">
-<h2>Setup and packages</h2>
+<p><br></p>
+<div id="preparations" class="section level1" number="1">
+<h1 number="1"><span class="header-section-number">1</span> Preparations</h1>
+<div id="setup-and-packages" class="section level2" number="1.1">
+<h2 number="1.1"><span class="header-section-number">1.1</span> Setup and packages</h2>
 <p>The following packages will be necessary to perform the analyses we learn today:</p>
 <table>
 <caption>
@@ -309,15 +317,15 @@ tools that pertain to the analysis and exploration of statistical interactions i
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, haven, kableExtra, knitr, ggformula, jtools, interactions)</span></code></pre></div>
 <p>This is basically just an easy and compact way of loading packages instead of repeating the <code>library()</code> command several times.</p>
 </div>
-<div id="data" class="section level2">
-<h2>Data</h2>
+<div id="data" class="section level2" number="1.2">
+<h2 number="1.2"><span class="header-section-number">1.2</span> Data</h2>
 <p>We will continue using the data from the Österman (2021) article “Can We Trust Education for Fostering Trust? Quasi-experimental Evidence on the Effect of Education and Tracking on Social Trust”:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Load the Osterman data:</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>osterman <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;https://cgmoreh.github.io/SSC7001M/data/osterman.dta&quot;</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># COMMENT: add haven:: in front of the &#39;read_dta&#39; command if the package haven is not already loaded using library()</span></span></code></pre></div>
-<div id="creating-a-data-dictionary" class="section level3">
-<h3>Creating a “data dictionary”</h3>
+<div id="creating-a-data-dictionary" class="section level3" number="1.2.1">
+<h3 number="1.2.1"><span class="header-section-number">1.2.1</span> Creating a “data dictionary”</h3>
 <p>After importing the dataset, you can create a searchable data dictionary using a convenience function from the <code>labelled</code> package (already imported with the <code>tidyverse</code>) that allows easier identification of variable names and labels:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a searchable data dictionary:</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>data_dictionary <span class="ot">&lt;-</span> labelled<span class="sc">::</span><span class="fu">generate_dictionary</span>(osterman) </span>
@@ -678,8 +686,8 @@ NULL
 </tbody>
 </table>
 </div>
-<div id="descriptive-statistics" class="section level3">
-<h3>Descriptive statistics</h3>
+<div id="descriptive-statistics" class="section level3" number="1.2.2">
+<h3 number="1.2.2"><span class="header-section-number">1.2.2</span> Descriptive statistics</h3>
 <p>We can recreate Table 2 from the Osterman article for comparison:</p>
 <table>
 <caption>
@@ -1249,11 +1257,14 @@ mbrneur
 </tr>
 </tbody>
 </table>
-<p><br> # Data analysis: The effect of education on trust</p>
+<p><br></p>
 </div>
 </div>
-<div id="model-fitting-and-summary" class="section level2">
-<h2>Model fitting and summary</h2>
+</div>
+<div id="data-analysis-the-effect-of-education-on-trust" class="section level1" number="2">
+<h1 number="2"><span class="header-section-number">2</span> Data analysis: The effect of education on trust</h1>
+<div id="model-fitting-and-summary" class="section level2" number="2.1">
+<h2 number="2.1"><span class="header-section-number">2.1</span> Model fitting and summary</h2>
 <p>Let’s start by fitting a model of social trust as a function of education while also accounting for age, gender, parental education and belonging to an ethnic minority group (Exercise 2 from last week):</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>mod1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(trustindex3 <span class="sc">~</span> eduyrs25 <span class="sc">+</span> agea <span class="sc">+</span> female <span class="sc">+</span> paredu_a_high <span class="sc">+</span> blgetmg_d, <span class="at">data =</span> osterman)</span></code></pre></div>
 <p>We already know how to print summmary results from the fitted model using base <code>R</code> functions and how to interpret the results:</p>
@@ -1284,407 +1295,54 @@ mbrneur
 ## F-statistic: 938.4 on 5 and 64468 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>However, there are several packages that can be used to produce more nicely formatted summary results, including options to print the results as a table in an almost publisheable-ready format. Let’s have a look at some functions from one such convenience package written by Jacob A. Long, called <code>jtools</code>. We have already loaded the <code>jtools</code>library in a previous step at the start, so there is no need to add ‘jtools::’ before the command we are using, but for sake of clarity, I’ll follow that format. An alternative to the ‘summary()’ we used above would be:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>jtools<span class="sc">::</span><span class="fu">summ</span>(mod1)</span></code></pre></div>
-<table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<tbody>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Observations
-</td>
-<td style="text-align:right;">
-64474 (4322 missing obs. deleted)
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Dependent variable
-</td>
-<td style="text-align:right;">
-trustindex3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Type
-</td>
-<td style="text-align:right;">
-OLS linear regression
-</td>
-</tr>
-</tbody>
-</table>
-<table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<tbody>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-F(5,64468)
-</td>
-<td style="text-align:right;">
-938.42
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-R²
-</td>
-<td style="text-align:right;">
-0.07
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Adj. R²
-</td>
-<td style="text-align:right;">
-0.07
-</td>
-</tr>
-</tbody>
-</table>
-<table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;border-bottom: 0;">
-<thead>
-<tr>
-<th style="text-align:left;">
-</th>
-<th style="text-align:right;">
-Est.
-</th>
-<th style="text-align:right;">
-S.E.
-</th>
-<th style="text-align:right;">
-t val.
-</th>
-<th style="text-align:right;">
-p
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-(Intercept)
-</td>
-<td style="text-align:right;">
-2.94
-</td>
-<td style="text-align:right;">
-0.04
-</td>
-<td style="text-align:right;">
-66.86
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-eduyrs25
-</td>
-<td style="text-align:right;">
-0.11
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
-58.15
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-agea
-</td>
-<td style="text-align:right;">
-0.02
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
-26.84
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-female
-</td>
-<td style="text-align:right;">
-0.04
-</td>
-<td style="text-align:right;">
-0.01
-</td>
-<td style="text-align:right;">
-2.89
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-paredu_a_high
-</td>
-<td style="text-align:right;">
-0.17
-</td>
-<td style="text-align:right;">
-0.02
-</td>
-<td style="text-align:right;">
-10.72
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-blgetmg_d
-</td>
-<td style="text-align:right;">
--0.38
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
--6.30
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-</tr>
-</tbody>
-<tfoot>
-<tr>
-<td style="padding: 0; " colspan="100%">
-<sup></sup> Standard errors: OLS
-</td>
-</tr>
-</tfoot>
-</table>
+<pre><code>## MODEL INFO:
+## Observations: 64474 (4322 missing obs. deleted)
+## Dependent Variable: trustindex3
+## Type: OLS linear regression 
+## 
+## MODEL FIT:
+## F(5,64468) = 938.42, p = 0.00
+## R² = 0.07
+## Adj. R² = 0.07 
+## 
+## Standard errors: OLS
+## --------------------------------------------------
+##                        Est.   S.E.   t val.      p
+## ------------------- ------- ------ -------- ------
+## (Intercept)            2.94   0.04    66.86   0.00
+## eduyrs25               0.11   0.00    58.15   0.00
+## agea                   0.02   0.00    26.84   0.00
+## female                 0.04   0.01     2.89   0.00
+## paredu_a_high          0.17   0.02    10.72   0.00
+## blgetmg_d             -0.38   0.06    -6.30   0.00
+## --------------------------------------------------</code></pre>
 <p>If we would like some more precision in the output, we can opt for more decimal points; we can also request 95% Confidence Intervals instead of the Standard Errors, which can be visually more useful than the p-value with respect to the information they provide:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>jtools<span class="sc">::</span><span class="fu">summ</span>(mod1, <span class="at">confint =</span> <span class="cn">TRUE</span>, <span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
-<table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<tbody>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Observations
-</td>
-<td style="text-align:right;">
-64474 (4322 missing obs. deleted)
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Dependent variable
-</td>
-<td style="text-align:right;">
-trustindex3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Type
-</td>
-<td style="text-align:right;">
-OLS linear regression
-</td>
-</tr>
-</tbody>
-</table>
-<table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<tbody>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-F(5,64468)
-</td>
-<td style="text-align:right;">
-938.415
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-R²
-</td>
-<td style="text-align:right;">
-0.068
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Adj. R²
-</td>
-<td style="text-align:right;">
-0.068
-</td>
-</tr>
-</tbody>
-</table>
-<table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;border-bottom: 0;">
-<thead>
-<tr>
-<th style="text-align:left;">
-</th>
-<th style="text-align:right;">
-Est.
-</th>
-<th style="text-align:right;">
-2.5%
-</th>
-<th style="text-align:right;">
-97.5%
-</th>
-<th style="text-align:right;">
-t val.
-</th>
-<th style="text-align:right;">
-p
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-(Intercept)
-</td>
-<td style="text-align:right;">
-2.944
-</td>
-<td style="text-align:right;">
-2.858
-</td>
-<td style="text-align:right;">
-3.030
-</td>
-<td style="text-align:right;">
-66.865
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-eduyrs25
-</td>
-<td style="text-align:right;">
-0.110
-</td>
-<td style="text-align:right;">
-0.106
-</td>
-<td style="text-align:right;">
-0.114
-</td>
-<td style="text-align:right;">
-58.153
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-agea
-</td>
-<td style="text-align:right;">
-0.016
-</td>
-<td style="text-align:right;">
-0.015
-</td>
-<td style="text-align:right;">
-0.018
-</td>
-<td style="text-align:right;">
-26.843
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-female
-</td>
-<td style="text-align:right;">
-0.042
-</td>
-<td style="text-align:right;">
-0.014
-</td>
-<td style="text-align:right;">
-0.070
-</td>
-<td style="text-align:right;">
-2.892
-</td>
-<td style="text-align:right;">
-0.004
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-paredu_a_high
-</td>
-<td style="text-align:right;">
-0.174
-</td>
-<td style="text-align:right;">
-0.143
-</td>
-<td style="text-align:right;">
-0.206
-</td>
-<td style="text-align:right;">
-10.720
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-blgetmg_d
-</td>
-<td style="text-align:right;">
--0.378
-</td>
-<td style="text-align:right;">
--0.496
-</td>
-<td style="text-align:right;">
--0.261
-</td>
-<td style="text-align:right;">
--6.301
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-</tbody>
-<tfoot>
-<tr>
-<td style="padding: 0; " colspan="100%">
-<sup></sup> Standard errors: OLS
-</td>
-</tr>
-</tfoot>
-</table>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>jtools<span class="sc">::</span><span class="fu">summ</span>(mod1, <span class="at">confint =</span> <span class="cn">TRUE</span>, <span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<pre><code>## MODEL INFO:
+## Observations: 64474 (4322 missing obs. deleted)
+## Dependent Variable: trustindex3
+## Type: OLS linear regression 
+## 
+## MODEL FIT:
+## F(5,64468) = 938.415, p = 0.000
+## R² = 0.068
+## Adj. R² = 0.068 
+## 
+## Standard errors: OLS
+## ---------------------------------------------------------------
+##                         Est.     2.5%    97.5%   t val.       p
+## ------------------- -------- -------- -------- -------- -------
+## (Intercept)            2.944    2.858    3.030   66.865   0.000
+## eduyrs25               0.110    0.106    0.114   58.153   0.000
+## agea                   0.016    0.015    0.018   26.843   0.000
+## female                 0.042    0.014    0.070    2.892   0.004
+## paredu_a_high          0.174    0.143    0.206   10.720   0.000
+## blgetmg_d             -0.378   -0.496   -0.261   -6.301   0.000
+## ---------------------------------------------------------------</code></pre>
 <p>In the output table above we now see the lower and upper bounds of a 95% Confidence Interval.</p>
 </div>
-<div id="model-interpretation" class="section level2">
-<h2>Model interpretation</h2>
+<div id="model-interpretation" class="section level2" number="2.2">
+<h2 number="2.2"><span class="header-section-number">2.2</span> Model interpretation</h2>
 <p>Mathematically, we have fitted the following model:</p>
 <p><span class="math display">\[ trustindex3=\beta_0+\beta_1*eduyears25+\beta_2*agea+\beta_3*female+\beta_4*{paredu}+\beta_5*{blgetmg}+error \]</span> We interpret the coefficients as follows (see ROS p. 135):</p>
 <ul>
@@ -1693,221 +1351,44 @@ blgetmg_d
 </ul>
 <p>The standard errors, confidence intervals, t-values and the p-value (corresponding to the t-test that resulted the t-values) are helpful for inferring from the model to the hypothesised wider population. What is being tested in each line is whether the parameter estimate may be equal to 0 in the wider population from which our data sample was drawn. The hypothesis that a parameter equals zero (or any other fixed value) can be directly tested by fitting the model that includes the parameter in question and examining the corresponding 95% interval. If the interval excludes zero (or the specified fixed value), then the hypothesis is said to be rejected at the 5% level. Testing whether two parameters are equal is equivalent to testing whether their difference equals zero. We can do this by including both parameters in the model and then examining the 95% interval for their difference. As with inference for a single parameter, the confidence interval is commonly of more interest than the hypothesis test. The hypothesis of whether a parameter is positive is directly assessed via its confidence interval. Testing whether one parameter is greater than the other is equivalent to examining the confidence interval for their difference and testing for whether it is entirely positive.</p>
 </div>
-<div id="testing-for-interactions-between-variables" class="section level2">
-<h2>Testing for interactions between variables</h2>
+<div id="testing-for-interactions-between-variables" class="section level2" number="2.3">
+<h2 number="2.3"><span class="header-section-number">2.3</span> Testing for interactions between variables</h2>
 <p>In the linear regression model we assume that each variable has a linear effect on the outcome. However, there are often reasons to suspect that some effects are not linear across other variables. For example, we can test whether education years have a similar effect for men and women by including an <em>interaction</em> between gender and education:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>mod2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(trustindex3 <span class="sc">~</span> eduyrs25<span class="sc">*</span>female <span class="sc">+</span> agea <span class="sc">+</span> paredu_a_high <span class="sc">+</span> blgetmg_d, <span class="at">data =</span> osterman)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>jtools<span class="sc">::</span><span class="fu">summ</span>(mod2, <span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
-<table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<tbody>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Observations
-</td>
-<td style="text-align:right;">
-64474 (4322 missing obs. deleted)
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Dependent variable
-</td>
-<td style="text-align:right;">
-trustindex3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Type
-</td>
-<td style="text-align:right;">
-OLS linear regression
-</td>
-</tr>
-</tbody>
-</table>
-<table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<tbody>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-F(6,64467)
-</td>
-<td style="text-align:right;">
-791.137
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-R²
-</td>
-<td style="text-align:right;">
-0.069
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Adj. R²
-</td>
-<td style="text-align:right;">
-0.068
-</td>
-</tr>
-</tbody>
-</table>
-<table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;border-bottom: 0;">
-<thead>
-<tr>
-<th style="text-align:left;">
-</th>
-<th style="text-align:right;">
-Est.
-</th>
-<th style="text-align:right;">
-S.E.
-</th>
-<th style="text-align:right;">
-t val.
-</th>
-<th style="text-align:right;">
-p
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-(Intercept)
-</td>
-<td style="text-align:right;">
-3.102
-</td>
-<td style="text-align:right;">
-0.049
-</td>
-<td style="text-align:right;">
-62.952
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-eduyrs25
-</td>
-<td style="text-align:right;">
-0.097
-</td>
-<td style="text-align:right;">
-0.003
-</td>
-<td style="text-align:right;">
-37.094
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-female
-</td>
-<td style="text-align:right;">
--0.272
-</td>
-<td style="text-align:right;">
-0.046
-</td>
-<td style="text-align:right;">
--5.881
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-agea
-</td>
-<td style="text-align:right;">
-0.016
-</td>
-<td style="text-align:right;">
-0.001
-</td>
-<td style="text-align:right;">
-27.105
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-paredu_a_high
-</td>
-<td style="text-align:right;">
-0.174
-</td>
-<td style="text-align:right;">
-0.016
-</td>
-<td style="text-align:right;">
-10.693
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-blgetmg_d
-</td>
-<td style="text-align:right;">
--0.378
-</td>
-<td style="text-align:right;">
-0.060
-</td>
-<td style="text-align:right;">
--6.289
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-eduyrs25:female
-</td>
-<td style="text-align:right;">
-0.025
-</td>
-<td style="text-align:right;">
-0.003
-</td>
-<td style="text-align:right;">
-7.148
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-</tbody>
-<tfoot>
-<tr>
-<td style="padding: 0; " colspan="100%">
-<sup></sup> Standard errors: OLS
-</td>
-</tr>
-</tfoot>
-</table>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build the model and save it as an object; let&#39;s call the model object &#39;mod2&#39;:</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>mod2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(trustindex3 <span class="sc">~</span> eduyrs25<span class="sc">*</span>female <span class="sc">+</span> agea <span class="sc">+</span> paredu_a_high <span class="sc">+</span> blgetmg_d, <span class="at">data =</span> osterman)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Print out a summary of &#39;mod2&#39; using the `summ` function from the `jtools` package:</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>jtools<span class="sc">::</span><span class="fu">summ</span>(mod2, <span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<pre><code>## MODEL INFO:
+## Observations: 64474 (4322 missing obs. deleted)
+## Dependent Variable: trustindex3
+## Type: OLS linear regression 
+## 
+## MODEL FIT:
+## F(6,64467) = 791.137, p = 0.000
+## R² = 0.069
+## Adj. R² = 0.068 
+## 
+## Standard errors: OLS
+## -------------------------------------------------------
+##                           Est.    S.E.   t val.       p
+## --------------------- -------- ------- -------- -------
+## (Intercept)              3.102   0.049   62.952   0.000
+## eduyrs25                 0.097   0.003   37.094   0.000
+## female                  -0.272   0.046   -5.881   0.000
+## agea                     0.016   0.001   27.105   0.000
+## paredu_a_high            0.174   0.016   10.693   0.000
+## blgetmg_d               -0.378   0.060   -6.289   0.000
+## eduyrs25:female          0.025   0.003    7.148   0.000
+## -------------------------------------------------------</code></pre>
 <p>Now we have an additional coeficient, for the interaction between gender and education. We can interpret this as representing the difference in the slope for education, comparing females to males.</p>
+</div>
 </div>
 </div>
 
    
-      <div id="rmd-source-code">LS0tDQp0aXRsZTogIldlZWsgNTogTGluZWFyIHJlZ3Jlc3Npb24gd2l0aCBpbnRlcmFjdGlvbiB0ZXJtcyINCm91dHB1dDoNCiAgcm1kZm9ybWF0czo6cmVhZHRoZWRvd246DQogICAgICBjb2RlX2Rvd25sb2FkOiB0cnVlDQogICAgICBoaWdobGlnaHQ6IHRhbmdvDQotLS0NCjxicj4NCiMgUHJlcGFyYXRpb25zDQoNCiMjIFNldHVwIGFuZCBwYWNrYWdlcw0KDQpgYGB7ciBpbmNsdWRlPUZBTFNFfQ0KIyBHZW5lcmFsIHNldHRpbmdzIGZvciBrbml0dGluZw0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KA0KICBmaWcud2lkdGggPSAxMCwgZmlnLmhlaWdodCA9IDYsIGZpZy5yZXRpbmEgPSAyLA0KICB3YXJuaW5nID0gRkFMU0UsIG1lc3NhZ2UgPSBGQUxTRSwgZXZhbD1UKQ0KYGBgDQoNClRoZSBmb2xsb3dpbmcgcGFja2FnZXMgd2lsbCBiZSBuZWNlc3NhcnkgdG8gcGVyZm9ybSB0aGUgYW5hbHlzZXMgd2UgbGVhcm4gdG9kYXk6DQoNCmBgYHtyIGluY2x1ZGU9RkFMU0V9DQojIExvYWQgcmVxdWlyZWQgcGFja2FnZSBmb3IgdGhlIHRhYmxlIGJlbG93DQpsaWJyYXJ5KHRpYmJsZSkNCmxpYnJhcnkoa2FibGVFeHRyYSkNCmBgYA0KDQpgYGB7ciB3NV9wYWNrYWdlcywgZWNobz1GQUxTRX0NCnc1X3BhY2thZ2VzIDwtIHRyaWJibGUoDQogIH5wYWNrYWdlLCB+ZGVzY3JpcHRpb24sDQogICJwYWNtYW4iLCAiQW4gUiBwYWNrYWdlIG1hbmFnZW1lbnQgdG9vbCB0aGF0IG1ha2VzIGl0IGVhc2llciB0byBpbnN0YWxsIGFuZCBsb2FkIG1pc3NpbmcgcGFja2FnZXMiLA0KICAidGlkeXZlcnNlIiwgIkdlbmVyaWMgcmVwcm9kdWNpYmxlIGRhdGEgbWFuYWdlbWVudDsgY29udGFpbnMgc2V2ZXJhbCB1c2VmdWwgcGFja2FnZXMsIHN1Y2ggYXMgaGF2ZW4sIGdncGxvdDIsIGRwbHlyLCB0aWR5ciwgYnJvb20sIGZvcmNhdHMgYW5kIGEgcG9ydCB0byB0aGUgJT4lIHBpcGUgb3BlcmF0b3IiLCANCiAgImthYmxlRXh0cmEiLCAiVG8gYnVpbGQgY29tcGxleCBwcmludCB0YWJsZXMgdXNpbmcgJ2thYmxlKCknIGZyb20gJ2tuaXRyJyBhbmQgdGhlIHBpcGluZyBzeW50YXggZnJvbSAnbWFncml0dHInIiwNCiAgImdnZm9ybXVsYSIsICJQcm92aWRlcyBhIGZvcm11bGEgaW50ZXJmYWNlIHRvIHRoZSAnZ2dwbG90MicgZ3JhcGhpY3MgcGFja2FnZSwgZWZmZWN0aXZlbHkgbWFraW5nIHRoZSBwcm9kdWN0aW9uIG9mIGdyYXBocyBtdWNoIGVhc2llciIsDQogICJrbml0ciIsICJBIGdlbmVyYWwtcHVycG9zZSB0b29sIGZvciBkeW5hbWljIHJlcG9ydCBnZW5lcmF0aW9uOyB1c2VmdWwgZm9yIGNyZWF0aW5nIGdvb2QtbG9va2luZyBwcmludGVkIHRhYmxlcyBhbmQgZm9yICdrbml0dGluZycgdGhlIHByaW50IHZlcnNpb24gb2YgdGhlIFJtZCBkb2N1bWVudCIsDQogICJqdG9vbHMiLCAiUHJvdmlkZXMgdG9vbHMgZm9yIG1vcmUgZWZmaWNpZW50IHByZXNlbnRhdGlvbiBvZiByZWdyZXNzaW9uIGFuYWx5c2VzIiwNCiAgImludGVyYWN0aW9ucyIsICJ0b29scyB0aGF0IHBlcnRhaW4gdG8gdGhlIGFuYWx5c2lzIGFuZCBleHBsb3JhdGlvbiBvZiBzdGF0aXN0aWNhbCBpbnRlcmFjdGlvbnMgaW4gdGhlIGNvbnRleHQgb2YgcmVncmVzc2lvbiINCikNCnc1X3BhY2thZ2VzICU+JQ0KICBrYmwobGluZXNlcCA9ICIiLCBib29rdGFicyA9IFRSVUUsIGNhcHRpb24gPSAiIiwNCiAgICAgIGNvbC5uYW1lcyA9IGMoIlBhY2thZ2UiLCAiRGVzY3JpcHRpb24iKSkgJT4lDQogIGNvbHVtbl9zcGVjKDEsIHdpZHRoID0gIjIwZW0iLCBtb25vc3BhY2UgPSBUUlVFLCBib2xkID0gRkFMU0UpDQpgYGANCg0KU29tZSBvZiB0aGVzZSBwYWNrYWdlcyBhcmUgY29udmVuaWVuY2UgdG9vbHMgZm9yIHByZXNlbnRpbmcgcmVncmVzc2lvbiByZXN1bHRzIGluIG1vcmUgY29udmVuaWVudCBmb3JtYXRzIHRoYW4gd2hhdCB3ZSBoYXZlIHNlZW4gaW4gcHJldmlvdXMgd2Vla3Mgd2l0aCBgUmAncyBkZWZhdWx0IG91dHB1dCB0eXBlcy4gU29tZSBvdGhlciBwYWNrYWdlcyBoZXJlIHByb3ZpZGUgY29udmVuaWVuY2UgdG9vbHMgZm9yIG1hbmFnaW5nIHlvdXIgd29ya2Zsb3cgYW5kIG1hbmlwdWxhdGluZyBkYXRhIGZvciBzdGF0aXN0aWNhbCBhbmFseXNpcy4gQXMgd2UgYnVpbGQgdXAgdGhlIHNraWxscyByZXF1aXJlZCB0byB1bmRlcnRha2UgYSB3aG9sZSBkYXRhIGFuYWx5c2lzIHByb2plY3QsIHRoZXNlIHRvb2xzIHdpbGwgYmVjb21lIG1vcmUgYW5kIG1vcmUgcmVsZXZhbnQgYW5kIGltcG9ydGFudC4NCg0KV2UgY2FuIGZpcnN0IGluc3RhbGwgdGhlIGBwYWNtYW5gIHBhY2thZ2UgKGlmIHdlIGRvbid0IGFscmVhZHkgaGF2ZSBpdCBpbnN0YWxsZWQpOg0KYGBge3IsIGV2YWw9RkFMU0V9DQppbnN0YWxsLnBhY2thZ2VzKCJwYWNtYW4iKQ0KYGBgDQpUaGVuIHVzaW5nIHRoZSBmdW5jdGlvbiBgcF9sb2FkYCBmcm9tIGBwYWNtYW5gIHdlIGNhbiBsaXN0IHRoZSBuZWVkZWQgcGFja2FnZXMgLSBpbiB0aGUgYmFja2dyb3VuZCB0aGUgZnVuY3Rpb24gY2hlY2tzIHdoZXRoZXIgd2UgYWxyZWFkeSBoYXZlIGl0IGluc3RhbGxlZCwgaWYgbm90IGl0IGluc3RhbGxzIHRoZW0sIHRoZW4gbG9hZHMgdGhlIHBhY2thZ2VzOg0KDQpgYGB7cn0NCnBhY21hbjo6cF9sb2FkKHRpZHl2ZXJzZSwgaGF2ZW4sIGthYmxlRXh0cmEsIGtuaXRyLCBnZ2Zvcm11bGEsIGp0b29scywgaW50ZXJhY3Rpb25zKQ0KYGBgDQoNClRoaXMgaXMgYmFzaWNhbGx5IGp1c3QgYW4gZWFzeSBhbmQgY29tcGFjdCB3YXkgb2YgbG9hZGluZyBwYWNrYWdlcyBpbnN0ZWFkIG9mIHJlcGVhdGluZyB0aGUgYGxpYnJhcnkoKWAgY29tbWFuZCBzZXZlcmFsIHRpbWVzLg0KDQojIyBEYXRhDQoNCldlIHdpbGwgY29udGludWUgdXNpbmcgdGhlIGRhdGEgZnJvbSB0aGUgw5ZzdGVybWFuICgyMDIxKSBhcnRpY2xlICJDYW4gV2UgVHJ1c3QgRWR1Y2F0aW9uIGZvciBGb3N0ZXJpbmcgVHJ1c3Q/IFF1YXNpLWV4cGVyaW1lbnRhbCBFdmlkZW5jZSBvbiB0aGUgRWZmZWN0IG9mIEVkdWNhdGlvbiBhbmQgVHJhY2tpbmcgb24gU29jaWFsIFRydXN0IjoNCg0KYGBge3IgaW1wb3J0IGRhdGEsIGluY2x1ZGU9VFJVRX0NCiMjIExvYWQgdGhlIE9zdGVybWFuIGRhdGE6DQpvc3Rlcm1hbiA8LSByZWFkX2R0YSgiaHR0cHM6Ly9jZ21vcmVoLmdpdGh1Yi5pby9TU0M3MDAxTS9kYXRhL29zdGVybWFuLmR0YSIpDQoNCiMgQ09NTUVOVDogYWRkIGhhdmVuOjogaW4gZnJvbnQgb2YgdGhlICdyZWFkX2R0YScgY29tbWFuZCBpZiB0aGUgcGFja2FnZSBoYXZlbiBpcyBub3QgYWxyZWFkeSBsb2FkZWQgdXNpbmcgbGlicmFyeSgpDQpgYGANCg0KIyMjIENyZWF0aW5nIGEgImRhdGEgZGljdGlvbmFyeSINCg0KQWZ0ZXIgaW1wb3J0aW5nIHRoZSBkYXRhc2V0LCB5b3UgY2FuIGNyZWF0ZSBhIHNlYXJjaGFibGUgZGF0YSBkaWN0aW9uYXJ5IHVzaW5nIGEgY29udmVuaWVuY2UgZnVuY3Rpb24gZnJvbSB0aGUgYGxhYmVsbGVkYCBwYWNrYWdlIChhbHJlYWR5IGltcG9ydGVkIHdpdGggdGhlIGB0aWR5dmVyc2VgKSB0aGF0IGFsbG93cyBlYXNpZXIgaWRlbnRpZmljYXRpb24gb2YgdmFyaWFibGUgbmFtZXMgYW5kIGxhYmVsczoNCg0KYGBge3J9DQojIENyZWF0ZSBhIHNlYXJjaGFibGUgZGF0YSBkaWN0aW9uYXJ5Og0KZGF0YV9kaWN0aW9uYXJ5IDwtIGxhYmVsbGVkOjpnZW5lcmF0ZV9kaWN0aW9uYXJ5KG9zdGVybWFuKSANCg0KIyBTb21lIG9mIHRoZSBjb2x1bW5zIHRoYXQgYXJlIGxlc3MgcmVsZXZhbnQsIHNvIGxldCdzIGtlZXAganVzdCB0aHJlZToNCmRhdGFfZGljdGlvbmFyeSA8LSBkYXRhX2RpY3Rpb25hcnkgJT4lIHNlbGVjdChjKCJ2YXJpYWJsZSIsICJsYWJlbCIsICJ2YWx1ZV9sYWJlbHMiKSkNCg0KIyBXZSBjYW4gbm93IHZpZXcgdGhhdCBkYXRhIGRpY3Rpb25hcnkgd2l0aCB0aGUgY29tbWFuZDoNCiMgJ1ZpZXcoZGF0YV9kaWN0aW9uYXJ5KScNCg0KIyBPciB3ZSBjYW4gcHJpbnQgaXQgdG8gb3VyIG91dHB1dCBkb2N1bWVudCBhcyBhIHByaW50ZWQgdGFibGUgICghISB0aGlzIGlzIGp1c3QgYXMgZXhhbXBsZSAtIGZvciBkYXRhc2V0cyB3aXRoIG1hbnkgdmFyaWFibGVzIHRoaXMgaXMgaW1wcmFjdGljYWwsIGFuZCBhbnl3YXkgaXQgaXMgbW9yZSBjb252ZW5pZW50IHRvIGFsc28gdXNlIHRoZSBzZWFyY2ggZnVuY3Rpb25hbGl0eSBhdmFpbGFibGUgaWYgd2Ugb3BlbiBhbmQgVmlldyB0aGUgZGF0YV9kaWN0aW9uYXJ5IG9iamVjdCBpdHNlbGYpOg0Ka25pdHI6OmthYmxlKGRhdGFfZGljdGlvbmFyeSkNCmBgYA0KDQojIyMgRGVzY3JpcHRpdmUgc3RhdGlzdGljcw0KDQpXZSBjYW4gcmVjcmVhdGUgVGFibGUgMiBmcm9tIHRoZSBPc3Rlcm1hbiBhcnRpY2xlIGZvciBjb21wYXJpc29uOg0KDQpgYGB7ciwgZWNobz1GQUxTRX0NCiMgVGhpcyBjb2RlIGlzIGEgY3VzdG9tLXdyaXR0ZW4gZnVuY3Rpb24gdG8gYnVpbGQgdGhlIHRhYmxlIGJ1dCBpdCdzIG5vdCB0aGUgbW9zdCB1c2VyLWZyaWVuZGx5IHdheSBvZiBkb2luZyBpdDsgdGhlcmUgYXJlIHVzZXItd3JpdHRlbiBwYWNrYWdlcyB0aGF0IGNhbiBiZSB1c2VkLCBzbyB0aGVyZSBpcyBubyByZWFzb24gdG8gZGlzc2VjdCB0aGlzIGNvZGUNCg0KbXkuc3VtbWFyeSA8LSBmdW5jdGlvbih4LCBuYS5ybT1UUlVFKXsNCiAgcmVzdWx0IDwtIGMoTj1sZW5ndGgoeFshaXMubmEoeCldKSwNCiAgICAgICAgICAgICAgTWVhbj1yb3VuZChtZWFuKHgsIG5hLnJtPW5hLnJtKSwgMyksDQogICAgICAgICAgICAgIFNEPXJvdW5kKHNkKHgsIG5hLnJtPW5hLnJtKSwgMyksDQogICAgICAgICAgICAgIE1pbj1taW4oeCwgbmEucm09bmEucm0pLA0KICAgICAgICAgICAgICBNYXg9bWF4KHgsIG5hLnJtPW5hLnJtKSkNCn0NCg0Kc3VtdGFiIDwtIGRhdGEuZnJhbWUoc2FwcGx5KG9zdGVybWFuLCBteS5zdW1tYXJ5KSkgJT4lIHNlbGVjdCgtKGNudHJ5OmR3ZWlnaHQpKQ0Ka25pdHI6OmthYmxlKGRhdGEuZnJhbWUodChzdW10YWIpKSwgY2FwdGlvbiA9ICJUYWJsZSAyIGluIMOWc3Rlcm1hbiAoMjAyMSkiKQ0KYGBgDQoNCjxicj4NCiMgRGF0YSBhbmFseXNpczogVGhlIGVmZmVjdCBvZiBlZHVjYXRpb24gb24gdHJ1c3QNCg0KIyMgTW9kZWwgZml0dGluZyBhbmQgc3VtbWFyeQ0KDQpMZXQncyBzdGFydCBieSBmaXR0aW5nIGEgbW9kZWwgb2Ygc29jaWFsIHRydXN0IGFzIGEgZnVuY3Rpb24gb2YgZWR1Y2F0aW9uIHdoaWxlIGFsc28gYWNjb3VudGluZyBmb3IgYWdlLCBnZW5kZXIsIHBhcmVudGFsIGVkdWNhdGlvbiBhbmQgYmVsb25naW5nIHRvIGFuIGV0aG5pYyBtaW5vcml0eSBncm91cCAoRXhlcmNpc2UgMiBmcm9tIGxhc3Qgd2Vlayk6DQoNCmBgYHtyfQ0KbW9kMSA8LSBsbSh0cnVzdGluZGV4MyB+IGVkdXlyczI1ICsgYWdlYSArIGZlbWFsZSArIHBhcmVkdV9hX2hpZ2ggKyBibGdldG1nX2QsIGRhdGEgPSBvc3Rlcm1hbikNCmBgYA0KDQpXZSBhbHJlYWR5IGtub3cgaG93IHRvIHByaW50IHN1bW1tYXJ5IHJlc3VsdHMgZnJvbSB0aGUgZml0dGVkIG1vZGVsIHVzaW5nIGJhc2UgYFJgIGZ1bmN0aW9ucyBhbmQgaG93IHRvIGludGVycHJldCB0aGUgcmVzdWx0czoNCg0KYGBge3J9DQpzdW1tYXJ5KG1vZDEpDQpgYGANCkhvd2V2ZXIsIHRoZXJlIGFyZSBzZXZlcmFsIHBhY2thZ2VzIHRoYXQgY2FuIGJlIHVzZWQgdG8gcHJvZHVjZSBtb3JlIG5pY2VseSBmb3JtYXR0ZWQgc3VtbWFyeSByZXN1bHRzLCBpbmNsdWRpbmcgb3B0aW9ucyB0byBwcmludCB0aGUgcmVzdWx0cyBhcyBhIHRhYmxlIGluIGFuIGFsbW9zdCBwdWJsaXNoZWFibGUtcmVhZHkgZm9ybWF0LiBMZXQncyBoYXZlIGEgbG9vayBhdCBzb21lIGZ1bmN0aW9ucyBmcm9tIG9uZSBzdWNoIGNvbnZlbmllbmNlIHBhY2thZ2Ugd3JpdHRlbiBieSBKYWNvYiBBLiBMb25nLCBjYWxsZWQgYGp0b29sc2AuIFdlIGhhdmUgYWxyZWFkeSBsb2FkZWQgdGhlIGBqdG9vbHNgbGlicmFyeSBpbiBhIHByZXZpb3VzIHN0ZXAgYXQgdGhlIHN0YXJ0LCBzbyB0aGVyZSBpcyBubyBuZWVkIHRvIGFkZCAnanRvb2xzOjonIGJlZm9yZSB0aGUgY29tbWFuZCB3ZSBhcmUgdXNpbmcsIGJ1dCBmb3Igc2FrZSBvZiBjbGFyaXR5LCBJJ2xsIGZvbGxvdyB0aGF0IGZvcm1hdC4gQW4gYWx0ZXJuYXRpdmUgdG8gdGhlICdzdW1tYXJ5KCknIHdlIHVzZWQgYWJvdmUgd291bGQgYmU6DQoNCmBgYHtyfQ0KanRvb2xzOjpzdW1tKG1vZDEpDQpgYGANCklmIHdlIHdvdWxkIGxpa2Ugc29tZSBtb3JlIHByZWNpc2lvbiBpbiB0aGUgb3V0cHV0LCB3ZSBjYW4gb3B0IGZvciBtb3JlIGRlY2ltYWwgcG9pbnRzOyB3ZSBjYW4gYWxzbyByZXF1ZXN0IDk1JSBDb25maWRlbmNlIEludGVydmFscyBpbnN0ZWFkIG9mIHRoZSBTdGFuZGFyZCBFcnJvcnMsIHdoaWNoIGNhbiBiZSB2aXN1YWxseSBtb3JlIHVzZWZ1bCB0aGFuIHRoZSBwLXZhbHVlIHdpdGggcmVzcGVjdCB0byB0aGUgaW5mb3JtYXRpb24gdGhleSBwcm92aWRlOg0KYGBge3J9DQpqdG9vbHM6OnN1bW0obW9kMSwgY29uZmludCA9IFRSVUUsIGRpZ2l0cyA9IDMpDQpgYGANCkluIHRoZSBvdXRwdXQgdGFibGUgYWJvdmUgd2Ugbm93IHNlZSB0aGUgbG93ZXIgYW5kIHVwcGVyIGJvdW5kcyBvZiBhIDk1JSBDb25maWRlbmNlIEludGVydmFsLg0KDQojIyBNb2RlbCBpbnRlcnByZXRhdGlvbg0KDQpNYXRoZW1hdGljYWxseSwgd2UgaGF2ZSBmaXR0ZWQgdGhlIGZvbGxvd2luZyBtb2RlbDoNCg0KJCQgdHJ1c3RpbmRleDM9XGJldGFfMCtcYmV0YV8xKmVkdXllYXJzMjUrXGJldGFfMiphZ2VhK1xiZXRhXzMqZmVtYWxlK1xiZXRhXzQqe3BhcmVkdX0rXGJldGFfNSp7YmxnZXRtZ30rZXJyb3IgJCQNCldlIGludGVycHJldCB0aGUgY29lZmZpY2llbnRzIGFzIGZvbGxvd3MgKHNlZSBST1MgcC4gMTM1KToNCg0KLSBUaGUgaW50ZXJjZXB0IHJlcHJlc2VudHMgdGhlIHByZWRpY3RlZCB0cnVzdCBpbnRleCBzY29yZSBmb3IgcmVzcG9uZGVudHMgd2hvc2Ugc2NvcmUgb24gZWFjaCBvZiB0aGUgcHJlZGljdG9ycyBlcXVhbHMgMCAoaS5lLiBzb21lb25lIHdpdGggMCBlZHVjYXRpb24geWVhcnMsIDAgYWdlLCBtYWxlLCBwYXJlbnRzIHdpdGggKm5vKiBoaWdoZXIgZWR1Y2F0aW9uLCBhbmQgKm5vdCogYmVsb25naW5nIHRvIGFuIGV0aG5pYyBtaW5vcml0eSBncm91cCkuIFRoaXMgaXMganVzdCBhIHN0YXRpc3RpY2FsIGJhc2VsaW5lLCBzbyBpdCBkb2Vzbid0IG1hdGVyIHRoYXQgaW4gbW9zdCBjYXNlcyB0aGUgMCB2YWx1ZSBkbyBub3QgbWFrZSBzZW5zZTsgd2UgdXN1YWxseSBkbyBub3QgaW50ZXJwcmV0IHRoZSBpbnRlcmNlcHQgZm9yIHRoaXMgcmVhc29uLiBJbnRlcmNlcHRzLCBob3dldmVyLCBjYW4gYmUgbW9yZSBpbnRlcnByZXRhYmxlIGlmIGlucHV0IHZhcmlhYmxlcyBhcmUgY2VudGVyZWQgYmVmb3JlIGluY2x1ZGluZyB0aGVtIGFzIHJlZ3Jlc3Npb24gcHJlZGljdG9ycy4NCi0gVGhlIGNvZWZmaWNpZW50cyAkXGJldGFfMSQgdG8gJFxiZXRhXzUkIHJlcHJlc2VudCB0aGUgY2hhbmdlIGluIHRydXN0aW5kZXggc2NvcmUgaWYgdGhlIHJlc3BlY3RpdmUgdmFyaWFibGUgaW5jcmVhc2VzIGJ5IG9uZSB1bml0ICp3aGlsZSBob2xkaW5nIGNvbnN0YW50KiAob3IgKmFjY291bnRpbmcgZm9yKikgdGhlIHByZXNlbmNlIG9mIHRoZSBvdGhlciB2YXJpYWJsZXMgaW4gdGhlIG1vZGVsLg0KDQpUaGUgc3RhbmRhcmQgZXJyb3JzLCBjb25maWRlbmNlIGludGVydmFscywgdC12YWx1ZXMgYW5kIHRoZSBwLXZhbHVlIChjb3JyZXNwb25kaW5nIHRvIHRoZSB0LXRlc3QgdGhhdCByZXN1bHRlZCB0aGUgdC12YWx1ZXMpIGFyZSBoZWxwZnVsIGZvciBpbmZlcnJpbmcgZnJvbSB0aGUgbW9kZWwgdG8gdGhlIGh5cG90aGVzaXNlZCB3aWRlciBwb3B1bGF0aW9uLiBXaGF0IGlzIGJlaW5nIHRlc3RlZCBpbiBlYWNoIGxpbmUgaXMgd2hldGhlciB0aGUgcGFyYW1ldGVyIGVzdGltYXRlIG1heSBiZSBlcXVhbCB0byAwIGluIHRoZSB3aWRlciBwb3B1bGF0aW9uIGZyb20gd2hpY2ggb3VyIGRhdGEgc2FtcGxlIHdhcyBkcmF3bi4NClRoZSBoeXBvdGhlc2lzIHRoYXQgYSBwYXJhbWV0ZXIgZXF1YWxzIHplcm8gKG9yIGFueSBvdGhlciBmaXhlZCB2YWx1ZSkgY2FuIGJlIGRpcmVjdGx5IHRlc3RlZCBieSBmaXR0aW5nIHRoZSBtb2RlbCB0aGF0IGluY2x1ZGVzIHRoZSBwYXJhbWV0ZXIgaW4gcXVlc3Rpb24gYW5kIGV4YW1pbmluZyB0aGUgY29ycmVzcG9uZGluZyA5NSUgaW50ZXJ2YWwuIElmIHRoZSBpbnRlcnZhbCBleGNsdWRlcyB6ZXJvIChvciB0aGUgc3BlY2lmaWVkIGZpeGVkIHZhbHVlKSwgdGhlbiB0aGUgaHlwb3RoZXNpcyBpcyBzYWlkIHRvIGJlIHJlamVjdGVkIGF0IHRoZSA1JSBsZXZlbC4NClRlc3Rpbmcgd2hldGhlciB0d28gcGFyYW1ldGVycyBhcmUgZXF1YWwgaXMgZXF1aXZhbGVudCB0byB0ZXN0aW5nIHdoZXRoZXIgdGhlaXIgZGlmZmVyZW5jZSBlcXVhbHMNCnplcm8uIFdlIGNhbiBkbyB0aGlzIGJ5IGluY2x1ZGluZyBib3RoIHBhcmFtZXRlcnMgaW4gdGhlIG1vZGVsIGFuZCB0aGVuIGV4YW1pbmluZyB0aGUgOTUlIGludGVydmFsIGZvciB0aGVpciBkaWZmZXJlbmNlLiBBcyB3aXRoIGluZmVyZW5jZSBmb3IgYSBzaW5nbGUgcGFyYW1ldGVyLCB0aGUgY29uZmlkZW5jZSBpbnRlcnZhbCBpcyBjb21tb25seSBvZiBtb3JlIGludGVyZXN0IHRoYW4gdGhlIGh5cG90aGVzaXMgdGVzdC4gDQpUaGUgaHlwb3RoZXNpcyBvZiB3aGV0aGVyIGEgcGFyYW1ldGVyIGlzIHBvc2l0aXZlIGlzIGRpcmVjdGx5IGFzc2Vzc2VkIHZpYSBpdHMgY29uZmlkZW5jZSBpbnRlcnZhbC4gVGVzdGluZyB3aGV0aGVyIG9uZSBwYXJhbWV0ZXIgaXMgZ3JlYXRlciB0aGFuIHRoZSBvdGhlciBpcyBlcXVpdmFsZW50IHRvIGV4YW1pbmluZyB0aGUgY29uZmlkZW5jZSBpbnRlcnZhbCBmb3IgdGhlaXIgZGlmZmVyZW5jZSBhbmQgdGVzdGluZyBmb3Igd2hldGhlciBpdCBpcyBlbnRpcmVseSBwb3NpdGl2ZS4NCg0KIyMgVGVzdGluZyBmb3IgaW50ZXJhY3Rpb25zIGJldHdlZW4gdmFyaWFibGVzDQoNCkluIHRoZSBsaW5lYXIgcmVncmVzc2lvbiBtb2RlbCB3ZSBhc3N1bWUgdGhhdCBlYWNoIHZhcmlhYmxlIGhhcyBhIGxpbmVhciBlZmZlY3Qgb24gdGhlIG91dGNvbWUuIEhvd2V2ZXIsIHRoZXJlIGFyZSBvZnRlbiByZWFzb25zIHRvIHN1c3BlY3QgdGhhdCBzb21lIGVmZmVjdHMgYXJlIG5vdCBsaW5lYXIgYWNyb3NzIG90aGVyIHZhcmlhYmxlcy4gRm9yIGV4YW1wbGUsIHdlIGNhbiB0ZXN0IHdoZXRoZXIgZWR1Y2F0aW9uIHllYXJzIGhhdmUgYSBzaW1pbGFyIGVmZmVjdCBmb3IgbWVuIGFuZCB3b21lbiBieSBpbmNsdWRpbmcgYW4gKmludGVyYWN0aW9uKiBiZXR3ZWVuIGdlbmRlciBhbmQgZWR1Y2F0aW9uOg0KDQpgYGB7cn0NCm1vZDIgPC0gbG0odHJ1c3RpbmRleDMgfiBlZHV5cnMyNSpmZW1hbGUgKyBhZ2VhICsgcGFyZWR1X2FfaGlnaCArIGJsZ2V0bWdfZCwgZGF0YSA9IG9zdGVybWFuKQ0KanRvb2xzOjpzdW1tKG1vZDIsIGRpZ2l0cyA9IDMpDQpgYGANCk5vdyB3ZSBoYXZlIGFuIGFkZGl0aW9uYWwgY29lZmljaWVudCwgZm9yIHRoZSBpbnRlcmFjdGlvbiBiZXR3ZWVuIGdlbmRlciBhbmQgZWR1Y2F0aW9uLiBXZSBjYW4gaW50ZXJwcmV0IHRoaXMgYXMgcmVwcmVzZW50aW5nIHRoZSBkaWZmZXJlbmNlIGluIHRoZSBzbG9wZSBmb3IgZWR1Y2F0aW9uLCBjb21wYXJpbmcgZmVtYWxlcyB0byBtYWxlcy4NCg0K</div>
+      <div id="rmd-source-code">LS0tDQp0aXRsZTogIldlZWsgNTogTGluZWFyIHJlZ3Jlc3Npb24gd2l0aCBpbnRlcmFjdGlvbiB0ZXJtcyINCm91dHB1dDoNCiAgcm1kZm9ybWF0czo6cmVhZHRoZWRvd246DQogICAgICBjb2RlX2Rvd25sb2FkOiB0cnVlDQogICAgICBoaWdobGlnaHQ6IHRhbmdvDQogICAgICBudW1iZXJfc2VjdGlvbnM6IHRydWUNCi0tLQ0KPGJyPg0KDQojIFByZXBhcmF0aW9ucw0KDQojIyBTZXR1cCBhbmQgcGFja2FnZXMNCg0KYGBge3IgaW5jbHVkZT1GQUxTRX0NCiMgR2VuZXJhbCBzZXR0aW5ncyBmb3Iga25pdHRpbmcNCmtuaXRyOjpvcHRzX2NodW5rJHNldCgNCiAgZmlnLndpZHRoID0gMTAsIGZpZy5oZWlnaHQgPSA2LCBmaWcucmV0aW5hID0gMiwNCiAgd2FybmluZyA9IEZBTFNFLCBtZXNzYWdlID0gRkFMU0UsIGV2YWw9VCkNCmBgYA0KDQpUaGUgZm9sbG93aW5nIHBhY2thZ2VzIHdpbGwgYmUgbmVjZXNzYXJ5IHRvIHBlcmZvcm0gdGhlIGFuYWx5c2VzIHdlIGxlYXJuIHRvZGF5Og0KDQpgYGB7ciBpbmNsdWRlPUZBTFNFfQ0KIyBMb2FkIHJlcXVpcmVkIHBhY2thZ2UgZm9yIHRoZSB0YWJsZSBiZWxvdw0KbGlicmFyeSh0aWJibGUpDQpsaWJyYXJ5KGthYmxlRXh0cmEpDQpgYGANCg0KYGBge3IgdzVfcGFja2FnZXMsIGVjaG89RkFMU0V9DQp3NV9wYWNrYWdlcyA8LSB0cmliYmxlKA0KICB+cGFja2FnZSwgfmRlc2NyaXB0aW9uLA0KICAicGFjbWFuIiwgIkFuIFIgcGFja2FnZSBtYW5hZ2VtZW50IHRvb2wgdGhhdCBtYWtlcyBpdCBlYXNpZXIgdG8gaW5zdGFsbCBhbmQgbG9hZCBtaXNzaW5nIHBhY2thZ2VzIiwNCiAgInRpZHl2ZXJzZSIsICJHZW5lcmljIHJlcHJvZHVjaWJsZSBkYXRhIG1hbmFnZW1lbnQ7IGNvbnRhaW5zIHNldmVyYWwgdXNlZnVsIHBhY2thZ2VzLCBzdWNoIGFzIGhhdmVuLCBnZ3Bsb3QyLCBkcGx5ciwgdGlkeXIsIGJyb29tLCBmb3JjYXRzIGFuZCBhIHBvcnQgdG8gdGhlICU+JSBwaXBlIG9wZXJhdG9yIiwgDQogICJrYWJsZUV4dHJhIiwgIlRvIGJ1aWxkIGNvbXBsZXggcHJpbnQgdGFibGVzIHVzaW5nICdrYWJsZSgpJyBmcm9tICdrbml0cicgYW5kIHRoZSBwaXBpbmcgc3ludGF4IGZyb20gJ21hZ3JpdHRyJyIsDQogICJnZ2Zvcm11bGEiLCAiUHJvdmlkZXMgYSBmb3JtdWxhIGludGVyZmFjZSB0byB0aGUgJ2dncGxvdDInIGdyYXBoaWNzIHBhY2thZ2UsIGVmZmVjdGl2ZWx5IG1ha2luZyB0aGUgcHJvZHVjdGlvbiBvZiBncmFwaHMgbXVjaCBlYXNpZXIiLA0KICAia25pdHIiLCAiQSBnZW5lcmFsLXB1cnBvc2UgdG9vbCBmb3IgZHluYW1pYyByZXBvcnQgZ2VuZXJhdGlvbjsgdXNlZnVsIGZvciBjcmVhdGluZyBnb29kLWxvb2tpbmcgcHJpbnRlZCB0YWJsZXMgYW5kIGZvciAna25pdHRpbmcnIHRoZSBwcmludCB2ZXJzaW9uIG9mIHRoZSBSbWQgZG9jdW1lbnQiLA0KICAianRvb2xzIiwgIlByb3ZpZGVzIHRvb2xzIGZvciBtb3JlIGVmZmljaWVudCBwcmVzZW50YXRpb24gb2YgcmVncmVzc2lvbiBhbmFseXNlcyIsDQogICJpbnRlcmFjdGlvbnMiLCAidG9vbHMgdGhhdCBwZXJ0YWluIHRvIHRoZSBhbmFseXNpcyBhbmQgZXhwbG9yYXRpb24gb2Ygc3RhdGlzdGljYWwgaW50ZXJhY3Rpb25zIGluIHRoZSBjb250ZXh0IG9mIHJlZ3Jlc3Npb24iDQopDQp3NV9wYWNrYWdlcyAlPiUNCiAga2JsKGxpbmVzZXAgPSAiIiwgYm9va3RhYnMgPSBUUlVFLCBjYXB0aW9uID0gIiIsDQogICAgICBjb2wubmFtZXMgPSBjKCJQYWNrYWdlIiwgIkRlc2NyaXB0aW9uIikpICU+JQ0KICBjb2x1bW5fc3BlYygxLCB3aWR0aCA9ICIyMGVtIiwgbW9ub3NwYWNlID0gVFJVRSwgYm9sZCA9IEZBTFNFKQ0KYGBgDQoNClNvbWUgb2YgdGhlc2UgcGFja2FnZXMgYXJlIGNvbnZlbmllbmNlIHRvb2xzIGZvciBwcmVzZW50aW5nIHJlZ3Jlc3Npb24gcmVzdWx0cyBpbiBtb3JlIGNvbnZlbmllbnQgZm9ybWF0cyB0aGFuIHdoYXQgd2UgaGF2ZSBzZWVuIGluIHByZXZpb3VzIHdlZWtzIHdpdGggYFJgJ3MgZGVmYXVsdCBvdXRwdXQgdHlwZXMuIFNvbWUgb3RoZXIgcGFja2FnZXMgaGVyZSBwcm92aWRlIGNvbnZlbmllbmNlIHRvb2xzIGZvciBtYW5hZ2luZyB5b3VyIHdvcmtmbG93IGFuZCBtYW5pcHVsYXRpbmcgZGF0YSBmb3Igc3RhdGlzdGljYWwgYW5hbHlzaXMuIEFzIHdlIGJ1aWxkIHVwIHRoZSBza2lsbHMgcmVxdWlyZWQgdG8gdW5kZXJ0YWtlIGEgd2hvbGUgZGF0YSBhbmFseXNpcyBwcm9qZWN0LCB0aGVzZSB0b29scyB3aWxsIGJlY29tZSBtb3JlIGFuZCBtb3JlIHJlbGV2YW50IGFuZCBpbXBvcnRhbnQuDQoNCldlIGNhbiBmaXJzdCBpbnN0YWxsIHRoZSBgcGFjbWFuYCBwYWNrYWdlIChpZiB3ZSBkb24ndCBhbHJlYWR5IGhhdmUgaXQgaW5zdGFsbGVkKToNCmBgYHtyLCBldmFsPUZBTFNFfQ0KaW5zdGFsbC5wYWNrYWdlcygicGFjbWFuIikNCmBgYA0KVGhlbiB1c2luZyB0aGUgZnVuY3Rpb24gYHBfbG9hZGAgZnJvbSBgcGFjbWFuYCB3ZSBjYW4gbGlzdCB0aGUgbmVlZGVkIHBhY2thZ2VzIC0gaW4gdGhlIGJhY2tncm91bmQgdGhlIGZ1bmN0aW9uIGNoZWNrcyB3aGV0aGVyIHdlIGFscmVhZHkgaGF2ZSBpdCBpbnN0YWxsZWQsIGlmIG5vdCBpdCBpbnN0YWxscyB0aGVtLCB0aGVuIGxvYWRzIHRoZSBwYWNrYWdlczoNCg0KYGBge3J9DQpwYWNtYW46OnBfbG9hZCh0aWR5dmVyc2UsIGhhdmVuLCBrYWJsZUV4dHJhLCBrbml0ciwgZ2dmb3JtdWxhLCBqdG9vbHMsIGludGVyYWN0aW9ucykNCmBgYA0KDQpUaGlzIGlzIGJhc2ljYWxseSBqdXN0IGFuIGVhc3kgYW5kIGNvbXBhY3Qgd2F5IG9mIGxvYWRpbmcgcGFja2FnZXMgaW5zdGVhZCBvZiByZXBlYXRpbmcgdGhlIGBsaWJyYXJ5KClgIGNvbW1hbmQgc2V2ZXJhbCB0aW1lcy4NCg0KIyMgRGF0YQ0KDQpXZSB3aWxsIGNvbnRpbnVlIHVzaW5nIHRoZSBkYXRhIGZyb20gdGhlIMOWc3Rlcm1hbiAoMjAyMSkgYXJ0aWNsZSAiQ2FuIFdlIFRydXN0IEVkdWNhdGlvbiBmb3IgRm9zdGVyaW5nIFRydXN0PyBRdWFzaS1leHBlcmltZW50YWwgRXZpZGVuY2Ugb24gdGhlIEVmZmVjdCBvZiBFZHVjYXRpb24gYW5kIFRyYWNraW5nIG9uIFNvY2lhbCBUcnVzdCI6DQoNCmBgYHtyIGltcG9ydCBkYXRhLCBpbmNsdWRlPVRSVUV9DQojIyBMb2FkIHRoZSBPc3Rlcm1hbiBkYXRhOg0Kb3N0ZXJtYW4gPC0gcmVhZF9kdGEoImh0dHBzOi8vY2dtb3JlaC5naXRodWIuaW8vU1NDNzAwMU0vZGF0YS9vc3Rlcm1hbi5kdGEiKQ0KDQojIENPTU1FTlQ6IGFkZCBoYXZlbjo6IGluIGZyb250IG9mIHRoZSAncmVhZF9kdGEnIGNvbW1hbmQgaWYgdGhlIHBhY2thZ2UgaGF2ZW4gaXMgbm90IGFscmVhZHkgbG9hZGVkIHVzaW5nIGxpYnJhcnkoKQ0KYGBgDQoNCiMjIyBDcmVhdGluZyBhICJkYXRhIGRpY3Rpb25hcnkiDQoNCkFmdGVyIGltcG9ydGluZyB0aGUgZGF0YXNldCwgeW91IGNhbiBjcmVhdGUgYSBzZWFyY2hhYmxlIGRhdGEgZGljdGlvbmFyeSB1c2luZyBhIGNvbnZlbmllbmNlIGZ1bmN0aW9uIGZyb20gdGhlIGBsYWJlbGxlZGAgcGFja2FnZSAoYWxyZWFkeSBpbXBvcnRlZCB3aXRoIHRoZSBgdGlkeXZlcnNlYCkgdGhhdCBhbGxvd3MgZWFzaWVyIGlkZW50aWZpY2F0aW9uIG9mIHZhcmlhYmxlIG5hbWVzIGFuZCBsYWJlbHM6DQoNCmBgYHtyfQ0KIyBDcmVhdGUgYSBzZWFyY2hhYmxlIGRhdGEgZGljdGlvbmFyeToNCmRhdGFfZGljdGlvbmFyeSA8LSBsYWJlbGxlZDo6Z2VuZXJhdGVfZGljdGlvbmFyeShvc3Rlcm1hbikgDQoNCiMgU29tZSBvZiB0aGUgY29sdW1ucyB0aGF0IGFyZSBsZXNzIHJlbGV2YW50LCBzbyBsZXQncyBrZWVwIGp1c3QgdGhyZWU6DQpkYXRhX2RpY3Rpb25hcnkgPC0gZGF0YV9kaWN0aW9uYXJ5ICU+JSBzZWxlY3QoYygidmFyaWFibGUiLCAibGFiZWwiLCAidmFsdWVfbGFiZWxzIikpDQoNCiMgV2UgY2FuIG5vdyB2aWV3IHRoYXQgZGF0YSBkaWN0aW9uYXJ5IHdpdGggdGhlIGNvbW1hbmQ6DQojICdWaWV3KGRhdGFfZGljdGlvbmFyeSknDQoNCiMgT3Igd2UgY2FuIHByaW50IGl0IHRvIG91ciBvdXRwdXQgZG9jdW1lbnQgYXMgYSBwcmludGVkIHRhYmxlICAoISEgdGhpcyBpcyBqdXN0IGFzIGV4YW1wbGUgLSBmb3IgZGF0YXNldHMgd2l0aCBtYW55IHZhcmlhYmxlcyB0aGlzIGlzIGltcHJhY3RpY2FsLCBhbmQgYW55d2F5IGl0IGlzIG1vcmUgY29udmVuaWVudCB0byBhbHNvIHVzZSB0aGUgc2VhcmNoIGZ1bmN0aW9uYWxpdHkgYXZhaWxhYmxlIGlmIHdlIG9wZW4gYW5kIFZpZXcgdGhlIGRhdGFfZGljdGlvbmFyeSBvYmplY3QgaXRzZWxmKToNCmtuaXRyOjprYWJsZShkYXRhX2RpY3Rpb25hcnkpDQpgYGANCg0KIyMjIERlc2NyaXB0aXZlIHN0YXRpc3RpY3MNCg0KV2UgY2FuIHJlY3JlYXRlIFRhYmxlIDIgZnJvbSB0aGUgT3N0ZXJtYW4gYXJ0aWNsZSBmb3IgY29tcGFyaXNvbjoNCg0KYGBge3IsIGVjaG89RkFMU0V9DQojIFRoaXMgY29kZSBpcyBhIGN1c3RvbS13cml0dGVuIGZ1bmN0aW9uIHRvIGJ1aWxkIHRoZSB0YWJsZSBidXQgaXQncyBub3QgdGhlIG1vc3QgdXNlci1mcmllbmRseSB3YXkgb2YgZG9pbmcgaXQ7IHRoZXJlIGFyZSB1c2VyLXdyaXR0ZW4gcGFja2FnZXMgdGhhdCBjYW4gYmUgdXNlZCwgc28gdGhlcmUgaXMgbm8gcmVhc29uIHRvIGRpc3NlY3QgdGhpcyBjb2RlDQoNCm15LnN1bW1hcnkgPC0gZnVuY3Rpb24oeCwgbmEucm09VFJVRSl7DQogIHJlc3VsdCA8LSBjKE49bGVuZ3RoKHhbIWlzLm5hKHgpXSksDQogICAgICAgICAgICAgIE1lYW49cm91bmQobWVhbih4LCBuYS5ybT1uYS5ybSksIDMpLA0KICAgICAgICAgICAgICBTRD1yb3VuZChzZCh4LCBuYS5ybT1uYS5ybSksIDMpLA0KICAgICAgICAgICAgICBNaW49bWluKHgsIG5hLnJtPW5hLnJtKSwNCiAgICAgICAgICAgICAgTWF4PW1heCh4LCBuYS5ybT1uYS5ybSkpDQp9DQoNCnN1bXRhYiA8LSBkYXRhLmZyYW1lKHNhcHBseShvc3Rlcm1hbiwgbXkuc3VtbWFyeSkpICU+JSBzZWxlY3QoLShjbnRyeTpkd2VpZ2h0KSkNCmtuaXRyOjprYWJsZShkYXRhLmZyYW1lKHQoc3VtdGFiKSksIGNhcHRpb24gPSAiVGFibGUgMiBpbiDDlnN0ZXJtYW4gKDIwMjEpIikNCmBgYA0KDQo8YnI+DQoNCiMgRGF0YSBhbmFseXNpczogVGhlIGVmZmVjdCBvZiBlZHVjYXRpb24gb24gdHJ1c3QNCg0KIyMgTW9kZWwgZml0dGluZyBhbmQgc3VtbWFyeQ0KDQpMZXQncyBzdGFydCBieSBmaXR0aW5nIGEgbW9kZWwgb2Ygc29jaWFsIHRydXN0IGFzIGEgZnVuY3Rpb24gb2YgZWR1Y2F0aW9uIHdoaWxlIGFsc28gYWNjb3VudGluZyBmb3IgYWdlLCBnZW5kZXIsIHBhcmVudGFsIGVkdWNhdGlvbiBhbmQgYmVsb25naW5nIHRvIGFuIGV0aG5pYyBtaW5vcml0eSBncm91cCAoRXhlcmNpc2UgMiBmcm9tIGxhc3Qgd2Vlayk6DQoNCmBgYHtyfQ0KbW9kMSA8LSBsbSh0cnVzdGluZGV4MyB+IGVkdXlyczI1ICsgYWdlYSArIGZlbWFsZSArIHBhcmVkdV9hX2hpZ2ggKyBibGdldG1nX2QsIGRhdGEgPSBvc3Rlcm1hbikNCmBgYA0KDQpXZSBhbHJlYWR5IGtub3cgaG93IHRvIHByaW50IHN1bW1tYXJ5IHJlc3VsdHMgZnJvbSB0aGUgZml0dGVkIG1vZGVsIHVzaW5nIGJhc2UgYFJgIGZ1bmN0aW9ucyBhbmQgaG93IHRvIGludGVycHJldCB0aGUgcmVzdWx0czoNCg0KYGBge3J9DQpzdW1tYXJ5KG1vZDEpDQpgYGANCkhvd2V2ZXIsIHRoZXJlIGFyZSBzZXZlcmFsIHBhY2thZ2VzIHRoYXQgY2FuIGJlIHVzZWQgdG8gcHJvZHVjZSBtb3JlIG5pY2VseSBmb3JtYXR0ZWQgc3VtbWFyeSByZXN1bHRzLCBpbmNsdWRpbmcgb3B0aW9ucyB0byBwcmludCB0aGUgcmVzdWx0cyBhcyBhIHRhYmxlIGluIGFuIGFsbW9zdCBwdWJsaXNoZWFibGUtcmVhZHkgZm9ybWF0LiBMZXQncyBoYXZlIGEgbG9vayBhdCBzb21lIGZ1bmN0aW9ucyBmcm9tIG9uZSBzdWNoIGNvbnZlbmllbmNlIHBhY2thZ2Ugd3JpdHRlbiBieSBKYWNvYiBBLiBMb25nLCBjYWxsZWQgYGp0b29sc2AuIFdlIGhhdmUgYWxyZWFkeSBsb2FkZWQgdGhlIGBqdG9vbHNgbGlicmFyeSBpbiBhIHByZXZpb3VzIHN0ZXAgYXQgdGhlIHN0YXJ0LCBzbyB0aGVyZSBpcyBubyBuZWVkIHRvIGFkZCAnanRvb2xzOjonIGJlZm9yZSB0aGUgY29tbWFuZCB3ZSBhcmUgdXNpbmcsIGJ1dCBmb3Igc2FrZSBvZiBjbGFyaXR5LCBJJ2xsIGZvbGxvdyB0aGF0IGZvcm1hdC4gQW4gYWx0ZXJuYXRpdmUgdG8gdGhlICdzdW1tYXJ5KCknIHdlIHVzZWQgYWJvdmUgd291bGQgYmU6DQoNCmBgYHtyLCByZW5kZXI9a25pdHI6Om5vcm1hbF9wcmludH0NCmp0b29sczo6c3VtbShtb2QxKQ0KYGBgDQpJZiB3ZSB3b3VsZCBsaWtlIHNvbWUgbW9yZSBwcmVjaXNpb24gaW4gdGhlIG91dHB1dCwgd2UgY2FuIG9wdCBmb3IgbW9yZSBkZWNpbWFsIHBvaW50czsgd2UgY2FuIGFsc28gcmVxdWVzdCA5NSUgQ29uZmlkZW5jZSBJbnRlcnZhbHMgaW5zdGVhZCBvZiB0aGUgU3RhbmRhcmQgRXJyb3JzLCB3aGljaCBjYW4gYmUgdmlzdWFsbHkgbW9yZSB1c2VmdWwgdGhhbiB0aGUgcC12YWx1ZSB3aXRoIHJlc3BlY3QgdG8gdGhlIGluZm9ybWF0aW9uIHRoZXkgcHJvdmlkZToNCmBgYHtyLCByZW5kZXI9a25pdHI6Om5vcm1hbF9wcmludH0NCmp0b29sczo6c3VtbShtb2QxLCBjb25maW50ID0gVFJVRSwgZGlnaXRzID0gMykNCmBgYA0KSW4gdGhlIG91dHB1dCB0YWJsZSBhYm92ZSB3ZSBub3cgc2VlIHRoZSBsb3dlciBhbmQgdXBwZXIgYm91bmRzIG9mIGEgOTUlIENvbmZpZGVuY2UgSW50ZXJ2YWwuDQoNCiMjIE1vZGVsIGludGVycHJldGF0aW9uDQoNCk1hdGhlbWF0aWNhbGx5LCB3ZSBoYXZlIGZpdHRlZCB0aGUgZm9sbG93aW5nIG1vZGVsOg0KDQokJCB0cnVzdGluZGV4Mz1cYmV0YV8wK1xiZXRhXzEqZWR1eWVhcnMyNStcYmV0YV8yKmFnZWErXGJldGFfMypmZW1hbGUrXGJldGFfNCp7cGFyZWR1fStcYmV0YV81KntibGdldG1nfStlcnJvciAkJA0KV2UgaW50ZXJwcmV0IHRoZSBjb2VmZmljaWVudHMgYXMgZm9sbG93cyAoc2VlIFJPUyBwLiAxMzUpOg0KDQotIFRoZSBpbnRlcmNlcHQgcmVwcmVzZW50cyB0aGUgcHJlZGljdGVkIHRydXN0IGludGV4IHNjb3JlIGZvciByZXNwb25kZW50cyB3aG9zZSBzY29yZSBvbiBlYWNoIG9mIHRoZSBwcmVkaWN0b3JzIGVxdWFscyAwIChpLmUuIHNvbWVvbmUgd2l0aCAwIGVkdWNhdGlvbiB5ZWFycywgMCBhZ2UsIG1hbGUsIHBhcmVudHMgd2l0aCAqbm8qIGhpZ2hlciBlZHVjYXRpb24sIGFuZCAqbm90KiBiZWxvbmdpbmcgdG8gYW4gZXRobmljIG1pbm9yaXR5IGdyb3VwKS4gVGhpcyBpcyBqdXN0IGEgc3RhdGlzdGljYWwgYmFzZWxpbmUsIHNvIGl0IGRvZXNuJ3QgbWF0ZXIgdGhhdCBpbiBtb3N0IGNhc2VzIHRoZSAwIHZhbHVlIGRvIG5vdCBtYWtlIHNlbnNlOyB3ZSB1c3VhbGx5IGRvIG5vdCBpbnRlcnByZXQgdGhlIGludGVyY2VwdCBmb3IgdGhpcyByZWFzb24uIEludGVyY2VwdHMsIGhvd2V2ZXIsIGNhbiBiZSBtb3JlIGludGVycHJldGFibGUgaWYgaW5wdXQgdmFyaWFibGVzIGFyZSBjZW50ZXJlZCBiZWZvcmUgaW5jbHVkaW5nIHRoZW0gYXMgcmVncmVzc2lvbiBwcmVkaWN0b3JzLg0KLSBUaGUgY29lZmZpY2llbnRzICRcYmV0YV8xJCB0byAkXGJldGFfNSQgcmVwcmVzZW50IHRoZSBjaGFuZ2UgaW4gdHJ1c3RpbmRleCBzY29yZSBpZiB0aGUgcmVzcGVjdGl2ZSB2YXJpYWJsZSBpbmNyZWFzZXMgYnkgb25lIHVuaXQgKndoaWxlIGhvbGRpbmcgY29uc3RhbnQqIChvciAqYWNjb3VudGluZyBmb3IqKSB0aGUgcHJlc2VuY2Ugb2YgdGhlIG90aGVyIHZhcmlhYmxlcyBpbiB0aGUgbW9kZWwuDQoNClRoZSBzdGFuZGFyZCBlcnJvcnMsIGNvbmZpZGVuY2UgaW50ZXJ2YWxzLCB0LXZhbHVlcyBhbmQgdGhlIHAtdmFsdWUgKGNvcnJlc3BvbmRpbmcgdG8gdGhlIHQtdGVzdCB0aGF0IHJlc3VsdGVkIHRoZSB0LXZhbHVlcykgYXJlIGhlbHBmdWwgZm9yIGluZmVycmluZyBmcm9tIHRoZSBtb2RlbCB0byB0aGUgaHlwb3RoZXNpc2VkIHdpZGVyIHBvcHVsYXRpb24uIFdoYXQgaXMgYmVpbmcgdGVzdGVkIGluIGVhY2ggbGluZSBpcyB3aGV0aGVyIHRoZSBwYXJhbWV0ZXIgZXN0aW1hdGUgbWF5IGJlIGVxdWFsIHRvIDAgaW4gdGhlIHdpZGVyIHBvcHVsYXRpb24gZnJvbSB3aGljaCBvdXIgZGF0YSBzYW1wbGUgd2FzIGRyYXduLg0KVGhlIGh5cG90aGVzaXMgdGhhdCBhIHBhcmFtZXRlciBlcXVhbHMgemVybyAob3IgYW55IG90aGVyIGZpeGVkIHZhbHVlKSBjYW4gYmUgZGlyZWN0bHkgdGVzdGVkIGJ5IGZpdHRpbmcgdGhlIG1vZGVsIHRoYXQgaW5jbHVkZXMgdGhlIHBhcmFtZXRlciBpbiBxdWVzdGlvbiBhbmQgZXhhbWluaW5nIHRoZSBjb3JyZXNwb25kaW5nIDk1JSBpbnRlcnZhbC4gSWYgdGhlIGludGVydmFsIGV4Y2x1ZGVzIHplcm8gKG9yIHRoZSBzcGVjaWZpZWQgZml4ZWQgdmFsdWUpLCB0aGVuIHRoZSBoeXBvdGhlc2lzIGlzIHNhaWQgdG8gYmUgcmVqZWN0ZWQgYXQgdGhlIDUlIGxldmVsLg0KVGVzdGluZyB3aGV0aGVyIHR3byBwYXJhbWV0ZXJzIGFyZSBlcXVhbCBpcyBlcXVpdmFsZW50IHRvIHRlc3Rpbmcgd2hldGhlciB0aGVpciBkaWZmZXJlbmNlIGVxdWFscw0KemVyby4gV2UgY2FuIGRvIHRoaXMgYnkgaW5jbHVkaW5nIGJvdGggcGFyYW1ldGVycyBpbiB0aGUgbW9kZWwgYW5kIHRoZW4gZXhhbWluaW5nIHRoZSA5NSUgaW50ZXJ2YWwgZm9yIHRoZWlyIGRpZmZlcmVuY2UuIEFzIHdpdGggaW5mZXJlbmNlIGZvciBhIHNpbmdsZSBwYXJhbWV0ZXIsIHRoZSBjb25maWRlbmNlIGludGVydmFsIGlzIGNvbW1vbmx5IG9mIG1vcmUgaW50ZXJlc3QgdGhhbiB0aGUgaHlwb3RoZXNpcyB0ZXN0LiANClRoZSBoeXBvdGhlc2lzIG9mIHdoZXRoZXIgYSBwYXJhbWV0ZXIgaXMgcG9zaXRpdmUgaXMgZGlyZWN0bHkgYXNzZXNzZWQgdmlhIGl0cyBjb25maWRlbmNlIGludGVydmFsLiBUZXN0aW5nIHdoZXRoZXIgb25lIHBhcmFtZXRlciBpcyBncmVhdGVyIHRoYW4gdGhlIG90aGVyIGlzIGVxdWl2YWxlbnQgdG8gZXhhbWluaW5nIHRoZSBjb25maWRlbmNlIGludGVydmFsIGZvciB0aGVpciBkaWZmZXJlbmNlIGFuZCB0ZXN0aW5nIGZvciB3aGV0aGVyIGl0IGlzIGVudGlyZWx5IHBvc2l0aXZlLg0KDQojIyBUZXN0aW5nIGZvciBpbnRlcmFjdGlvbnMgYmV0d2VlbiB2YXJpYWJsZXMNCg0KSW4gdGhlIGxpbmVhciByZWdyZXNzaW9uIG1vZGVsIHdlIGFzc3VtZSB0aGF0IGVhY2ggdmFyaWFibGUgaGFzIGEgbGluZWFyIGVmZmVjdCBvbiB0aGUgb3V0Y29tZS4gSG93ZXZlciwgdGhlcmUgYXJlIG9mdGVuIHJlYXNvbnMgdG8gc3VzcGVjdCB0aGF0IHNvbWUgZWZmZWN0cyBhcmUgbm90IGxpbmVhciBhY3Jvc3Mgb3RoZXIgdmFyaWFibGVzLiBGb3IgZXhhbXBsZSwgd2UgY2FuIHRlc3Qgd2hldGhlciBlZHVjYXRpb24geWVhcnMgaGF2ZSBhIHNpbWlsYXIgZWZmZWN0IGZvciBtZW4gYW5kIHdvbWVuIGJ5IGluY2x1ZGluZyBhbiAqaW50ZXJhY3Rpb24qIGJldHdlZW4gZ2VuZGVyIGFuZCBlZHVjYXRpb246DQoNCmBgYHtyfQ0KIyBCdWlsZCB0aGUgbW9kZWwgYW5kIHNhdmUgaXQgYXMgYW4gb2JqZWN0OyBsZXQncyBjYWxsIHRoZSBtb2RlbCBvYmplY3QgJ21vZDInOg0KDQptb2QyIDwtIGxtKHRydXN0aW5kZXgzIH4gZWR1eXJzMjUqZmVtYWxlICsgYWdlYSArIHBhcmVkdV9hX2hpZ2ggKyBibGdldG1nX2QsIGRhdGEgPSBvc3Rlcm1hbikNCmBgYA0KYGBge3IsIHJlbmRlcj1rbml0cjo6bm9ybWFsX3ByaW50fQ0KIyBQcmludCBvdXQgYSBzdW1tYXJ5IG9mICdtb2QyJyB1c2luZyB0aGUgYHN1bW1gIGZ1bmN0aW9uIGZyb20gdGhlIGBqdG9vbHNgIHBhY2thZ2U6DQoNCmp0b29sczo6c3VtbShtb2QyLCBkaWdpdHMgPSAzKQ0KYGBgDQpOb3cgd2UgaGF2ZSBhbiBhZGRpdGlvbmFsIGNvZWZpY2llbnQsIGZvciB0aGUgaW50ZXJhY3Rpb24gYmV0d2VlbiBnZW5kZXIgYW5kIGVkdWNhdGlvbi4gV2UgY2FuIGludGVycHJldCB0aGlzIGFzIHJlcHJlc2VudGluZyB0aGUgZGlmZmVyZW5jZSBpbiB0aGUgc2xvcGUgZm9yIGVkdWNhdGlvbiwgY29tcGFyaW5nIGZlbWFsZXMgdG8gbWFsZXMuDQoNCg==</div>
    
             
       
