@@ -1,5 +1,5 @@
 ---
-title: "Week 2: measurement exercises"
+title: "Week 6: Exercises with causal data"
 output: 
   rmdformats::readthedown:
     code_folding: hide
@@ -8,6 +8,229 @@ output:
     number_sections: false
 ---
 
-<br>
+```{r}
+# Load packages
+pacman::p_load(tidyverse, haven, kableExtra, knitr, ggformula, jtools, interactions)
+```
 
+
+# Exercise 1: Racial discrimination in the labour-market
+
+### Based on: 
+### Bertrand, M. and Mullainathan, S. (2004) “Are Emily and Greg more employable than Lakisha and Jamal? A field experiment on labor market discrimination.” American Economic Review, vol. 94, no. 4, pp. 991–1013.
+
+We can import the example dataset and look at some descriptives of the data:
+
+```{r message=FALSE, warning=FALSE}
+resume <- read_csv("https://cgmoreh.github.io/SSC7001M/data/resume.csv")
+```
+
+---
+```{r}
+resume 
+```
+
+```{r}
+summary(resume)
+```
+
+The **dplyr** package makes it easy to tabulate summaries by group. Use `group_by()` to identify each combination of `race` and `call`, and then `count()` the observations:
+```{r}
+race_call_tab <-
+  resume %>%
+  group_by(race, call) %>%
+  count()
+race_call_tab
+```
+
+If we want to calculate callback rates by race, we can use the `mutate()` function from **dplyr**.
+```{r}
+race_call_rate <-
+  race_call_tab %>%
+  group_by(race) %>%
+  mutate(call_rate =  n / sum(n)) %>%
+  filter(call == 1) %>%
+  select(race, call_rate)
+race_call_rate
+```
+
+If we want the overall callback rate, we can calculate it from the original
+data. Use the `summarise()` function from **dplyr**.
+```{r}
+resume %>%
+  summarise(call_back = mean(call))
+```
+
+## Subsetting Data in R
+
+### Subsetting
+
+Create a new object of all individuals whose `race` variable equals `black` in the `resume` data:
+```{r resumeB}
+resumeB <-
+  resume %>%
+  filter(race == "black")
+
+```
+```{r}
+glimpse(resumeB)
+```
+
+Calculate the callback rate for black individuals:
+```{r}
+resumeB %>%
+  summarise(call_rate = mean(call))
+```
+
+You can combine the `filter()` and `select()` functions with multiple conditions.
+For example, to keep the call and first name variables for female individuals with stereotypically black names:
+```{r}
+resumeBf <-
+  resume %>%
+  filter(race == "black", sex == "female") %>%
+  select(call, firstname)
+head(resumeBf)
+```
+
+Now we can calculate the gender gap by group.
+
+First, group by race and sex and calculate the callback rate for each group:
+```{r}
+resume_race_sex <-
+  resume %>%
+  group_by(race, sex) %>%
+  summarise(call = mean(call))
+head(resume_race_sex)
+```
+Use `spread()` from the **tidyr** package to make each value of `race` a new column:
+```{r}
+
+resume_sex <-
+  resume_race_sex %>%
+  ungroup() %>%
+  spread(race, call)
+resume_sex
+```
+Now we can calculate the race wage differences by sex as before,
+```{r}
+resume_sex %>%
+  mutate(call_diff = white - black)
+```
+This could be combined into a single chain with only six lines of code:
+```{r}
+resume %>%
+  group_by(race, sex) %>%
+  summarise(call = mean(call)) %>%
+  ungroup() %>%
+  spread(race, call) %>%
+  mutate(call_diff = white - black)
+```
+
+Let's now model the data using regression methods.
+
+A race only model:
+```{r}
+# Build the model
+race_reg <- lm(call ~ race, data=resume)
+
+# Describe the model
+jtools::summ(race_reg, digits=3)
+```
+
+A race and gender model:
+```{r}
+# Build the model
+race_reg <- lm(call ~ race + sex, data=resume)
+
+# Describe the model
+jtools::summ(race_reg, digits=3)
+```
+
+And, finally, let's assume an interaction between gender and race:
+```{r}
+# Build the model
+race_reg <- lm(call ~ race*sex, data=resume)
+
+# Describe the model
+jtools::summ(race_reg, digits=3)
+```
+
+# Exercise 2: Can the media persuade people to vote differently? 
+
+### Based on: 
+### Ladd, J.M. and Lenz, G.S. (2009) ‘Exploiting a Rare Communication Shift to Document the Persuasive Power of the News Media’, American Journal of Political Science, 53(2), pp. 394–410.
+
+This is a really hard problem to investigate from a causal perspective since people choose their media based on their political preferences. We could do a lab experiment, but there would be concerns about external validity (i.e.  generalisability). Ladd and Lenz tried to get around this problem by focusing on a particular moment in UK politics.
+
+Four newspapers in the UK changed their editorial stance and tone between the 1992 and 1997 from supporting the Conservative Party to supporting the Labour Party. Switching papers were largely seen as a surprise to the public. The data, contained in the `newspapers.csv` file contains the following variables: 
+
+
+| Name            | Description                                                                                                  |
+|-----------------|--------------------------------------------------------------------------------------------------------------|
+| `to_labour`       | Did respondent read a newspaper that switched endorsement to the Labour between 1992 and 1997 (1=Yes, 0=No)? |
+| `vote_lab_92`   | Did respondent vote for Labour in 1992 election (1=Yes, 0=No)?                                               |
+| `vote_lab_97`   | Did respondent vote for Labour in 1997 election (1=Yes, 0=No)?                                               |
+| `parent_labour` | Did the respondent's parents vote for Labour (1=Yes, 0=No)?                                                  |
+| `wkclass`       | Does the respondent identify as working class (1=Yes, 0=No)?                                                 |
+| `male`          | Does the respondent identify as Male (1=Yes, 0=No)?                                                          |
+| `age`     | Age of respondent |
+
+
+The treatment here is someone reading a paper that switched their endorsement. The outcome of interest is how the respondent voted in 1997.
+
+```{r setup}
+news <- read.csv("https://cgmoreh.github.io/SSC7001M/data/newspapers.csv")
+```
+
+Calculate the average treatment effect of reading a switching to Labour paper on voting for Labour in 1997 under a cross-sectional design:
+
+``` {r}
+
+switched <- news %>% filter(to_labour ==1) 
+no_change <- news %>% filter(to_labour ==0) 
+
+ate <- mean(switched$vote_lab_97) - mean(no_change$vote_lab_97)
+ate
+```
+
+Estimate the same using regression modelling:
+
+```{r}
+ate_reg <- lm(vote_lab_97 ~ to_labour, data = news)
+jtools::summ(ate_reg, digits=3)
+```
+
+Task:
+
+1. Fit a model that includes all the available covariates
+
+```{r}
+
+```
+
+2. Fit a model with all covariates that also includes an interaction between the treatment (to_labour) and previous vote in 1992:
+
+```{r}
+
+```
+
+# Exercise 3: Osterman data
+
+Using the Osterman data that we have been using for the past few weeks, fit a complex model that models Social Trust on the following predictors:
+
+* high parental education
+- Gender
+- Ethnic minority status
+- Foreign-born parents(all available variables)
+- essround
+- `reform1_7`: the treatment measure for any educational reforms having been implemented
+- an interaction between the 'treatment' and parental education
+
+```{r}
+
+```
+
+```{r}
+
+```
 
