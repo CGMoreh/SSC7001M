@@ -229,10 +229,11 @@ Using the Osterman data that we have been using for the past few weeks, fit a co
 - an interaction between the 'treatment' and parental education
 
 ```{r}
-
+osterman <- haven::read_dta("https://cgmoreh.github.io/SSC7001M/data/osterman.dta")
 ```
 
 ```{r}
-
+ost_mod <- lm(trustindex3 ~ paredu_a_high + female + blgetmg_d + fnotbrneur + mnotbrneur + fbrneur + mbrneur + essround + reform1_7 + reform1_7:paredu_a_high, data=osterman)
+jtools::summ(ost_mod, digits=3)
 ```
 
