@@ -48,7 +48,8 @@ The treatment here is someone reading a paper that switched their endorsement. T
 
 
 ```{r setup}
-news <- read.csv("data/newspapers.csv")
+news <- read.csv("https://cgmoreh.github.io/SSC7001M/data/newspapers.csv")
+# LaddLenz <- read_dta("https://cgmoreh.github.io/SSC7001M/data/LaddLenz")
 ```
 
 
@@ -63,13 +64,26 @@ Calculate the average treatment effect of reading a switching to Labour paper on
 
 ```{r}
 switched <- subset(news, subset = to_labour == 1)
+
+switched2 <- news %>% filter(to_labour ==1) ## dplyr option; but tidyverse doesn't index rows, so that info is lost compared to base::subset; if important, then:
+switched3 <- news %>% 
+    rownames_to_column('rn') %>%
+    filter(to_labour ==1)
+
+
 no_change <- subset(news, subset = to_labour == 0)
 
-ate <- mean(switched$vote_lab_97) - mean(no_chage$vote_lab_97)
+ate <- mean(switched$vote_lab_97) - mean(no_change$vote_lab_97)
 ate
 ```
 
-Using a cross-sectional design with no statistical control, the estimated average treatment effect is "r round(ate, digits = 2)". 
+```{r}
+ate_reg <- lm(vote_lab_97 ~ to_labour, data = news)
+coef(ate_reg)
+```
+
+
+Using a cross-sectional design with no statistical control, the estimated average treatment effect is `r round(ate, digits = 2)`. 
 
 
 - **Question:** how is the analysis of a cross-sectional design different than the analysis of a randomized experiment?
@@ -96,12 +110,24 @@ See QSS Section 2.5.2 for more information if you need it.
 
 ```{r}
 mean(switched$male)
+## or
+nrow(switched_males) / nrow(switched)
+
 mean(no_change$male)
+# or
+nrow(no_change_males)/nrow(no_change)
 ```
+
+
 
 ```{r}
 switched_males <- switched[switched$male == 1,]
+## or
+switched_males2 <- switched %>% filter(male == 1)
+
 no_change_males <- no_change[no_change$male == 1,]
+# or 
+no_change_males2 <- no_change %>% filter(male ==1)
 
 mean(switched_males$vote_lab_97) - mean(no_change_males$vote_lab_97)
 ```
@@ -115,6 +141,13 @@ no_change_females <- no_change[no_change$male == 0,]
 
 mean(switched_females$vote_lab_97) - mean(no_change_females$vote_lab_97)
 ```
+
+```{r}
+gender_reg <- lm(vote_lab_97 ~ male*to_labour, data = news)
+jtools::summ(gender_reg, digits=3)
+```
+
+
 
 - Pick one group to present their results. 
 - What about variables that we didn't measure? 

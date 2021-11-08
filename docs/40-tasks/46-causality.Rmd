@@ -1,0 +1,13 @@
+---
+title: "Week 2: measurement exercises"
+output: 
+  rmdformats::readthedown:
+    code_folding: hide
+    code_download: true
+    highlight: tango
+    number_sections: false
+---
+
+<br>
+
+
