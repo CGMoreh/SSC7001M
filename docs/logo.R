@@ -85,3 +85,58 @@ ggplot(logo_data, aes(x, y)) +
 ggsave("logo2.png")
 
 
+#### NEW TITLE LOGO ------------------------------------------------------------
+
+a <- c("?", "!", "|", ">", "A", "P", "P", "L", "I", "E", "D", "(", 
+       "S", "O", "C", "I", "O", "L", "O", "G", "I", "C", "A", "L", 
+       "M", "E", "T", "H", "O", "D", "O", "L", "O", "G", "Y", ")",
+       "_", "|", ">", "T", "O", "(", "T", "R", "U", "S", "T", ")")
+
+y <- c(5,5,5,5,5,5,5,5,5,5,5,5, 
+       4,4,4,4,4,4,4,4,4,4,4,4,
+       3,3,3,3,3,3,3,3,3,3,3,3,
+       2,2,2,2,2,2,2,2,2,2,2,2)
+
+x <- c(1,2,3,4,5,6,7,8,9,10,11,12,
+       1,2,3,4,5,6,7,8,9,10,11,12,
+       1,2,3,4,5,6,7,8,9,10,11,12,
+       1,2,3,4,5,6,7,8,9,10,11,12)
+
+group <- c("y", "y", "z", "z", "a", "a", "a", "a", "a", "a", "a", "q",
+           "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b",
+           "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "q",
+           "", "z", "z", "a", "a", "q", "c", "c", "c", "c", "c", "q")
+
+group2 <- c(9,9,8,8,1,1,1,1,1,1,1,7,
+            2,2,2,2,2,2,2,2,2,2,2,2,
+            2,2,2,2,2,2,2,2,2,2,2,7,
+            0,8,8,1,1,7,3,3,3,3,3,7)
+
+
+logo_data <- tibble(a, y, x, group)
+
+colours <- c( "9" = "#a90606",
+              "8" = "#638cb3",
+              "1" = "#8c8279",
+              "7" = "#cf9930",
+              "2" = "#160202",
+              "0" = "#cf9930",
+              "3" = "#aaaaaa")
+  
+  
+ggplot(logo_data, aes(x, y)) +
+  theme(axis.title.x = element_blank(), 
+        axis.title.y = element_blank(),
+        axis.text=element_blank(),
+        axis.ticks=element_blank()) +
+  geom_point(aes(color = group), shape = 15, size = 20, show.legend = F) +
+  scale_color_manual(values = c("#a90606", "#638cb3", "#8c8279", "#cf9930", "#160202", "#cf9930", "#aaaaaa")) +
+  geom_text(aes(label=a), size=9, 
+            colour = ifelse(logo_data$group=="c" | logo_data$group=="e", "white", "black"),
+            fontface = 2) 
+
+
+
+  expand_limits(x=c(-11, 9), y=c(-10, 5.2)) +
+  scale_x_continuous(breaks=seq(-11, 9, 2)) +
+  scale_y_continuous(breaks=seq(-10, 6, 2))
