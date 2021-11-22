@@ -237,3 +237,9 @@ ost_mod <- lm(trustindex3 ~ paredu_a_high + female + blgetmg_d + fnotbrneur + mn
 jtools::summ(ost_mod, digits=3)
 ```
 
+Alternatively, with `essround` specified as categorical (i.e. 'factor'):
+
+```{r}
+ost_mod <- lm(trustindex3 ~ paredu_a_high + female + blgetmg_d + fnotbrneur + mnotbrneur + fbrneur + mbrneur + as.factor(essround) + reform1_7 + reform1_7:paredu_a_high, data=osterman)
+jtools::summ(ost_mod, digits=3)
+```
