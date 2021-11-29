@@ -104,3 +104,10 @@ summary(margins(logit_vote))
 
 We can interpret these results are change in probabilities while also considering the other variables in the model.
 
+Quick recode:
+
+```{r}
+vote <- vote %>% mutate(to_labour=recode(to_labour,
+                                         `0`=0, 
+                                         `1`=2))
+```
