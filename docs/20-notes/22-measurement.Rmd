@@ -148,3 +148,12 @@ ggplot(evs5_trust, aes(x = v31))+
 
 Let's try now to apply these basic descriptive steps to other variables in the dataset too!
 
+Quick recode:
+
+```{r}
+vote <- vote %>% mutate(to_labour=recode(to_labour,
+                                         `0`=0, 
+                                         `1`=2))
+```
+
+
