@@ -90,6 +90,9 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
 
+  <!--  https://schema.org/Article -->
+  <meta property="article:published" itemprop="datePublished" content="2021-11-29"/>
+  <meta property="article:created" itemprop="dateCreated" content="2021-11-29"/>
   <meta name="article:author" content="Dr. Chris Moreh&lt;br&gt; York St. John University"/>
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
@@ -106,7 +109,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","author","output"]}},"value":[{"type":"character","attributes":{},"value":["Troubleshooting R in class"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Dr. Chris Moreh<br> York St. John University"]}]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["rmdformats::readthedown"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["highlight"]}},"value":[{"type":"character","attributes":{},"value":["tango"]}]}]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Troubleshooting R in class"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Dr. Chris Moreh<br> York St. John University"]}]}]},{"type":"character","attributes":{},"value":["Last compiled on 2021-11-29"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["rmdformats::readthedown"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["highlight"]}},"value":[{"type":"character","attributes":{},"value":["tango"]}]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -453,7 +456,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   </style>
 
-  <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+  <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
   <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
   <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
   <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
@@ -2031,7 +2034,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2164,7 +2167,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Troubleshooting R in class","authors":[{"author":"Dr. Chris Moreh<br> York St. John University","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}]}
+{"title":"Troubleshooting R in class","authors":[{"author":"Dr. Chris Moreh<br> York St. John University","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-11-29T00:00:00.000+00:00","citationText":"University, 2021"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2258,7 +2261,7 @@ Exercises
   
   Dr. Chris Moreh<br> York St. John University
   
-
+<br/>Last compiled on 2021-11-29
 </div>
 
 <div class="d-article">
@@ -2303,6 +2306,67 @@ Exercises
 </div>
 </div>
 <p>Once this is done, you can install new packages and you will see your packages saved into your folder. That’s the folder from where <code>R</code> will also load the packages when you instruct it to do so. One problem to keep in mind is that this setting is only valid for your current <code>R</code> session; in other words, whenever you re-start <code>R</code> you will need to quickly change the default directory to your personal <em>myRlib</em> folder.</p>
+<h2 id="converting-a-column-to-factor">#2. Converting a column to ‘factor’</h2>
+<p>Many operations require that variables are set as categorical (‘factor’). In case they are imported as ‘character’ or ‘numeric’, fe can use them as factors by either stating it directly in functions - factor(variable) - or we can transform them in the dataset. I like two methods for factorising. The general tidyverse method that allows for many variables to be transformed at once:</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Example</span>
+<span class='va'>resume1</span> <span class='op'>&lt;-</span> <span class='va'>resume2</span> <span class='op'>&lt;-</span> <span class='va'>resume3</span> <span class='op'>&lt;-</span> <span class='fu'>readr</span><span class='fu'>::</span><span class='fu'><a href='https://readr.tidyverse.org/reference/read_delim.html'>read_csv</a></span><span class='op'>(</span><span class='st'>"data/resume.csv"</span><span class='op'>)</span>
+
+<span class='co'>#1 base</span>
+<span class='va'>resume1</span><span class='op'>$</span><span class='va'>race</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span><span class='op'>(</span><span class='va'>resume1</span><span class='op'>$</span><span class='va'>race</span><span class='op'>)</span>
+
+<span class='co'>#2 dplyr</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span>
+<span class='va'>resume2</span> <span class='op'>&lt;-</span> <span class='va'>resume2</span> |&gt; <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate_all.html'>mutate_at</a></span><span class='op'>(</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/vars.html'>vars</a></span><span class='op'>(</span><span class='va'>race</span><span class='op'>)</span>, <span class='va'>factor</span><span class='op'>)</span>
+
+<span class='co'>#3 sjlabelled</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://strengejacke.github.io/sjlabelled/'>sjlabelled</a></span><span class='op'>)</span>
+<span class='va'>resume3</span> <span class='op'>&lt;-</span> <span class='va'>resume3</span> |&gt; <span class='fu'><a href='https://strengejacke.github.io/sjlabelled/reference/as_factor.html'>as_factor</a></span><span class='op'>(</span><span class='va'>race</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<h2 id="importing">#3. Importing</h2>
+<p>See also this blog: <a href="https://www.pipinghotdata.com/posts/2020-12-23-leveraging-labelled-data-in-r/" class="uri">https://www.pipinghotdata.com/posts/2020-12-23-leveraging-labelled-data-in-r/</a></p>
+Construct path to a file:
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'>## Set path to a file</span>
+<span class='va'>dtapath</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span><span class='op'>(</span><span class='op'>)</span>, <span class='st'>"data"</span>, <span class='st'>"ess9.dta"</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+Importing with ‘haven’ and ‘sjlabelled’
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://haven.tidyverse.org'>haven</a></span><span class='op'>)</span>
+<span class='co'>## Import only a selection of variables</span>
+<span class='va'>ess</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://haven.tidyverse.org/reference/read_dta.html'>read_dta</a></span><span class='op'>(</span><span class='va'>dtapath</span>, col_select <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"cntry"</span>, <span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>starts_with</a></span><span class='op'>(</span><span class='st'>"imp"</span><span class='op'>)</span>, <span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>starts_with</a></span><span class='op'>(</span><span class='st'>"ip"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/detach.html'>detach</a></span><span class='op'>(</span><span class='st'>"package:haven"</span>, unload <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://strengejacke.github.io/sjlabelled/'>sjlabelled</a></span><span class='op'>)</span>
+<span class='va'>ess2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://strengejacke.github.io/sjlabelled/reference/read_spss.html'>read_stata</a></span><span class='op'>(</span><span class='va'>dtapath</span><span class='op'>)</span>
+<span class='va'>ess2</span> <span class='op'>&lt;-</span> <span class='va'>ess2</span> |&gt; <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"cntry"</span>, <span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>starts_with</a></span><span class='op'>(</span><span class='st'>"imp"</span><span class='op'>)</span>, <span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>starts_with</a></span><span class='op'>(</span><span class='st'>"ip"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># quick check</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://ggplot2.tidyverse.org'>ggplot2</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidyr.tidyverse.org'>tidyr</a></span><span class='op'>)</span>
+
+<span class='va'>ess</span> |&gt; 
+  <span class='co'>## mutate_if(haven::is.labelled, haven::as_factor) |&gt; </span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='va'>impcntr</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_bar.html'>geom_bar</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->

@@ -1,7 +1,7 @@
 ---
 title: Troubleshooting R in class
 author: "Dr. Chris Moreh<br> York St. John University"
-date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
+date: "Last compiled on `r Sys.Date()`"
 output:
   rmdformats::readthedown:
       highlight: tango
@@ -66,3 +66,64 @@ myPaths <- c("C:/Users/c.moreh/OneDrive - York St John University/SSC7001M/myRli
 ```
 
 Once this is done, you can install new packages and you will see your packages saved into your folder. That's the folder from where `R` will also load the packages when you instruct it to do so. One problem to keep in mind is that this setting is only valid for your current `R` session; in other words, whenever you re-start `R` you will need to quickly change the default directory to your personal *myRlib* folder.
+
+## \#2. Converting a column to 'factor'
+
+Many operations require that variables are set as categorical ('factor'). In case they are imported as 'character' or 'numeric', fe can use them as factors by either stating it directly in functions - factor(variable) - or we can transform them in the dataset.
+I like two methods for factorising. The general tidyverse method that allows for many variables to be transformed at once:
+
+``` {r}
+# Example
+resume1 <- resume2 <- resume3 <- readr::read_csv("data/resume.csv")
+
+#1 base
+resume1$race <- as.factor(resume1$race)
+
+#2 dplyr
+library(dplyr)
+resume2 <- resume2 |> mutate_at(vars(race), factor)
+
+#3 sjlabelled
+library(sjlabelled)
+resume3 <- resume3 |> as_factor(race)
+```
+
+## \#3. Importing
+
+See also this blog: https://www.pipinghotdata.com/posts/2020-12-23-leveraging-labelled-data-in-r/
+
+Construct path to a file:
+```{r}
+## Set path to a file
+dtapath <- file.path(getwd(), "data", "ess9.dta")
+```
+
+Importing with 'haven' and 'sjlabelled'
+```{r}
+library(haven)
+## Import only a selection of variables
+ess <- read_dta(dtapath, col_select = c("cntry", starts_with("imp"), starts_with("ip")))
+```
+
+```{r}
+detach("package:haven", unload = TRUE)
+library(sjlabelled)
+ess2 <- read_stata(dtapath)
+ess2 <- ess2 |> select(c("cntry", starts_with("imp"), starts_with("ip")))
+```
+
+```{r}
+# quick check
+library(ggplot2)
+library(tidyr)
+
+ess |> 
+  ## mutate_if(haven::is.labelled, haven::as_factor) |> 
+  ggplot(aes(x=impcntr)) +
+  geom_bar()
+
+```
+
+
+
+
