@@ -98,7 +98,7 @@ One way of obtaining so-called marginal probabilities - probabilities
 
 ```{r}
 # install.packages("margins")
-# library(margins)
+library(margins)
 summary(margins(logit_vote))
 ```
 
