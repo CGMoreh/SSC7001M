@@ -1,0 +1,349 @@
+---
+title: "Week 6: Multicategory regression models"
+output:
+  rmdformats::readthedown:
+      highlight: tango
+---
+```{r include=FALSE}
+knitr::opts_chunk$set(eval=FALSE)
+```
+
+
+# Introduction
+
+This session introduces two new regression models:
+- Ordinal logistic regression, and
+- Multinomial logistic regression
+  
+# Ordinal Regression 
+
+Ordinal regression (also known as Ordinal Logistic Regression) is an extension of binomial logistics regression. Ordinal regression is used to predict a dependent variable with ‘ordered’ multiple categories and independent variables. In other words, it is used to facilitate the interaction of dependent variables (having multiple ordered levels) with one or more independent variables.
+
+For example: Let us assume a survey is done. We asked a question with answer options such as Strongly Disagree, Disagree, Agree, Strongly Agree. This helped us to observe a natural order in the categories.
+
+For our regression model to be realistic, we must appreciate this order, and Ordinal Logistic Regression addresses this fact. Ordinal means that there is a logical order to the categories.
+
+# Multinomial regression
+
+Multinomial Logistic Regression (MLR) is a form of linear regression analysis conducted when the dependent variable is nominal with more than two levels. It is used to describe data and to explain the relationship between one dependent nominal variable and one or more continuous-level (interval or ratio scale) independent variables. You can understand nominal variable as, a variable which has no intrinsic ordering.
+
+For example: Types of Forests: ‘Evergreen Forest’, ‘Deciduous Forest’, ‘Rain Forest’. As you see, there is no intrinsic order in them, but each forest represent a unique category. In other words, multinomial regression is an extension of logistic regression, which analyzes dichotomous (binary) dependents.
+
+# Fitting multinomial and ordinal regression modesl in R
+
+There are several packages in `R` that provide functions for fitting multicategory models, such as the `nnet` and `mlogit` packages for multinomial models, the `MASS` package for ordinal models, or `vgl`, which fits both. Each of these packages have their advantages and disadvantages in terms of the format of their outputs, summary statistic provided, etc. 
+
+
+```{r}
+pacman::p_load(VGAM, MASS, ordinal, nnet, stargazer, tidyverse)
+```
+
+
+
+# Data import and wrangling
+
+```{r}
+evs <- haven::read_dta("https://cgmoreh.github.io/SSC7001M/data/evs5.dta")
+```
+
+```{r}
+# We can create a data dictionary to quickly check variable names and labels
+
+evs_dictionary <- labelled::generate_dictionary(evs) 
+```
+
+```{r}
+# We can select some variables of interest that we would like to model
+
+evs <- evs %>% select("v31":"v37", "v225", "v234", "v227", "age", "v102", "v105")
+```
+
+```{r}
+# We can transform the imported categorical data from 'haven labelled' format to 'factors' (categorical variables)
+
+evs <- evs %>% mutate_if(haven::is.labelled, haven::as_factor)
+```
+
+```{r}
+# Some variables are better left as continuous
+
+# evs %<>% mutate(across(all_of("age"), as.numeric),
+#                across(all_of("v102"), as.numeric),
+#                across(all_of("v105"), as.numeric))
+
+# We can include these as 'as.numeric' in the model specification
+```
+
+
+```{r}
+# We can check the frequencies of some variables
+evs %>% count(v225)
+
+```
+
+
+```{r}
+# We can set some of the non-relevant categories to be missing; in this case, this applies to all the variables
+
+evs %<>% mutate(across(.cols = everything(), na_if, "multiple answers Mail"))
+evs %<>% mutate(across(.cols = everything(), na_if, "no answer"))
+evs %<>% mutate(across(.cols = everything(), na_if, "dont know"))
+```
+
+
+
+
+
+```{r}
+### Binomial model
+
+mod1 <- glm(v31 ~ v33 + as.numeric(age) + as.numeric(v105), family = "binomial", data = evs)
+jtools::summ(mod1, digits =3)
+```
+
+
+```{r}
+### Ordinal model; using the VGAM package
+
+m_ord <- vglm(as.ordered(v33) ~ v225 + v234 + v227 + as.numeric(age) + as.numeric(v102) + as.numeric(v105), family = propodds, data = evs)
+
+summary(m_ord)
+
+```
+
+
+```{r}
+### Ordinal model; using the 'ordinal' package
+
+m_ord2 <- clm(v33 ~ v225 + v234 + v227 + as.numeric(age) + as.numeric(v102) + as.numeric(v105), link="logit", data = evs)
+
+summary(m_ord2)
+
+```
+
+
+```{r}
+### Ordinal model; using the MASS package
+
+m_ord3 <- polr(v33 ~ v225 + v234 + v227 + as.numeric(age) + as.numeric(v102) + as.numeric(v105), method = "logistic", data = evs)
+
+## Unfortunately, the polr algorithm fails to find suitable starting values and cannot fit the model; we'll just leave it.
+
+```
+
+
+
+
+```{r}
+### Multinomial model; using the VGAM package
+
+m_mlogit <- vglm(v33 ~ v225 + v234 + v227 + as.numeric(age) + as.numeric(v102) + as.numeric(v105), family = multinomial, data = evs)
+
+```
+
+```{r}
+### Multinomial model; using the 'VGAM'nnet' package
+m_mlogit2 <- multinom(v33 ~ v225 + v234 + v227 + as.numeric(age) + as.numeric(v102) + as.numeric(v105), data = evs)
+
+```
+
+
+```{r}
+stargazer(m_mlogit2, type = "text")
+```
+
+
+
+# Prediction
+
+# Causality
+
+## Example: The effect of media on electoral outcome
+
+- This example (including dataset and much of the notes) comes from Matthew Blackwell's Gov-51 course (http://gov50.mattblackwell.org/weeks/02-observational/)
+
+Can the media persuade people to vote differently? This is a really hard problem to investigate from a causal perspective since people choose their media based on their political preferences. So liberals choose to watch MSNBC or read the New York Times and conservatives choose to watch Fox News or read the Wall Street Journal. We could do a lab experiment, but there would be concerns about external validity.
+
+Two political scientists tried to get around this problem by focusing on a particular moment in UK politics. The data for this exercise comes from this paper:
+
+> Ladd, Jonathan M., and Gabriel S. Lenz. "Exploiting a Rare Communication Shift to Document the Persuasive Power of the News Media." American Journal of Political Science 53, no. 2 (2009): 394–410. [https://www.jstor.org/stable/25548125](https://www.jstor.org/stable/25548125)
+
+
+Four newspapers in the UK changed their editorial stance and tone between the 1992 and 1997 from supporting the Conservative Party to supporting the Labour Party. Switching papers were largely seen as a surprise to the public. The data, contained in the `newspapers.csv` file contains the following variables: 
+
+
+| Name            | Description                                                                                                  |
+|-----------------|--------------------------------------------------------------------------------------------------------------|
+| `to_labour`       | Did respondent read a newspaper that switched endorsement to the Labour between 1992 and 1997 (1=Yes, 0=No)? |
+| `vote_lab_92`   | Did respondent vote for Labour in 1992 election (1=Yes, 0=No)?                                               |
+| `vote_lab_97`   | Did respondent vote for Labour in 1997 election (1=Yes, 0=No)?                                               |
+| `parent_labour` | Did the respondent's parents vote for Labour (1=Yes, 0=No)?                                                  |
+| `wkclass`       | Does the respondent identify as working class (1=Yes, 0=No)?                                                 |
+| `male`          | Does the respondent identify as Male (1=Yes, 0=No)?                                                          |
+| `age`     | Age of respondent |
+
+
+The treatment here is someone reading a paper that switched their endorsement. The outcome of interest is how the respondent voted in 1997.
+
+
+```{r}
+news <- read.csv("https://cgmoreh.github.io/SSC7001M/data/newspapers.csv")
+# LaddLenz <- read_dta("https://cgmoreh.github.io/SSC7001M/data/LaddLenz")
+```
+
+
+## Question 1 (MB demo, 10 mins)
+
+Calculate the average treatment effect of reading a switching to Labour paper on voting for Labour in 1997 under a cross-sectional design. 
+
+
+## Answer 1
+
+- **Question**: How do we estimate the ATE in a cross-sectional design? Without controls, no different than a randomized experiment. 
+
+```{r}
+switched <- subset(news, subset = to_labour == 1)
+
+switched2 <- news %>% filter(to_labour ==1) ## dplyr option; but tidyverse doesn't index rows, so that info is lost compared to base::subset; if important, then:
+switched3 <- news %>% 
+    rownames_to_column('rn') %>%
+    filter(to_labour ==1)
+
+
+no_change <- subset(news, subset = to_labour == 0)
+
+ate <- mean(switched$vote_lab_97) - mean(no_change$vote_lab_97)
+ate
+```
+
+```{r}
+ate_reg <- lm(vote_lab_97 ~ to_labour, data = news)
+coef(ate_reg)
+```
+
+
+Using a cross-sectional design with no statistical control, the estimated average treatment effect is `r round(ate, digits = 2)`. 
+
+
+- **Question:** how is the analysis of a cross-sectional design different than the analysis of a randomized experiment?
+
+- **Question:** why might we not believe this estimate of the ATE?
+
+
+- If more liberal people were more likely to read the NYT, what kind of cross-sectional estimate would we expect? How would we expect the estimate to change if we looked at the effect among liberals? **Use yes/no to vote on what direction the effect would go.**
+
+## Question 2 (Breakout room, 20 mins)
+
+Choose one of the binary pretreatment variable to do a balance check. Compare the sample proportions of that variable across the treated and control groups. Come up with a story for how the confounding might occur for this variable. That is, how do you expect the confounder to affect both the treatment and the outcome in this case? 
+
+Nest, use the method of subclassification to statistically control for this variable  and estimate the treatment effect within levels of that variable. Do the effects in each group look similar to the overall ATE? 
+
+**Challenge question:** do the quantitative results from these two exercises seem to validate your story for the confounding bias?
+
+See QSS Section 2.5.2 for more information if you need it. 
+
+
+## Answer 2
+
+- Compare the sample proportions of men in the treated and control groups:
+
+```{r}
+mean(switched$male)
+## or
+nrow(switched_males) / nrow(switched)
+
+mean(no_change$male)
+# or
+nrow(no_change_males)/nrow(no_change)
+```
+
+
+
+```{r}
+switched_males <- switched[switched$male == 1,]
+## or
+switched_males2 <- switched %>% filter(male == 1)
+
+no_change_males <- no_change[no_change$male == 1,]
+# or 
+no_change_males2 <- no_change %>% filter(male ==1)
+
+mean(switched_males$vote_lab_97) - mean(no_change_males$vote_lab_97)
+```
+
+- For women: 
+
+
+```{r}
+switched_females <- switched[switched$male == 0,]
+no_change_females <- no_change[no_change$male == 0,]
+
+mean(switched_females$vote_lab_97) - mean(no_change_females$vote_lab_97)
+```
+
+```{r}
+gender_reg <- lm(vote_lab_97 ~ male*to_labour, data = news)
+jtools::summ(gender_reg, digits=3)
+```
+
+
+
+- Pick one group to present their results. 
+- What about variables that we didn't measure? 
+
+## Question 3 (Breakout rooms, 20 mins)
+
+This data set is a panel data set since we have measurements on the same individuals at two different time points. This allows us to conduct new types of observational studies. Review section 2.5.3 of QSS and conduct two analyses on this data set:
+
+1. A before-and-after comparison of the treated group, comparing their average vote in 1997 to their average vote in 1992. 
+2. A differences-in-differences design that compares the average changes over time in the treatment group to average changes over time in the control group. 
+
+How do these estimates compare to the cross-sectional design? For both of these methods, come up with one possible source of bias. Which of the three methods do you find the most plausible for inferring causal effects?
+
+## Answer 3
+
+### Before-and-after comparison
+
+
+```{r}
+switched_diff <- mean(switched$vote_lab_97) - mean(switched$vote_lab_92)
+switched_diff
+```
+
+### Differences-in-differences
+
+```{r}
+no_change_diff <- mean(no_change$vote_lab_97) - mean(no_change$vote_lab_92)
+switched_diff - no_change_diff
+```
+
+- Pick one group to share. 
+- What are the assumptions that make a before-and-after design valid?
+  - Tony Blair very popular across the board. 
+- What are the assumptions that make a differences-in-differences design valid?
+- Are these assumptions plausible in this case? 
+- Final thing: **we always rely on assumptions to make observational studies causally valid**
+
+
+## Question 4 (Breakout room, 15 mins)
+
+With continuous covariates, we might want to check different aspects of the distribution of the data are different in the treated and control group. 
+
+1. Compare the summary statistics from a `summary()` call on the `age` variable in the treated and control group. If we were worried about confounding bias from age, what should we expect to see in this comparison? What do you actually see?
+2. Compare the standard deviation of `age` in the two groups. What does this comparison tell us?
+
+
+## Answer 4
+
+```{r}
+summary(switched$age)
+summary(no_change$age)
+
+sd(switched$age)
+sd(no_change$age)
+```
+
+
+- What does it mean for one group to have a higher standard deviation of age than another group? 
+- Is it possible for an SD to be negative? 
+- Is it possible for an SD to be zero? What would that mean?
