@@ -1,8 +1,11 @@
 ---
 title: "Week 6: Multicategory regression models"
-output:
+output: 
   rmdformats::readthedown:
-      highlight: tango
+    code_folding: hide
+    code_download: true
+    highlight: tango
+    number_sections: false
 ---
 ```{r include=FALSE}
 knitr::opts_chunk$set(eval=FALSE)
