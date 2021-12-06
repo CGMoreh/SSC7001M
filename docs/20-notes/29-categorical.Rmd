@@ -1,5 +1,5 @@
 ---
-title: "Week 6: Multicategory regression models"
+title: "Week 10: Multicategory regression models"
 output: 
   rmdformats::readthedown:
     code_folding: hide
@@ -8,7 +8,7 @@ output:
     number_sections: false
 ---
 ```{r include=FALSE}
-knitr::opts_chunk$set(eval=FALSE)
+knitr::opts_chunk$set(eval=TRUE)
 ```
 
 
@@ -75,7 +75,7 @@ evs <- evs %>% mutate_if(haven::is.labelled, haven::as_factor)
 ## replace the variable name to check others;
 ## come back and check again after recoding the variables later
 
-evs %>% count(v227)
+evs %>% count(v35)
 
 ```
 
@@ -84,7 +84,7 @@ evs %>% count(v227)
 # We can set some of the non-relevant categories to be missing; in this case, this applies to all the variables;
 ## for simplicity, we use the %<>% pipe from the magrittr package, which saves us some repetitive typing
 
-evs %<>% mutate(across(.cols = everything(), na_if, "multiple answers Mail"))
+evs <- evs %>% mutate(across(.cols = everything(), na_if, "multiple answers Mail"))
 evs %<>% mutate(across(.cols = everything(), na_if, "no answer"))
 evs %<>% mutate(across(.cols = everything(), na_if, "dont know"))
 ```
@@ -160,6 +160,7 @@ Another fitting option exists, but it doesn't always work well:
 
 m_ord3 <- polr(as.ordered(v35) ~ v225 + v227 + v234 + as.numeric(age) + as.numeric(v105) + as.numeric(v102), method = "logistic", data = evs)
 
+summary(m_ord3)
 ## Unfortunately, the polr algorithm fails to find suitable starting values and cannot fit the model; we'll just leave it.
 
 ```
@@ -183,6 +184,7 @@ Reading the output is tedious. Another modelling option lets us to then use a ni
 ### Multinomial model; using the 'nnet' package
 m_mlogit2 <- multinom(v33 ~ v225 + v234 + v227 + as.numeric(age) + as.numeric(v102) + as.numeric(v105), data = evs)
 
+summary(m_mlogit2)
 ```
 
 
