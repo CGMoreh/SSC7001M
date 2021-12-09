@@ -1,0 +1,257 @@
+---
+title: "Data manipulation"
+author: "C Moreh"
+output: html_document:
+    code_download: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width=6, fig.asp = 0.618, collapse=TRUE) 
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
+```
+
+## Data manipulation
+
+Working with real-life data requires a lot of pre-processing before we are able to carry out out main analyses. This pre-processing can involve importing data from various storage formats, applying and changing overall characteristics, filtering and ordering rows (cases), computing, adding and renaming columns (variables), recoding variable values, and computing summary statistics for variables of interest to determine any need to recode variables. These are the main data manipulation techniques that I will cover in this workshop tutorial. While the procedures we learn here are the ones you will probably require for your own small-scale data analysis projects, some data manipulation requirements are specific to given data sets and they may require some techniques not covered here. Should that be the case, get in touch at [c.moreh\@yorksj.ac.uk](mailto:c.moreh@yorksj.ac.uk?subject=SSC7001M coding help) and describe the problem you need to solve.
+
+Data manipulation tasks can be carried out in plain `R` language or by using specially written packages (libraries). The former can often seem less intuitive and reader-friendly, so we will use mainly the popular **dplyr** R package, which contains important R functions to carry out easily your data manipulation. **dplyr** is part of the wider universe of packages called **tidyverse**, whose main aim is to implement `R` functions using a more intuitive syntax.
+
+## Data frames and 'tibbles'
+
+The `Tidyverse` is built around the basic concept that data in a table should have one observation per row, one variable per column, and only one value per cell. Once data is in this 'tidy' format, it can be transformed, visualized and modelled for an analysis.
+
+When using functions in the `Tidyverse` ecosystem, most data is returned as a `tibble` object. `Tibbles` are very similar to the `data.frames` (which are the basic types of object storing datasets in base `R`) and it is perfectly fine to use `Tidyverse` functions on a `data.frame` object. Just be aware that in most cases, the `Tidyverse` function will transform your data into a `tibble.` If you are unobservant, you won't even notice a difference. However, there are a few differences between the two data types, most of which are just designed to make your life easier. The most obvious differences when you work with `tibbles`:
+
++  printing in the console looks a bit different 
++  never changes the type of the inputs (e.g. it never converts strings to factors!)
++  never creates row names
++  never changes the names of variables
++  tibbles generate a warning if the column you are trying to access does not exist
+
+## Required packages
+
+Let's load the `tidyverse` packages, which include the `dplyr` package (for data manipulation) and additional R packages for easily reading (`readr`), transforming (`tidyr`) and visualizing (`ggplot2`) datasets. For importing datasets in non-native formats, we also need the `haven` package. We have also used some other convenience packages such as `labelled` or `mosaic`.
+
+```{r}
+library("tidyverse")
+library("haven")
+```
+
+You can see the suite of packages that are loaded when you load the `Tidyverse` library using the following command:
+
+```{r}
+tidyverse_packages()
+```
+
+## dplyr
+
+The `dplyr` package is designed to make it easier to manipulate flat (2-D) data (i.e. the type of datasets we are most likely to use, which are laid out as in a standard spreadsheet, with rows referring to cases (observations; respondents) and columns referring to variables. `dplyr` provides simple "verbs", functions that correspond to the most common data manipulation tasks, to help you translate your thoughts into code. Here are some of the most common functions in `dplyr`:
+
+  * `filter()` chooses rows based on column values.
+  * `arrange()` changes the order of the rows.
+  * `select()` changes whether or not a column is included.
+  * `rename()` changes the name of columns.
+  * `mutate()` changes the values of columns and creates new columns (variables)
+  * `summarise()` compute statistical summaries (e.g., computing the mean or the sum)
+  * `group_by()` group data into rows with the same values
+  * `ungroup()` remove grouping information from data frame.
+  * `distinct()` remove duplicate rows. 
+
+All these functions work similarly as follow:
+
+- The first argument is a data frame
+- The subsequent arguments are comma separated list of unquoted variable names and the specification of what you want to do
+- The result is a new data frame
+
+## The pipe
+
+All of the dplyr functions take a data frame (or tibble) as the first argument. Rather than forcing the user to either save intermediate objects or nest functions, dplyr provides the pipe operator `%>%` from the package `magrittr`. The pipe operator allows us to combine multiple operations in R into a single sequential chain of actions.
+
+Let’s start with a hypothetical example. Say you would like to perform a sequence of operations on data frame `x` using hypothetical functions f(), g(), and h():
+
+1.  Take x *then*
+2.  Use x as an input to a function f() *then*
+3.  Use the output of f(x) as an input to a function g() *then*
+4.  Use the output of g(f(x)) as an input to a function h()
+
+One way to achieve this sequence of operations is by using nesting parentheses as follows:
+
+```
+h(g(f(x)))
+```
+
+This code isn’t so hard to read since we are applying only three functions: f(), then g(), then h() and each of the functions is short in its name. Further, each of these functions also only has one argument. However, you can imagine that this will get progressively harder to read as the number of functions applied in your sequence increases and the arguments in each function increase as well. This is where the pipe operator %>% comes in handy. %>% takes the output of one function and then “pipes” it to be the input of the next function. Furthermore, a helpful trick is to read %>% as “then” or “and then.” For example, you can obtain the same output as the hypothetical sequence of functions as follows:
+
+```
+x %>% 
+  f() %>% 
+  g() %>% 
+  h()
+```
+
+You would read this sequence as:
+
+1. Take x *then*
+2. Use this output as the input to the next function f() *then*
+3. Use this output as the input to the next function g() *then*
+4. Use this output as the input to the next function h()
+
+So while both approaches achieve the same goal, the latter is much more human-readable because you can clearly read the sequence of operations line-by-line. 
+Let's read in some data and try out one of these dplyr functions.
+
+## Importing data
+
+The data you will want to use is likely to come in a format used by another statistical package or data management tool (`SPSS`, `Stata`, `Excel`) or in raw *Comma Separated Values (CSV)* or *tab separated values (TSV)*. We have practised importing `Stata` (.dta) and `SPSS` (.sav) data files in particular, as it is the format in which much of the large survey data made available to researchers in the UK Data Service is stored. 
+
+There are a few datasets that are available from the course's (not quite developed as of yet) webpage: https://cgmoreh.github.io/SSC7001M/data/data-documentation
+
+Let's load the European Values Study; Wave 5 (2017-2020) dataset in `Stata`  (.dta) format using the `haven` package:
+
+```{r}
+evs <- haven::read_dta("https://cgmoreh.github.io/SSC7001M/data/evs5.dta")
+```
+
+If your dataset is in another format, you can use the appropriate function from `haven`, which have the same format of "read_*format type*". You can check a list of the available functios in `haven` with the command:
+
+```{r}
+ls("package:haven")
+```
+
+Once a dataset is loaded, you can have a quick look at some of its characteristics (which you can also check manually in the Environment pane and by opening the dataset). This simply tells us the number of cases (rows) and variables (columns) in the dataset.
+
+```{r}
+dim(evs)
+```
+
+If we have a dataset such as this, where the variables names are non-sensical, you need to rely on the survey documentation to understand what the variables mean. As we've practiced, the `labelled` package is a useful tool to generate a so-called "data dictionary" as an object that lists the variable labels alongside the names and some information about the variable types:
+
+```{r}
+evs_labels <- labelled::generate_dictionary(evs) 
+```
+
+For demonstration purposes, there are a few commonly used datasets that come implemented with `R` packages. One such dataset is the R built-in *iris* data set, which we can load as a 'tibble':
+
+```{r}
+iris <- as_tibble(iris)
+```
+
+And we can have a quick look at the first few cases by simply typing the dataset's name
+
+```{r}
+iris
+```
+
+## Selecting variables
+
+We can select only a few variables that we are interested in using the *select* command. We can either mention the number of the columns we are planning to keep, or more usefully, the names of the columns. We separate the comlumn names using a comma, or we can specify a range of columns/variables using ":", as in this example, where we keep all the variables between v31 and v37:
+
+```{r}
+evs %>% select("v31":"v37", "v225", "v234", "v227", "age", "v102", "v105")
+```
+
+There are also several special functions that can be used inside select(): starts_with(), ends_with(), contains(), matches(), one_of(), etc.
+
+To actually collapse the loaded dataset to the selected variables, we have to assign the 'select()' procedure to either a new object name (e.g. smalldata <- ) or the same name (evs <- ), which would overwrite the existing dataset.
+
+## Selecting cases
+
+You can also select a subset of cases for analysis. The reason might be that you are interested in only analysing cases that satisfy certain criteria. The filter() function [dplyr package] can be used to filter rows that meet some logical criteria.
+
+Before continuing, it's important to understand the logical comparisons and operators used in `r`, which are important to know for filtering data.
+
+The “logical” comparison operators available in R are:
+
+1. Logical comparisons
+- "<" for less than
+- ">" for greater than
+- "<=" for less than or equal to
+- ">=" for greater than or equal to
+- "==" for equal to each other
+- "!=" not equal to each other
+- "%in%" group membership. For example, “value %in% c(2, 3)” means that value can takes 2 or 3.
+- "is.na()" is NA
+- "is.na()" is not NA.
+
+2. Logical operators
+- value == 2|3: means that the value equal 2 or (|) 3. value %in% c(2, 3) is a shortcut equivalent to value == 2|3.
+- &: means and. For example sex == “female” & age > 25
+
+One frequent mistake is to use = instead of == when testing for equality. Remember that, when you are testing for equality, you should always use == (not =).
+
+For example let's select from the 'evs' dataset only cases that come from respondents in the United Kingdom. The 'country' variable codes the country of data collection. the 'val_labels' command from the 'labelled' package can be used to view a list of the labels (or we can check the data dictionary in the last column)
+
+```{r}
+labelled::val_labels(evs$country)
+```
+
+We can see in the list that the country label is Great Britain and it is coded 826, so we can filter the data using the following command (assigning the reduced dataset to a new object in this case, but we could also overwrite the existing one:
+
+```{r}
+gb_only <- evs %>% filter(country==826)
+```
+
+We could also make the selection using the variable label instead of the numeric code, but because our data was imported from a different format and it is stored in a special data type pertaining to the `haven` package, we would first need to convert the data types to a format that is interpretable by other `R` functions.
+
+We could also just specify the format for the selected variable only to make that transformation in the same command using:
+
+```{r}
+gb_only2 <- evs %>% filter(as_factor(country)=="Great Britain")
+```
+
+The 'filter' command is highly flexible and also allows to combine multiple criteria if needed, say only British respondents aged between 25 and 35:
+
+```{r}
+gb_2535_only <- evs %>% filter(
+      as_factor(country)=="Great Britain",
+      age >= 25 & age <= 35)
+```
+
+## Renaming columns/variables
+
+The simplest way is again by using `dplyr` functions, in this case the 'rename' function. Let's rename the 'v1' variable in the evs dataset (labelled: "how important in your life: work ) to "important_work", and the "v31" variable ("people can be trusted/can't be too careful") to "no_trust".
+
+```{r}
+evs <- evs %>% 
+  rename(
+    important_work = v1,
+    no_trust = v31
+    )
+```
+
+## Recoding values
+
+Let's check the variable "no_trust" that we just renamed:
+
+```{r}
+evs %>% count(no_trust)
+```
+
+To show the value labels, we could specify that the variables should be treated as a 'factor':
+
+```{r}
+evs %>% count(as_factor(no_trust))
+```
+
+We can recode values explicitly this way:
+
+```{r}
+evs1 <- evs %>% mutate(no_trust=recode(no_trust,
+                                         `1`=0, 
+                                         `2`=1))
+```
+
+But we need to be careful as the labels are no longer correct!
+
+## Summary statistics by group
+
+We can produce some useful summary statistics by goups of another variable. For example, let's look at the average value of the variable 'no_trust' (i.e. the proportions in this case) by country:
+
+```{r}
+evs %>%
+  group_by(country) %>%
+  summarise(
+          count = n(),
+          mean_no_trust = mean(no_trust))
+```
+
+This can be a useful technique if we need to check some basic summary statistics.
