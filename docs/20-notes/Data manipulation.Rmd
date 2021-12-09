@@ -1,8 +1,8 @@
 ---
 title: "Data manipulation"
 author: "C Moreh"
-output: html_document:
-    code_download: true
+output: html_document
+
 ---
 
 ```{r setup, include=FALSE}
@@ -235,12 +235,25 @@ evs %>% count(as_factor(no_trust))
 We can recode values explicitly this way:
 
 ```{r}
-evs1 <- evs %>% mutate(no_trust=recode(no_trust,
+evs <- evs %>% mutate(no_trust=recode(no_trust,
                                          `1`=0, 
                                          `2`=1))
 ```
 
 But we need to be careful as the labels are no longer correct!
+
+```{r}
+evs <- evs %>% mutate(no_trust=recode(no_trust,
+                                         `1`="trust", 
+                                         `2`="no trust"))
+```
+
+Recoding several variables by collapsing categories:
+
+```{r}
+evs <- evs %>% mutate_at(c("v32", "v34"), funs(recode(., `1`=1, `2`=1, `3`=0, `4`=0)))
+```
+
 
 ## Summary statistics by group
 

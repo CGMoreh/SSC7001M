@@ -419,10 +419,15 @@ library(&quot;haven&quot;)</code></pre>
 ## 3 most people can be trusted 20147
 ## 4 can not be too careful     35113</code></pre>
 <p>We can recode values explicitly this way:</p>
-<pre class="r"><code>evs1 &lt;- evs %&gt;% mutate(no_trust=recode(no_trust,
+<pre class="r"><code>evs &lt;- evs %&gt;% mutate(no_trust=recode(no_trust,
                                          `1`=0, 
                                          `2`=1))</code></pre>
 <p>But we need to be careful as the labels are no longer correct!</p>
+<pre class="r"><code>evs &lt;- evs %&gt;% mutate(no_trust=recode(no_trust,
+                                         `1`=&quot;trust&quot;, 
+                                         `2`=&quot;no trust&quot;))</code></pre>
+<p>Recoding several variables by collapsing categories:</p>
+<pre class="r"><code>evs &lt;- evs %&gt;% mutate_at(c(&quot;v32&quot;, &quot;v34&quot;), funs(recode(., `1`=1, `2`=1, `3`=0, `4`=0)))</code></pre>
 </div>
 <div id="summary-statistics-by-group" class="section level2">
 <h2>Summary statistics by group</h2>
@@ -435,16 +440,16 @@ library(&quot;haven&quot;)</code></pre>
 ## # A tibble: 34 x 3
 ##                         country count mean_no_trust
 ##                       &lt;dbl+lbl&gt; &lt;int&gt;         &lt;dbl&gt;
-##  1   8 [Albania]                 1435          1.96
-##  2  31 [Azerbaijan]              1800          1.52
-##  3  40 [Austria]                 1644          1.43
-##  4  51 [Armenia]                 1500          1.71
-##  5  70 [Bosnia and Herzegovina]  1724          1.87
-##  6 100 [Bulgaria]                1558          1.74
-##  7 112 [Belarus]                 1548          1.43
-##  8 191 [Croatia]                 1487          1.75
-##  9 203 [Czechia]                 1811          1.60
-## 10 208 [Denmark]                 3362          1.21
+##  1   8 [Albania]                 1435            NA
+##  2  31 [Azerbaijan]              1800            NA
+##  3  40 [Austria]                 1644            NA
+##  4  51 [Armenia]                 1500            NA
+##  5  70 [Bosnia and Herzegovina]  1724            NA
+##  6 100 [Bulgaria]                1558            NA
+##  7 112 [Belarus]                 1548            NA
+##  8 191 [Croatia]                 1487            NA
+##  9 203 [Czechia]                 1811            NA
+## 10 208 [Denmark]                 3362            NA
 ## # ... with 24 more rows</code></pre>
 <p>This can be a useful technique if we need to check some basic summary statistics.</p>
 </div>
