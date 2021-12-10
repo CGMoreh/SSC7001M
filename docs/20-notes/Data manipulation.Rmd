@@ -274,25 +274,18 @@ Recoding several variables by collapsing categories:
 evs <- evs %>% mutate_at(c("v32", "v34"), funs(recode(., `1`=1, `2`=1, `3`=0, `4`=0)))
 ```
 
-|> 
+## Changing the variable types on imported datasets
+
 ```{r}
-evs$v32 <- factor(evs$v32,
-  labels = c("no trust", "trust"))
+## from the 'labelled' package, the unlabelled function can be useful for simple transformation of a whole dataset. (https://cran.r-project.org/web/packages/labelled/vignettes/intro_labelled.html)
+# see:
+glimpse(small_evs)
+# vs.
+glimpse(small_evs |> labelled::unlabelled())
 ```
 
 
-Set labels and missings; the 'sjlabelled' package can make this easier than it would be in base `R`.
-
-```{r}
-library(sjlabelled)
-```
-
-
-```{r}
-evs <- evs %>% remove_labels(evs$v32, labels=.)
-```
-
-Computing new variables
+## Computing new variables
 
 ```{r}
 evs1 <- evs1 %>% mutate(computed_v32_34= v32 + v33 + v34)
