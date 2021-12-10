@@ -146,12 +146,17 @@ iris
 We can select only a few variables that we are interested in using the *select* command. We can either mention the number of the columns we are planning to keep, or more usefully, the names of the columns. We separate the comlumn names using a comma, or we can specify a range of columns/variables using ":", as in this example, where we keep all the variables between v31 and v37:
 
 ```{r}
-evs %>% select("v31":"v37", "v225", "v234", "v227", "age", "v102", "v105")
+evs %>% select("v1", "v31":"v37", "v225", "v234", "v227", "age", "v102", "v105")
 ```
 
 There are also several special functions that can be used inside select(): starts_with(), ends_with(), contains(), matches(), one_of(), etc.
 
-To actually collapse the loaded dataset to the selected variables, we have to assign the 'select()' procedure to either a new object name (e.g. smalldata <- ) or the same name (evs <- ), which would overwrite the existing dataset.
+To actually collapse the loaded dataset to the selected variables, we have to assign the 'select()' procedure to either a new object name (e.g. smalldata <- ) or the same name (evs <- ), which would overwrite the existing dataset. It is also possible to us the "=" sign instead of "<-", depending on which one appears more intuitive to you.
+
+```{r}
+small_evs = evs %>% select("v1", "v31":"v37", "v225", "v234", "v227", "age", "v102", "v105")
+```
+
 
 ## Selecting cases
 
@@ -211,7 +216,7 @@ gb_2535_only <- evs %>% filter(
 The simplest way is again by using `dplyr` functions, in this case the 'rename' function. Let's rename the 'v1' variable in the evs dataset (labelled: "how important in your life: work ) to "important_work", and the "v31" variable ("people can be trusted/can't be too careful") to "no_trust".
 
 ```{r}
-evs <- evs %>% 
+small_evs = small_evs %>% 
   rename(
     important_work = v1,
     no_trust = v31
@@ -223,14 +228,29 @@ evs <- evs %>%
 Let's check the variable "no_trust" that we just renamed:
 
 ```{r}
-evs %>% count(no_trust)
+small_evs %>% count(no_trust)
 ```
 
 To show the value labels, we could specify that the variables should be treated as a 'factor':
 
 ```{r}
-evs %>% count(as_factor(no_trust))
+small_evs %>% count(as_factor(no_trust))
 ```
+
+We can also check all the existing value labels on this variable:
+
+```{r}
+labelled::val_labels(small_evs$no_trust)
+```
+
+We can recode all the negative values in a dataset to missing:
+
+```{r}
+## recode all negative values to missing in the entire dataset:
+
+small_evs[small_evs < 0] = NA
+```
+
 
 We can recode values explicitly this way:
 
@@ -243,7 +263,7 @@ evs <- evs %>% mutate(no_trust=recode(no_trust,
 But we need to be careful as the labels are no longer correct!
 
 ```{r}
-evs <- evs %>% mutate(no_trust=recode(no_trust,
+small_evs <- small_evs %>% mutate(no_trust=recode(no_trust,
                                          `1`="trust", 
                                          `2`="no trust"))
 ```
@@ -253,6 +273,30 @@ Recoding several variables by collapsing categories:
 ```{r}
 evs <- evs %>% mutate_at(c("v32", "v34"), funs(recode(., `1`=1, `2`=1, `3`=0, `4`=0)))
 ```
+
+|> 
+```{r}
+evs$v32 <- factor(evs$v32,
+  labels = c("no trust", "trust"))
+```
+
+
+Set labels and missings; the 'sjlabelled' package can make this easier than it would be in base `R`.
+
+```{r}
+library(sjlabelled)
+```
+
+
+```{r}
+evs <- evs %>% remove_labels(evs$v32, labels=.)
+```
+
+Computing new variables
+
+```{r}
+evs1 <- evs1 %>% mutate(computed_v32_34= v32 + v33 + v34)
+```  
 
 
 ## Summary statistics by group
