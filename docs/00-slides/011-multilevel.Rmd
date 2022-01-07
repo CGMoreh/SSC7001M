@@ -3,7 +3,7 @@ title: "Advanced Research Methods 1"
 subtitle: "SSC7001M"
 author: "Dr. Chris Moreh<br> York St. John University"
 #institute: "York St. John University"
-date: "2021"
+date: "2022"
 output:
   xaringan::moon_reader:
     # self_contained: true ## create self-contained slides (https://yihui.org/en/2021/06/self-contained-xaringan/)
@@ -28,7 +28,6 @@ header-includes:
       - \usepackage{threeparttablex}
       - \usepackage[normalem]{ulem}
 ---
-
 class: inverse, center, middle
 
 ```{r setup, include=FALSE} 
@@ -37,6 +36,13 @@ knitr::opts_chunk$set(
   warning = FALSE, message = FALSE, options(digits = 5)
 )
 ```  
+
+```{r required-packages, eval=FALSE, include=FALSE}
+devtools::install_github("gadenbuie/metathis@05f8ba1f")
+devtools::install_github("gadenbuie/countdown@5c895d980")
+devtools::install_github("gadenbuie/xaringanExtra")
+install.packages("xaringanthemer")  
+```
 
 ```{r xaringan-themer, include=FALSE, warning=FALSE}
 library(xaringanthemer)
@@ -54,87 +60,34 @@ style_mono_light(
 # devtools::install_github("gadenbuie/xaringanExtra")
 xaringanExtra::use_progress_bar(color = "#0051BA", location = "bottom")
 ```
-  
-```{r required-packages, eval=FALSE, include=FALSE}
-devtools::install_github("gadenbuie/metathis@05f8ba1f")
-devtools::install_github("gadenbuie/countdown@5c895d980")
-devtools::install_github("gadenbuie/xaringanExtra")
-install.packages("moffitdocs")        #<< no longer available?
-install.packages("xaringanthemer")  
+
+```{r eval=FALSE, include=FALSE}
+## Run all code to live preview the slides
+xaringan:::inf_mr()
 ```
 
 
-# .blue[Week 4]
+# .blue[Week 12]
 
 --
 
-## Multiple linear regression 
-
---
-### a.k.a. Linear regression with multiple predictors
+## Multilevel/longitudinal models
 
 ---
 
-# A brief review of simple regression
+# A brief review of single-level regression
 
-### What is simple (bivariate) linear regression?
+- A dependent variable: $y_i$ 
+ - e.g. $y_{\mathrm{survey respondent}}$
 
-- **Simple**: it involves one *response* (dependent; outcome) variable and only one *explanatory* (independent; predictor) variable
+- The multiple regression model for $p$ number of predictors:
+#### $$  Y = \beta_0 + \beta_1 \ X_1 + \beta_2 \ X_2 + \beta_3 \ X_3 + \dots + \beta_p \ X_p + e $$
 
-- **Linear**: we assume that a one-unit change in the independent variable leads to a certain amount of increase or decrease in the dependent variable
-
-- **Regression**: the term originated in Francis Galton's studies of biological inheritance, specifically his 1886 article “Regression towards mediocrity in hereditary stature", published in the *Journal of the Anthropological Institute of Great Britain and Ireland* (vol. 15, pp. 246–263)
-
-- At its simplest, it helps us evaluate whether there is a linear relationship between a *numerical* variable on a horizontal axis and the average of a *numerical* variable on the vertical axis. It provides a mathematical solution to the question: what is the *best fitting* straight line to capture the relationship of two variables in a *scatter plot*?
+$$\mathscr{gpa} = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathscr{occasion} + \epsilon$$
 
 ---
-# A brief review of simple regression
 
-### What is simple (bivariate) linear regression?
-
-- A statistical method for fitting a line to data where the relationship between two variables, $x$ and $y,$ can be modeled by a straight line with some error:
-
-### $$  \overbrace{\color{green}{\textbf{y}}}^{outcome} = b_0 + b_1 * \overbrace{\color{green}{\textbf{x}}}^{predictor} + e$$
-
-- A dataset normally contains a collection of values for $y$ and $x$ from a number $(N)$ of cases (e.g. survey respondents, or another unit of analysis)
-- For example, each row $i$ in a dataset containing $N=1\dots{n}$ cases/units/rows would store values for $y_i$ and $x_i$
-- so that: 
-$$ y_i=b_0+b_1x_i + e_i $$
-
----
-# A brief review of simple regression
-
-### What is simple (bivariate) linear regression?
-
-### $$  \overbrace{\color{green}{\textbf{y}}}^{outcome} = \overbrace{\color{red}{b_0}}^{intercept} + \overbrace{\color{red}{b_1}}^{slope} * \overbrace{\color{green}{\textbf{x}}}^{predictor} + \overbrace{e}^{error;\ residual} $$
-
-- our aim is to calculate values for the $b_0$ and $b_1$ based on our data
-- the intercept $b_0$ (or $\alpha$, as it is also sometimes notated) represents the average value of $y$ when $x$ is zero
-- the slope $b_1$ measures the average increase in $y$ when $x$ increases by one unit
-- together, $b_0$ and $b_1$ together are called *coefficients*
-- the error term $e$ allows an observation to deviate from a perfect linear relationship
-- More generally, our aim is to generalise from our *sample* data to a hypothetical *population*. The mathematical notation to describe this general case is:
-
-$$ Y=\beta_0 + \beta_1*X+\epsilon $$
----
-# A brief review of simple regression
-
-For example, say we have data on two variables, $X$ and $Y$; both are continuous measures with means of 0.48 and 0.006, respectively, and some standard deviation (i.e. they have variation among values):
-.center[
-<img src="../pics/03_reg2.2.png" width="80%" align="center">
-]
----
-
-# A brief review of simple regression
-<br>
-### What are the aims of regression analysis?
-- ** Prediction**: we can use regression to predict an outcome variable, or more precisely the distribution of the outcome, given some set of inputs (i.e. predictors)
-
-- ** Comparison**: we can also compare these predictions for different values
-of the inputs, to make simple comparisons between groups, or to estimate causal effects (ROS, p. 81)
-
----
-# Applied regression
+# Applied example from Weeks 4 and 6 
 
 ```{r, include=FALSE}
 library(tidyverse)
@@ -198,53 +151,6 @@ my.summary <- function(x, na.rm=TRUE){
 sumtab <- data.frame(sapply(osterman, my.summary)) %>% select(-(cntry:dweight))
 
 knitr::kable(data.frame(t(sumtab)), caption = "Table 2 in Österman (2021)")
-```
-
----
-## Does education predict trust?
-
-- A scatter-plot of 'trustindex3' by 'eduyrs25'
-
-```{r, echo=FALSE}
-gf_point(trustindex3 ~ eduyrs25, data = osterman) %>%
-  gf_lm() + theme_light()
-```
-
----
-## Does education predict trust?
-```{r}
-m_edu <- lm(trustindex3 ~ eduyrs25, data = osterman)
-summary(m_edu)
-```
-
----
-## Does age predict trust?
-```{r echo=FALSE}
-gf_point(trustindex3 ~ agea, data = osterman) %>%
-  gf_lm() + theme_light()
-```
-
----
-## Does age predict trust?
-
-```{r}
-m_age <- lm(trustindex3 ~ agea, data = osterman)
-summary(m_age)
-```
-
----
-## Does gender predict trust?
-```{r echo=FALSE}
-gf_point(trustindex3 ~ female, data = osterman) %>%
-  gf_lm() + theme_light()
-```
-
----
-## Does gender predict trust?
-
-```{r}
-m_gender <- lm(trustindex3 ~ female, data = osterman)
-summary(m_gender)
 ```
 
 ---
