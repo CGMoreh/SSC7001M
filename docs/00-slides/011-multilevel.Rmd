@@ -77,143 +77,147 @@ xaringan:::inf_mr()
 
 # A brief review of single-level regression
 
-- A dependent variable: $y_i$ 
- - e.g. $y_{\mathrm{survey respondent}}$
+--
 
-- The multiple regression model for $p$ number of predictors:
-#### $$  Y = \beta_0 + \beta_1 \ X_1 + \beta_2 \ X_2 + \beta_3 \ X_3 + \dots + \beta_p \ X_p + e $$
+- We aim to model an **outcome** measurement, our ['estimand'](https://journals.sagepub.com/doi/10.1177/00031224211004187): $\color{green}{Y}$
 
-$$\mathscr{gpa} = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathscr{occasion} + \epsilon$$
+--
+
+- We have data on a number $(n)$ of **observations** $(\color{red}{i})$ (e.g. survey respondents; pupils; students; factory workers; etc.): $\color{red}{i}_{1\dots{n}}$
+
+--
+
+- We assume that observations are **independent** of each other (e.g. different respondents randomly sampled from a population)
+
+--
+
+.center[
+<img src="../pics/11-single1.2.png" width="75%" align="center">
+]
+
+--
+
+- The outcome measurement has a mean $(\mu)$, and each observation has some deviation ("error") from this grand mean $(e_i)$
+
+--
+
+<img src="../pics/11-single2.png" width="70%" align="left">
+<br>
+
+### $$ y_i = \mu + \color{red}{e_i} $$ 
+
+???
+- Independence of observation is usually assumed if the data collection was done properly using random sampling techniques; in practice, it also means that individual observations should not be strongly clustered into larger groups that may have a strong group-effect that shapes individual characteristics; for example, if data is collected cross-nationally, respondents from different countries can share characteristics specific to that country, shaped by historical, cultural, social, ethical etc. influences that affect everyone in that national context; or, a classicla example of hierarchical/multilevel data, when pupitls/students belong to different shools/universities; or people living in different regions of a country; or workers belonging to different factories; etc, etc.
+
+---
+# A brief review of single-level regression
+
+.center[<img src="../pics/11-single3.png" width="60%">]
+
+--
+
+- **Observed** part: our observation, outcome, estimate, etc.; the left-hand-side of the model 
+
+--
+
+- **Fixed** part: this can be a simple sample mean $(\mu)$ of a single measurement (e.g. an election exit poll), but it can also be a regression equation also containing predictor variables (e.g. $b_0 + b_{1i}x_{1i} + b_{2i}x_{2i} \cdots b_{pi}x_{pi}$ for a model with $p$ number of predictors/independent variables)
+
+--
+
+- **Random** part: the deviations of the observations from the model mean
+
+---
+# A brief review of single-level regression
+
+- We also assume that the error term $(e)$ is Normally distributed around a mean of 0 and has some variance $(\sigma^2)$ that we are estimating
+
+<br>
+.center[<img src="../pics/11-single4.png" width="80%">]
+
+???
+- in regression we also make some assumptions regarding the distribution of errors:
+- that they are Normally distributed, with a mean of 0 and some variance (the square of the standard deviation)
+- we are estimating this variance about that sample mean
 
 ---
 
 # Applied example from Weeks 4 and 6 
 
-```{r, include=FALSE}
-library(tidyverse)
-library(mosaic)
-library(ggformula)
-library(kableExtra)
+```{r include=FALSE}
+
+# Load/install necessary packages
+
+pacman::p_load(
+  tidyverse,   # general data management tools
+  mosaic,      # formula-type syntax for descriptive statistics
+  ggformula,   # ggplot2 powered graphing using 'mosaic' formula-syntax
+  summarytools,# summery statistics tables
+  kableExtra,  # publication-quality tabulation
+  sjlabelled,  # data import from other software (alternative to 'haven') and labels management
+  knitr,       # exporting .Rmd to Word, Html etc.
+  jtools,     # model summary tabulations
+  lme4         # multilevel modelling
+  )
 ```
 
---
-Data from Österman (2021) "Can We Trust Education for Fostering Trust? Quasi-experimental Evidence on the Effect of Education and Tracking on Social Trust"
+Let's use some selected variables and observations from the Österman (2021) dataset underpinning the article ["Can We Trust Education for Fostering Trust? Quasi-experimental Evidence on the Effect of Education and Tracking on Social Trust"](http://www.diva-portal.org/smash/get/diva2:1503902/FULLTEXT01.pdf), which we have explored in previous weeks.
 
-```{r import data, include=TRUE}
-## Load the Osterman data:
-osterman <- haven::read_dta("https://cgmoreh.github.io/SSC7001M/data/osterman.dta")
+```{r import data, include=FALSE}
+set.seed(1234)
+ost <- haven::read_dta("https://cgmoreh.github.io/SSC7001M/data/osterman.dta") %>%
+        select("trustindex3", "cntry", "facntr", "mocntr", "female", "agea", "eduyrs25", "paredu_a_high") %>%
+        filter(cntry %in% c("GB", "IE", "DE", "FR", "HU", "PL", "PT", "ES")) %>%  
+        group_by(cntry) %>% slice_sample(n=50) %>%
+        labelled::unlabelled() %>% as_tibble() %>%
+        mutate(cntry = as_factor(cntry),
+               fmnoncntr = ifelse(facntr==0 | mocntr==0, 1, 0)) %>%
+        sjlabelled::var_labels(trustindex3 = "Social trust scale",
+                               eduyrs25 = "Years of full-time education",
+                               paredu_a_high = "High parental education",
+                               fmnoncntr = "Least one parent born abroad")
 ```
 
-- cumulative European Social Survey (ESS) data, consisting
-of the nine rounds from 2002 to 2018
-
-- data are weighted using ESS design weights (we will disregard this, sowe can expect our results to always differ somewhat!)
-
-- follows 'the established approach of using a validated three-item scale' to study generalised social trust
-
-- data also includes twenty-seven educational reforms implemented in sixteen European countries over six decades, where for each reform we can compare earlier reform-unaffected cohorts with later reform-affected cohorts
-
----
-# Applied regression
-
-Data from Österman (2021) "Can We Trust Education for Fostering Trust? Quasi-experimental Evidence on the Effect of Education and Tracking on Social Trust"
-
-- The scale consists of the classic trust question, an item on whether people try to be fair, and an
-item on whether people are helpful:
-  - ‘Generally speaking, would you say that most people can be trusted, or that you can’t be too careful in dealing with people?’
-  - ‘Do you think that most people would try to take advantage of you if they got the chance, or would they try to be fair?’
-    - ‘Would you say that most of the time people try to be helpful or that they are mostly looking out for themselves?’
-    
-- All of the items may be answered on a scale from 0 to 10 (where 10 represents the highest level of trust) and the scale is calculated as the mean of the three items
-
-- The three-item scale improves measurement reliability and cross-country validity compared to using a single item, such as the classic trust question.
-
----
-
-```{css, echo = F}
-table {
-  font-size: 13px;     
-}
-```
-## Descriptive statistics
-
+The 'Country' variable - and our data - looks like this:
 
 ```{r echo=FALSE}
-my.summary <- function(x, na.rm=TRUE){
-  result <- c(N=length(x[!is.na(x)]),
-              Mean=round(mean(x, na.rm=na.rm), 3),
-              SD=round(sd(x, na.rm=na.rm), 3),
-              Min=min(x, na.rm=na.rm),
-              Max=max(x, na.rm=na.rm))
-}
+# Another frequency table of the "Country" variable after data processing
+summarytools::freq(ost$cntry)
+```
 
 
-sumtab <- data.frame(sapply(osterman, my.summary)) %>% select(-(cntry:dweight))
+---
+# Applied example from Weeks 4 and 6 
 
-knitr::kable(data.frame(t(sumtab)), caption = "Table 2 in Österman (2021)")
+A summary of the variables kept:
+```{r echo=FALSE}
+summarytools::descr(ost,
+      stats     = c("mean", "sd", "med", "min", "max", "n.valid"),
+      transpose = TRUE,
+      style="rmarkdown",
+      # headings  = FALSE ## uncomment this option to exclude the summary heading preceding table
+      )
 ```
 
 ---
-# Multiple linear regression
+# Applied example from Weeks 4 and 6
 
-- it allows us to test the joint effects of more than one predictor
+A single-level linear model:
 
-- usually, we are interested in one primary predictor, but *while taking into account*, or *holding constant* the values of other predictors
-- it allows us to account for the possible effect of other factors (variables) that may influence our regression results
-
-- the multiple regression model for $p$ number of predictors can be written as:
-#### $$  Y = \beta_0 + \beta_1 \ X_1 + \beta_2 \ X_2 + \beta_3 \ X_3 + \dots + \beta_p \ X_p + e $$
-
-- but visualising it is a bit more difficult...
-
----
-# Multiple linear regression
-
-.center[
-<img src="../pics/03_reg3.png" width="85%" align="center">
-]
-
----
-# Applied multiple regression
-
-## Does education predict trust, while accounting for age and gender?
-
-```{r, eval=FALSE, include=TRUE}
-## Load the Osterman data:
-osterman <- haven::read_dta("https://cgmoreh.github.io/SSC7001M/data/osterman.dta")
-```
-
-```{r, eval=FALSE, include=TRUE}
-m_multiple <- lm(trustindex3 ~ eduyrs25 + agea + female, data = osterman)
-summary(m_multiple)
+```{r echo=FALSE}
+lm(trustindex3 ~ eduyrs25 + agea + female + paredu_a_high + fmnoncntr, data = ost) %>%
+jtools::summ()
 ```
 
 ---
-# Applied multiple regression
+# Multilevel models
 
-### Does education predict trust, while accounting for age and gender?
+.center[<img src="../pics/11-multi.png" width="80%">]
 
-```{r}
-m_multiple <- lm(trustindex3 ~ eduyrs25 + agea + female, data = osterman)
-summary(m_multiple)
-```
+--
 
----
-class: inverse, center, middle
-
-<br><br>
-# Coffee break!
-.center[
-<img src="figures/coffee.gif" width="50%" align="center">
-]
+.center[<img src="../pics/11-multi2.png" width="70%">]
 
 ---
-# Exercises
+# Multilevel models
 
-## 1. In a new Rmd file, reproduce the multiple regression of trust on education, age and gender
-
-## 2. Build a new regression which **also** includes 'paternal education' and 'belonging to an ethnic minority group'
-
-## 3. Using the Osterman data, does 'institutional trust' predict generalised social trust if we account for age, gender and whether parents were born outside Europe?
-
-## 4. Free exercise using **your own** data!
+.center[<img src="../pics/11-multi3.png" width="80%">]

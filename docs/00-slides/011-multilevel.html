@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="author" content="Dr. Chris Moreh  York St. John University" />
     <meta name="date" content="2022-01-01" />
-    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.9/header-attrs.js"></script>
     <script src="libs/xaringanExtra-progressBar-0.0.1/progress-bar.js"></script>
     <link rel="stylesheet" href="css/rutgers-rmarkdown.css" type="text/css" />
     <link rel="stylesheet" href="css/rutgers-fonts_og.css" type="text/css" />
@@ -63,13 +63,67 @@ class: inverse, center, middle
 
 # A brief review of single-level regression
 
-- A dependent variable: `\(y_i\)` 
- - e.g. `\(y_{\mathrm{survey respondent}}\)`
+--
 
-- The multiple regression model for `\(p\)` number of predictors:
-#### $$  Y = \beta_0 + \beta_1 \ X_1 + \beta_2 \ X_2 + \beta_3 \ X_3 + \dots + \beta_p \ X_p + e $$
+- We aim to model an **outcome** measurement, our ['estimand'](https://journals.sagepub.com/doi/10.1177/00031224211004187): `\(\color{green}{Y}\)`
 
-`$$\mathscr{gpa} = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathscr{occasion} + \epsilon$$`
+--
+
+- We have data on a number `\((n)\)` of **observations** `\((\color{red}{i})\)` (e.g. survey respondents; pupils; students; factory workers; etc.): `\(\color{red}{i}_{1\dots{n}}\)`
+
+--
+
+- We assume that observations are **independent** of each other (e.g. different respondents randomly sampled from a population)
+
+--
+
+.center[
+&lt;img src="../pics/11-single1.2.png" width="75%" align="center"&gt;
+]
+
+--
+
+- The outcome measurement has a mean `\((\mu)\)`, and each observation has some deviation ("error") from this grand mean `\((e_i)\)`
+
+--
+
+&lt;img src="../pics/11-single2.png" width="70%" align="left"&gt;
+&lt;br&gt;
+
+### $$ y_i = \mu + \color{red}{e_i} $$ 
+
+???
+- Independence of observation is usually assumed if the data collection was done properly using random sampling techniques; in practice, it also means that individual observations should not be strongly clustered into larger groups that may have a strong group-effect that shapes individual characteristics; for example, if data is collected cross-nationally, respondents from different countries can share characteristics specific to that country, shaped by historical, cultural, social, ethical etc. influences that affect everyone in that national context; or, a classicla example of hierarchical/multilevel data, when pupitls/students belong to different shools/universities; or people living in different regions of a country; or workers belonging to different factories; etc, etc.
+
+---
+# A brief review of single-level regression
+
+.center[&lt;img src="../pics/11-single3.png" width="60%"&gt;]
+
+--
+
+- **Observed** part: our observation, outcome, estimate, etc.; the left-hand-side of the model 
+
+--
+
+- **Fixed** part: this can be a simple sample mean `\((\mu)\)` of a single measurement (e.g. an election exit poll), but it can also be a regression equation also containing predictor variables (e.g. `\(b_0 + b_{1i}x_{1i} + b_{2i}x_{2i} \cdots b_{pi}x_{pi}\)` for a model with `\(p\)` number of predictors/independent variables)
+
+--
+
+- **Random** part: the deviations of the observations from the model mean
+
+---
+# A brief review of single-level regression
+
+- We also assume that the error term `\((e)\)` is Normally distributed around a mean of 0 and has some variance `\((\sigma^2)\)` that we are estimating
+
+&lt;br&gt;
+.center[&lt;img src="../pics/11-single4.png" width="80%"&gt;]
+
+???
+- in regression we also make some assumptions regarding the distribution of errors:
+- that they are Normally distributed, with a mean of 0 and some variance (the square of the standard deviation)
+- we are estimating this variance about that sample mean
 
 ---
 
@@ -77,372 +131,162 @@ class: inverse, center, middle
 
 
 
---
-Data from Österman (2021) "Can We Trust Education for Fostering Trust? Quasi-experimental Evidence on the Effect of Education and Tracking on Social Trust"
+Let's use some selected variables and observations from the Österman (2021) dataset underpinning the article ["Can We Trust Education for Fostering Trust? Quasi-experimental Evidence on the Effect of Education and Tracking on Social Trust"](http://www.diva-portal.org/smash/get/diva2:1503902/FULLTEXT01.pdf), which we have explored in previous weeks.
 
 
-```r
-## Load the Osterman data:
-osterman &lt;- haven::read_dta("https://cgmoreh.github.io/SSC7001M/data/osterman.dta")
+
+The 'Country' variable - and our data - looks like this:
+
+
+```
+## Frequencies  
+## ost$cntry  
+## Label: Country  
+## Type: Factor  
+## 
+##               Freq   % Valid   % Valid Cum.   % Total   % Total Cum.
+## ----------- ------ --------- -------------- --------- --------------
+##          DE     50     12.50          12.50     12.50          12.50
+##          ES     50     12.50          25.00     12.50          25.00
+##          FR     50     12.50          37.50     12.50          37.50
+##          GB     50     12.50          50.00     12.50          50.00
+##          HU     50     12.50          62.50     12.50          62.50
+##          IE     50     12.50          75.00     12.50          75.00
+##          PL     50     12.50          87.50     12.50          87.50
+##          PT     50     12.50         100.00     12.50         100.00
+##        &lt;NA&gt;      0                               0.00         100.00
+##       Total    400    100.00         100.00    100.00         100.00
 ```
 
-- cumulative European Social Survey (ESS) data, consisting
-of the nine rounds from 2002 to 2018
-
-- data are weighted using ESS design weights (we will disregard this, sowe can expect our results to always differ somewhat!)
-
-- follows 'the established approach of using a validated three-item scale' to study generalised social trust
-
-- data also includes twenty-seven educational reforms implemented in sixteen European countries over six decades, where for each reform we can compare earlier reform-unaffected cohorts with later reform-affected cohorts
 
 ---
-# Applied regression
+# Applied example from Weeks 4 and 6 
 
-Data from Österman (2021) "Can We Trust Education for Fostering Trust? Quasi-experimental Evidence on the Effect of Education and Tracking on Social Trust"
+A summary of the variables kept:
 
-- The scale consists of the classic trust question, an item on whether people try to be fair, and an
-item on whether people are helpful:
-  - ‘Generally speaking, would you say that most people can be trusted, or that you can’t be too careful in dealing with people?’
-  - ‘Do you think that most people would try to take advantage of you if they got the chance, or would they try to be fair?’
-    - ‘Would you say that most of the time people try to be helpful or that they are mostly looking out for themselves?’
-    
-- All of the items may be answered on a scale from 0 to 10 (where 10 represents the highest level of trust) and the scale is calculated as the mean of the three items
-
-- The three-item scale improves measurement reliability and cross-country validity compared to using a single item, such as the classic trust question.
+```
+## ### Descriptive Statistics  
+## #### ost  
+## **N:** 400  
+## 
+## |            &amp;nbsp; |  Mean | Std.Dev | Median |   Min |   Max | N.Valid |
+## |------------------:|------:|--------:|-------:|------:|------:|--------:|
+## |          **agea** | 52.49 |   12.89 |  54.00 | 25.00 | 80.00 |  400.00 |
+## |      **eduyrs25** | 12.63 |    4.20 |  12.00 |  0.00 | 24.00 |  395.00 |
+## |        **facntr** |  0.96 |    0.19 |   1.00 |  0.00 |  1.00 |  400.00 |
+## |        **female** |  0.54 |    0.50 |   1.00 |  0.00 |  1.00 |  400.00 |
+## |     **fmnoncntr** |  0.05 |    0.21 |   0.00 |  0.00 |  1.00 |  400.00 |
+## |        **mocntr** |  0.97 |    0.17 |   1.00 |  0.00 |  1.00 |  400.00 |
+## | **paredu_a_high** |  0.32 |    0.47 |   0.00 |  0.00 |  1.00 |  379.00 |
+## |   **trustindex3** |  4.89 |    1.79 |   5.00 |  0.00 |  9.00 |  400.00 |
+```
 
 ---
+# Applied example from Weeks 4 and 6
 
-&lt;style type="text/css"&gt;
-table {
-  font-size: 13px;     
-}
-&lt;/style&gt;
-## Descriptive statistics
+A single-level linear model:
 
-
-&lt;table&gt;
-&lt;caption&gt;Table 2 in Österman (2021)&lt;/caption&gt;
+&lt;table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; Observations &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 376 (24 missing obs. deleted) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; Dependent variable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; trustindex3 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; Type &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; OLS linear regression &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt; &lt;table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; F(5,370) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.59 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; R² &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.09 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; Adj. R² &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.08 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt; &lt;table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;border-bottom: 0;"&gt;
  &lt;thead&gt;
   &lt;tr&gt;
    &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
-   &lt;th style="text-align:left;"&gt; N &lt;/th&gt;
-   &lt;th style="text-align:left;"&gt; Mean &lt;/th&gt;
-   &lt;th style="text-align:left;"&gt; SD &lt;/th&gt;
-   &lt;th style="text-align:left;"&gt; Min &lt;/th&gt;
-   &lt;th style="text-align:left;"&gt; Max &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Est. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; S.E. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; t val. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p &lt;/th&gt;
   &lt;/tr&gt;
  &lt;/thead&gt;
 &lt;tbody&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; ppltrst &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 68733 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 5.097 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 2.395 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.55 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.56 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.57 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; pplfair &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 68548 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 5.729 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 2.212 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; eduyrs25 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.02 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.54 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; pplhlp &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 68665 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 4.91 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 2.285 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; agea &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.02 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.01 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.66 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.01 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; dscrgrp &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 68565 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1.942 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.233 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; female &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.18 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1.13 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.26 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; brncntr &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 68796 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; paredu_a_high &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.23 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.21 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.09 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.28 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; facntr &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 68796 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.961 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.194 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; mocntr &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 68796 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.964 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.185 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; yrbrn &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 68796 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1959.058 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 11.914 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1926 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1993 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; agea &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 68796 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 50.949 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 12.244 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 25 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 80 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; female &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 68796 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.53 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.499 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; eduyrs25 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 68211 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 12.7 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 4.193 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 25 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; blgetmg_d &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 68796 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.015 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.122 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; ipudrst_rev &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 66903 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 7.317 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 2.063 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 10 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; fnotbrneur &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 68796 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.011 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.102 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; mnotbrneur &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 68796 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.009 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.096 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; trustindex3 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 68796 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 5.244 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1.906 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 10 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; inst_trustindex5 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 59255 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 4.496 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1.998 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 10 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; reform_id_num &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 68796 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 13.598 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 7.633 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 27 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; reform_years &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 68796 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; -0.174 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 4.305 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; -7 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 7 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; reform1_eonly_7 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 40632 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.5 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.5 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; reform1_d_7 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 29931 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.444 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.497 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; reform1_donly_7 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 8258 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.424 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.494 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; reform1_7 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 68796 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.482 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.5 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; paredu_a_high &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 64960 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.348 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.476 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; cntry_cohort &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 68796 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1135.899 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 534.978 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 32 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 2003 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; fbrneur &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 68796 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.029 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.166 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; mbrneur &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 68796 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.026 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.16 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; fmnoncntr &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.95 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.45 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -2.13 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.03 &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
+&lt;tfoot&gt;&lt;tr&gt;&lt;td style="padding: 0; " colspan="100%"&gt;
+&lt;sup&gt;&lt;/sup&gt; Standard errors: OLS&lt;/td&gt;&lt;/tr&gt;&lt;/tfoot&gt;
 &lt;/table&gt;
 
 ---
-# Multiple linear regression
+# Multilevel models
 
-- it allows us to test the joint effects of more than one predictor
+.center[&lt;img src="../pics/11-multi.png" width="80%"&gt;]
 
-- usually, we are interested in one primary predictor, but *while taking into account*, or *holding constant* the values of other predictors
-- it allows us to account for the possible effect of other factors (variables) that may influence our regression results
+--
 
-- the multiple regression model for `\(p\)` number of predictors can be written as:
-#### $$  Y = \beta_0 + \beta_1 \ X_1 + \beta_2 \ X_2 + \beta_3 \ X_3 + \dots + \beta_p \ X_p + e $$
-
-- but visualising it is a bit more difficult...
+.center[&lt;img src="../pics/11-multi2.png" width="70%"&gt;]
 
 ---
-# Multiple linear regression
+# Multilevel models
 
-.center[
-&lt;img src="../pics/03_reg3.png" width="85%" align="center"&gt;
-]
-
----
-# Applied multiple regression
-
-## Does education predict trust, while accounting for age and gender?
-
-
-```r
-## Load the Osterman data:
-osterman &lt;- haven::read_dta("https://cgmoreh.github.io/SSC7001M/data/osterman.dta")
-```
-
-
-```r
-m_multiple &lt;- lm(trustindex3 ~ eduyrs25 + agea + female, data = osterman)
-summary(m_multiple)
-```
-
----
-# Applied multiple regression
-
-### Does education predict trust, while accounting for age and gender?
-
-
-```r
-m_multiple &lt;- lm(trustindex3 ~ eduyrs25 + agea + female, data = osterman)
-summary(m_multiple)
-```
-
-```
-## 
-## Call:
-## lm(formula = trustindex3 ~ eduyrs25 + agea + female, data = osterman)
-## 
-## Residuals:
-##    Min     1Q Median     3Q    Max 
-## -6.746 -1.176  0.133  1.312  6.071 
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) 2.954729   0.042894   68.88   &lt;2e-16 ***
-## eduyrs25    0.116400   0.001735   67.11   &lt;2e-16 ***
-## agea        0.015558   0.000594   26.20   &lt;2e-16 ***
-## female      0.041157   0.014151    2.91   0.0036 ** 
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 1.84 on 68207 degrees of freedom
-##   (585 observations deleted due to missingness)
-## Multiple R-squared:  0.0634,	Adjusted R-squared:  0.0633 
-## F-statistic: 1.54e+03 on 3 and 68207 DF,  p-value: &lt;2e-16
-```
-
----
-class: inverse, center, middle
-
-&lt;br&gt;&lt;br&gt;
-# Coffee break!
-.center[
-&lt;img src="figures/coffee.gif" width="50%" align="center"&gt;
-]
-
----
-# Exercises
-
-## 1. In a new Rmd file, reproduce the multiple regression of trust on education, age and gender
-
-## 2. Build a new regression which **also** includes 'paternal education' and 'belonging to an ethnic minority group'
-
-## 3. Using the Osterman data, does 'institutional trust' predict generalised social trust if we account for age, gender and whether parents were born outside Europe?
-
-## 4. Free exercise using **your own** data!
+.center[&lt;img src="../pics/11-multi3.png" width="80%"&gt;]
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

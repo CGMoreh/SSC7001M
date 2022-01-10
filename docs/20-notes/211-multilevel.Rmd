@@ -1,0 +1,181 @@
+---
+title: "Week 12: Multilevel/longitudinal models"
+output:
+  rmdformats::readthedown:
+      code_download: true
+      highlight: tango
+      number_sections: true
+---
+
+```{r include=FALSE}
+# General settings for knitting
+knitr::opts_chunk$set(
+  fig.width = 10, fig.height = 6, fig.retina = 2,
+  warning = FALSE, message = FALSE, eval=T)
+```
+
+# Review of single-level regression
+
+## Applied example from Weeks 4 and 6
+
+```{r, include=F}
+
+# Load/install necessary packages
+
+pacman::p_load(
+  tidyverse,   # general data management tools
+  mosaic,      # formula-type syntax for descriptive statistics
+  ggformula,   # ggplot2 powered graphing using 'mosaic' formula-syntax
+  summarytools,# summery statistics tables
+  kableExtra,  # publication-quality tabulation
+  sjlabelled,  # data import from other software (alternative to 'haven') and labels management
+  knitr,       # exporting .Rmd to Word, Html etc.
+  jtools,     # model summary tabulations
+  lme4         # multilevel modelling
+  )
+```
+
+Let's use some selected variables and observations from the Österman (2021) dataset underpinning the article ["Can We Trust Education for Fostering Trust? Quasi-experimental Evidence on the Effect of Education and Tracking on Social Trust"](http://www.diva-portal.org/smash/get/diva2:1503902/FULLTEXT01.pdf), which we have explored in previous weeks.
+
+```{r import data, include=TRUE}
+# Load the Osterman data
+
+ost <- haven::read_dta("https://cgmoreh.github.io/SSC7001M/data/osterman.dta")
+```
+
+The data is from the cumulative European Social Survey (ESS) consisting of nine survey rounds from 2002 to 2018. The observations are individual survey respondents from various European countries:
+
+```{r}
+# A frequency table of the "Country" variable
+
+summarytools::freq(ost$cntry, style="rmarkdown")
+```
+
+To make the examples run faster and clearer for the purposes of demonstrating multilevel modelling, let's reduce the dataset by selecting only a few countries and variables, and a set number of 50 observations per country, as well as performing some other data formatting:
+
+```{r reduce data}
+# Select variables and observations
+set.seed(1234) # random number seed to always get the same sampling result when we 'slice_sample'
+ost <- ost %>%
+        select("trustindex3", "cntry", "facntr", "mocntr", "female", "agea", "eduyrs25", "paredu_a_high") %>%
+        filter(cntry %in% c("GB", "IE", "DE", "FR", "HU", "PL", "PT", "ES")) %>%  
+        group_by(cntry) %>% slice_sample(n=50) %>%
+        labelled::unlabelled() %>% as_tibble() %>%
+        mutate(cntry = as_factor(cntry),
+               fmnoncntr = ifelse(facntr==0 | mocntr==0, 1, 0)) %>%
+        sjlabelled::var_labels(trustindex3 = "Social trust scale",
+                               eduyrs25 = "Years of full-time education",
+                               paredu_a_high = "High parental education",
+                               fmnoncntr = "Least one parent born abroad")
+```
+
+Now, the 'Country' variable - and our data - looks like this:
+
+```{r}
+# Another frequency table of the "Country" variable after data processing
+summarytools::freq(ost$cntry, style="rmarkdown")
+```
+
+### Summary of the data
+
+Let's also have a look at descriptive statistics for the other variables in the dataset:
+
+```{r}
+summarytools::descr(ost,
+      stats     = c("mean", "sd", "med", "min", "max", "n.valid"),
+      transpose = TRUE,
+      style="rmarkdown",
+      # headings  = FALSE ## uncomment this option to exclude the summary heading preceding table
+      )
+```
+Or we can generate a more complete summary table:
+
+```{r}
+dfSummary(ost, 
+          plain.ascii  = FALSE, 
+          style        = "grid", 
+          graph.magnif = 0.75, 
+          valid.col    = FALSE,
+          tmp.img.dir  = "/tmp")
+# Use the command:
+# view(dfSummary(ost))
+# to generate a separate document in the viewer to treat as a data dictionary
+```
+
+Our outcome measurement - the measured 'estimand' of social trust - is coded in the `trustindex3` variable, which had been computed by taking the average of three other variables coding the ESS survey questions:
+
+    -   'Generally speaking, would you say that most people can be trusted, or that you can't be too careful in dealing with people?'
+
+    -   'Do you think that most people would try to take advantage of you if they got the chance, or would they try to be fair?'
+
+    -   'Would you say that most of the time people try to be helpful or that they are mostly looking out for themselves?'
+
+The other variables in the dataset are self-explanatory.
+
+## Single-level model fitting
+
+Let's start by fitting a model of social trust as a function of education while also accounting for age, gender, parental education and whether either of the parents were born abroad (i.e. the variable we computed earlier):
+
+```{r}
+mod_single <- lm(trustindex3 ~ eduyrs25 + agea + female + paredu_a_high + fmnoncntr, data = ost)
+```
+
+We can check some summary results:
+
+```{r, render=knitr::normal_print}
+jtools::summ(mod_single)
+```
+
+
+## Model interpretation
+
+Mathematically, we have fitted the following model:
+
+$$ trustindex3=\beta_0+\beta_1*eduyears25+\beta_2*agea+\beta_3*female+\beta_4*{paredu}+\beta_5*{fmnoncntr}+error $$ 
+We have interpreted this model in earier weeks. Our interest now is in comparing it with a multilevel model.
+
+# Building a multilevel model
+
+The first thing we need to realise is that in this dataset we cannot assume that the observations are fully independent (or that the errors are independently distributed). We know that observations were sampled from within selected countries, so the countries are cluster variables that may have a group-level influence on the behaviour,opinions, conditions etc. of our individual observations.
+
+To account for this influence, we can build a multilevel model instead.
+
+For the uninitiated, the terminology surrounding mixed models, especially across disciplines, can be a bit confusing. Some terms you might come across regarding these types of models include:
+- Variance components
+- Random intercepts and slopes
+- Random effects
+- Random coefficients
+- Varying coefficients
+- Intercepts- and/or slopes-as-outcomes
+- Hierarchical linear models
+- Multilevel models (implies multiple levels of hierarchically clustered data)
+- Growth curve models (possibly Latent GCM)
+- Mixed effects models
+All describe types of mixed models.  Some terms might be more historical, others are more often seen in a specific discipline, others might refer to a certain data structure, and still others are special cases. *Mixed effects*, or simply mixed, models generally refer to a mixture of fixed and random effects.  For the models in general, I prefer the terms 'mixed models' or 'random effects models' because they are simpler terms, no specific structure is implied, and the latter can also apply to extensions that many would not think of when other terms are used.  Regarding the mixed effects, *fixed effects* is perhaps a poor but nonetheless stubborn term for the typical main effects one would see in a linear regression model, i.e. the non-random part of a mixed model, and in some contexts they are referred to as the *population average* effect.  Though you will hear many definitions, random effects are simply those specific to an observational unit, however defined.  The approach outlined in this document largely pertains to the case where the observational unit is the level of some grouping factor, but this is only one possibility.
+
+Initially, it is advisable to first fit some simple, preliminary models, in part to establish a baseline for evaluating larger models. Then, we can build toward a final model for description and inference by attempting to add important covariates, centering certain variables, and checking model assumptions. In sociology we are usually still primarily interested in our individual-level(i.e. fixed) effects, so modelling the hierarchical structure of the data is primarily meant to ensure that the errors are modelled appropriately.
+
+The standard first step is to model only the outcome measurement, without any predictors, to get a sense for the effect of the clusters; this is often called a *random intercepts model* or *null model*. 
+
+```{r mixed1}
+# library(lme4)
+mod_null = lmer(trustindex3 ~ 1 + (1 | cntry), data = ost)
+```
+
+```{r}
+jtools::summ(mod_null)
+```
+
+The second step is then to fit the full covariate model:
+
+```{r }
+# library(lme4)
+mod_mixed = lmer(trustindex3 ~ eduyrs25 + agea + female + paredu_a_high + fmnoncntr + (1 | cntry), data = ost)
+```
+
+We can now get a summary of the results:
+
+```{r}
+jtools::summ(mod_mixed)
+```
+

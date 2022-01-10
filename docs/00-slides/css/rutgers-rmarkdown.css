@@ -287,3 +287,25 @@ ru-blockquote {
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
 }
+
+
+/* Hyperlinks - Chris's addition */
+a:link {
+    text-decoration: underline;
+    background-color: none;
+}
+
+a:visited {
+    text-decoration: underline;
+    background-color: none;
+}
+
+a:hover {
+    text-decoration: underline;
+    background-color: lightgrey;
+}
+
+a:active {
+    text-decoration: underline;
+    background-color: lightgrey;
+}

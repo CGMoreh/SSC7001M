@@ -237,3 +237,10 @@ Using the Osterman data that we have been using for the past few weeks, fit a co
 
 ```
 
+$$  \overbrace{\color{green}{\textbf{y}}}^{outcome} = b_0 + \overbrace{\color{green}{\textbf{X}}}^{predictors} \cdot \underbrace{b}_\textrm{coefficients} + e$$
+
+
+\(\textbf{y}_\color{red}{i} = b_0 + \textbf{X}_\color{red}{i} \cdot b + e \)
+
+
+$\mathbf{m^2}$

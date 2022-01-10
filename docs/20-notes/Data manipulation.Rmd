@@ -1,7 +1,11 @@
 ---
 title: "Data manipulation"
 author: "C Moreh"
-output: html_document
+output:
+  rmdformats::readthedown:
+      code_download: true
+      highlight: tango
+      number_sections: true
 
 ---
 
@@ -30,11 +34,16 @@ When using functions in the `Tidyverse` ecosystem, most data is returned as a `t
 
 ## Required packages
 
-Let's load the `tidyverse` packages, which include the `dplyr` package (for data manipulation) and additional R packages for easily reading (`readr`), transforming (`tidyr`) and visualizing (`ggplot2`) datasets. For importing datasets in non-native formats, we also need the `haven` package. We have also used some other convenience packages such as `labelled` or `mosaic`.
+Let's load some useful additional packages:
+- the `tidyverse` bundle of packages, which includes the `dplyr` package (for data manipulation) and additional R packages for reading (`readr`), transforming (`tidyr`) and visualizing (`ggplot2`) datasets 
+- to import datasets in non-native formats and to manage attached labels (a concept familiar from other statistical packages but foreign to `R`), load the `sjlabelled` package (an alternative to `haven` and `labelled`) 
+- the `summarytools` package can be useful for making simple summary tables
+- the `mosaic` and `ggformula` packages provide functions to write data visualisation commands using "formula syntax", which is particularly useful for introductory-level teaching/learning as it unifies data description and statistical modelling around a shared logical structure (read about it [here](http://www.mosaic-web.org/ggformula/articles/pkgdown/ggformula-blog.html) and [here](http://www.mosaic-web.org/mosaic/articles/web-only/LessVolume-MoreCreativity.html))
+- the `pacman` packege makes it easier to install and load at the same time any packages that may not yet be installed, also saving time on typing
 
 ```{r}
-library("tidyverse")
-library("haven")
+if (!require("pacman")) install.packages("pacman") ## installs 'pacman' if not yet installed
+pacman::p_load(tidyverse, sjlabelled, haven, labelled, summarytools, mosaic, ggformula) ## loads/installs other CRAN packages using 'pacman'
 ```
 
 You can see the suite of packages that are loaded when you load the `Tidyverse` library using the following command:
@@ -63,7 +72,7 @@ All these functions work similarly as follow:
 - The subsequent arguments are comma separated list of unquoted variable names and the specification of what you want to do
 - The result is a new data frame
 
-## The pipe
+## The pipe (%>%)
 
 All of the dplyr functions take a data frame (or tibble) as the first argument. Rather than forcing the user to either save intermediate objects or nest functions, dplyr provides the pipe operator `%>%` from the package `magrittr`. The pipe operator allows us to combine multiple operations in R into a single sequential chain of actions.
 
@@ -97,64 +106,88 @@ You would read this sequence as:
 4. Use this output as the input to the next function h()
 
 So while both approaches achieve the same goal, the latter is much more human-readable because you can clearly read the sequence of operations line-by-line. 
-Let's read in some data and try out one of these dplyr functions.
 
-## Importing data
+Note that since `R 4.1.0` there is also a [native pipe operator](https://www.r-bloggers.com/2021/05/the-new-r-pipe/) in `R` (|>), and in RStudio one can set the shortcut *Ctrl + Shift + M* (Windows) (or *Cmd + Shift + M* (on Mac)) to paste the new pipe operator instead.
+
+## Importing data from other software
 
 The data you will want to use is likely to come in a format used by another statistical package or data management tool (`SPSS`, `Stata`, `Excel`) or in raw *Comma Separated Values (CSV)* or *tab separated values (TSV)*. We have practised importing `Stata` (.dta) and `SPSS` (.sav) data files in particular, as it is the format in which much of the large survey data made available to researchers in the UK Data Service is stored. 
 
 There are a few datasets that are available from the course's (not quite developed as of yet) webpage: https://cgmoreh.github.io/SSC7001M/data/data-documentation
 
-Let's load the European Values Study; Wave 5 (2017-2020) dataset in `Stata`  (.dta) format using the `haven` package:
+Let's import the European Values Study; Wave 5 (2017-2020) dataset from the original `Stata` format using the `sjlabelled` package (an alternative is `read_dta()` or `read_stata()` from the `haven` package):
 
 ```{r}
-evs <- haven::read_dta("https://cgmoreh.github.io/SSC7001M/data/evs5.dta")
+evs <- sjlabelled::read_stata("https://cgmoreh.github.io/SSC7001M/data/evs5.dta")
 ```
 
-If your dataset is in another format, you can use the appropriate function from `haven`, which have the same format of "read_*format type*". You can check a list of the available functios in `haven` with the command:
+If your dataset is in another format, you can use the appropriate function of the same format "read_*format type*". You can check a list of the functions available in a package using the `ls()` command; for example:
 
 ```{r}
-ls("package:haven")
+ls("package:sjlabelled", pattern = "read") # list all functions in the 'sjlabelled' package that contain the word "read"
+
+ls("package:haven", pattern = "read") # list all functions in the 'haven' package that contain the word "read"
+
+# Note that different functions can have the same name in different packages; if the package name is not overtly mentioned using the `package::`formulation, than the function from the package loaded last will be applied
 ```
 
-Once a dataset is loaded, you can have a quick look at some of its characteristics (which you can also check manually in the Environment pane and by opening the dataset). This simply tells us the number of cases (rows) and variables (columns) in the dataset.
+Once a dataset is loaded, you can have a quick look at some of its characteristics (which you can also check manually in the Environment panel of RStudio or by opening the dataset in the Viewer). 
 
 ```{r}
-dim(evs)
+dim(evs)    # simply tells us the number of cases (rows) and variables (columns) in the dataset
 ```
 
-If we have a dataset such as this, where the variables names are non-sensical, you need to rely on the survey documentation to understand what the variables mean. As we've practiced, the `labelled` package is a useful tool to generate a so-called "data dictionary" as an object that lists the variable labels alongside the names and some information about the variable types:
+## Using built-in demo datasets
 
-```{r}
-evs_labels <- labelled::generate_dictionary(evs) 
-```
-
-For demonstration purposes, there are a few commonly used datasets that come implemented with `R` packages. One such dataset is the R built-in *iris* data set, which we can load as a 'tibble':
+For demonstration purposes, there are a few commonly used datasets that come implemented with `R` packages. One such dataset is the built-in *iris* data, which we can load as a 'tibble':
 
 ```{r}
 iris <- as_tibble(iris)
 ```
 
-And we can have a quick look at the first few cases by simply typing the dataset's name
+We can have a quick look at the first few cases by simply typing the dataset's name:
 
 ```{r}
 iris
 ```
 
-## Selecting variables
-
-We can select only a few variables that we are interested in using the *select* command. We can either mention the number of the columns we are planning to keep, or more usefully, the names of the columns. We separate the comlumn names using a comma, or we can specify a range of columns/variables using ":", as in this example, where we keep all the variables between v31 and v37:
+Apart from the `generate_dictionary()` function from the `labelled` package (which we have used before), the `dfSummary()` function from `summarytools` is another (probably nicer and more universally applicable) tool for generating a so-called "data dictionary". The easiest way to use it is to open it in the output viewer using the `view()` function:
 
 ```{r}
-evs %>% select("v1", "v31":"v37", "v225", "v234", "v227", "age", "v102", "v105")
+summarytools::dfSummary(iris) %>% view()
 ```
 
-There are also several special functions that can be used inside select(): starts_with(), ends_with(), contains(), matches(), one_of(), etc.
+This output can then be opened in a new window and if needed saved as an HTML file (or in other formats too). 
 
-To actually collapse the loaded dataset to the selected variables, we have to assign the 'select()' procedure to either a new object name (e.g. smalldata <- ) or the same name (evs <- ), which would overwrite the existing dataset. It is also possible to us the "=" sign instead of "<-", depending on which one appears more intuitive to you.
+## Selecting variables
+
+Sometimes (often) it's useful to select only a few variables that we are interested in using for analysis. With externally imported data we probably have access to the survey documentation and a data codebook (e.g. https://europeanvaluesstudy.eu/methodology-data-documentation/survey-2017/pre-release-evs-2017/documentation-survey-2017/). We can identify variables of interest in that documentation and select them either when importing the data or as a later step, using the the `select()` tidyverse function. We can either mention the location number of the columns (variables) we want to keep or, more usefully, the names of the columns. We separate the column names using a comma, or we can specify a range of columns/variables using ":", as in this example, where we keep all the variables between v31 and v37:
+
+```{r eval=FALSE, include=T}
+evs %>% select("country", "v1", "v31":"v37", "v225", "v234", "v227", "age", "v102", "v105")
+```
+
+There are also several special functions that can be used inside `select()`, such as `starts_with()`, `ends_with()`, `contains()`, `matches()`, `one_of()`, etc.
+
+To actually collapse the loaded dataset to the selected variables, we have to assign (with "<-") an object name (it is also possible to us the "=" sign instead of "<-", depending on which one appears more intuitive to you). If we assign the same name as an already loaded dataset object, the data will be overwritten:
 
 ```{r}
-small_evs = evs %>% select("v1", "v31":"v37", "v225", "v234", "v227", "age", "v102", "v105")
+small_evs <- evs %>% select("country", "v1", "v31":"v37", "v225", "v234", "v227", "age", "v102", "v105") # creates a new dataset object with reduced data
+evs <- evs %>% select("country", "v1", "v31":"v37", "v225", "v234", "v227", "age", "v102", "v105") # overwrites the previously loaded 'evs' data with the reduced version
+```
+
+We can remove redundant objects from the working Environment using the `rm()`/`remove()` function. This de-clutters our workspace and saves computer memory:
+
+```{r}
+rm(small_evs)
+```
+
+Let's have a look at the data dictionary:
+
+```{r}
+view(dfSummary(evs))
+
+# or "dfSummary(evs) %>% view()", using a pipe workflow as done earlier
 ```
 
 
@@ -186,28 +219,29 @@ One frequent mistake is to use = instead of == when testing for equality. Rememb
 For example let's select from the 'evs' dataset only cases that come from respondents in the United Kingdom. The 'country' variable codes the country of data collection. the 'val_labels' command from the 'labelled' package can be used to view a list of the labels (or we can check the data dictionary in the last column)
 
 ```{r}
-labelled::val_labels(evs$country)
+# Get a list of variable labels with values prefixed (i.e. ="p" or ="as.prefix")
+sjlabelled::get_labels(evs$country, values ="p")
 ```
 
-We can see in the list that the country label is Great Britain and it is coded 826, so we can filter the data using the following command (assigning the reduced dataset to a new object in this case, but we could also overwrite the existing one:
+We can see in the list that the country label is 'Great Britain' and it is coded as 826, so we can filter the data using the following command (assigning the reduced dataset to a new object in this case, but we could also overwrite the existing one:
 
 ```{r}
 gb_only <- evs %>% filter(country==826)
 ```
 
-We could also make the selection using the variable label instead of the numeric code, but because our data was imported from a different format and it is stored in a special data type pertaining to the `haven` package, we would first need to convert the data types to a format that is interpretable by other `R` functions.
-
-We could also just specify the format for the selected variable only to make that transformation in the same command using:
+We could also make the selection using the variable label instead of the numeric code, but because the 'country' variable is currently stored as a numeric variable, that wouldn't work straight away. Instead, we need to convert the variable into a 'character' type variable (i.e. a text string) or a labelled 'factor' (i.e. categorical variable) first, or specify it as such during the filtering operation:
 
 ```{r}
-gb_only2 <- evs %>% filter(as_factor(country)=="Great Britain")
+gb_only <- evs %>% filter(as_character(country)=="Great Britain")
+
+# Or, alternatively: gb_only <- evs %>% filter(as_label(country)=="Great Britain")
 ```
 
 The 'filter' command is highly flexible and also allows to combine multiple criteria if needed, say only British respondents aged between 25 and 35:
 
 ```{r}
 gb_2535_only <- evs %>% filter(
-      as_factor(country)=="Great Britain",
+      as_character(country)=="Great Britain",
       age >= 25 & age <= 35)
 ```
 
@@ -216,7 +250,7 @@ gb_2535_only <- evs %>% filter(
 The simplest way is again by using `dplyr` functions, in this case the 'rename' function. Let's rename the 'v1' variable in the evs dataset (labelled: "how important in your life: work ) to "important_work", and the "v31" variable ("people can be trusted/can't be too careful") to "no_trust".
 
 ```{r}
-small_evs = small_evs %>% 
+evs = evs %>% 
   rename(
     important_work = v1,
     no_trust = v31
@@ -225,45 +259,62 @@ small_evs = small_evs %>%
 
 ## Recoding values
 
-Let's check the variable "no_trust" that we just renamed:
+Let's check the variable "no_trust" that we have just renamed. It is set as a 'numeric' variable with associated value labels:
 
 ```{r}
-small_evs %>% count(no_trust)
+sjlabelled::get_labels(evs$no_trust, values = "p")
 ```
 
-To show the value labels, we could specify that the variables should be treated as a 'factor':
+We can check a quick distribution of its values using `count()`:
 
 ```{r}
-small_evs %>% count(as_factor(no_trust))
+evs %>% count(no_trust)
+```
+Or we can get a more detailed frequency table with `summarytools::freq()`:
+
+```{r}
+evs %>% freq(no_trust, style = "rmarkdown")
 ```
 
-We can also check all the existing value labels on this variable:
+Again, to see value labels instead of numeric values, we could specify that the variables should be treated as a labelled 'factor' variable:
 
 ```{r}
-labelled::val_labels(small_evs$no_trust)
+evs %>% count(as_label(no_trust))
 ```
 
-We can recode all the negative values in a dataset to missing:
+Values in the dataset that are coded with negative numbers can be treated as missing values. We can recode all the negative values in a dataset to missing:
 
 ```{r}
-## recode all negative values to missing in the entire dataset:
+## recode all negative values to missing in the entire dataset, keeping labels as tags:
 
-small_evs[small_evs < 0] = NA
+evs <- sjlabelled::set_na(evs, na = c(-1:-99), as.tag = TRUE)
 ```
 
-
-We can recode values explicitly this way:
+The result is:
 
 ```{r}
-evs <- evs %>% mutate(no_trust=recode(no_trust,
+evs %>% count(as_label(no_trust))
+```
+
+We can recode the values themselves as:
+
+```{r}
+evs <- evs %>% mutate(no_trust2 = recode(no_trust,
                                          `1`=0, 
                                          `2`=1))
 ```
 
-But we need to be careful as the labels are no longer correct!
+But we need to be careful as we then lose the labels:
+```{r}
+get_labels(evs$no_trust2, values = "p")
+```
+```{r}
+evs %>% count(as_label(no_trust2))
+```
+We could recode to character strings instead, but again we need careful because character variable values are then ordered alphabetically:
 
 ```{r}
-small_evs <- small_evs %>% mutate(no_trust=recode(no_trust,
+evs <- evs %>% mutate(no_trust3 = recode(no_trust,
                                          `1`="trust", 
                                          `2`="no trust"))
 ```
@@ -274,21 +325,10 @@ Recoding several variables by collapsing categories:
 evs <- evs %>% mutate_at(c("v32", "v34"), funs(recode(., `1`=1, `2`=1, `3`=0, `4`=0)))
 ```
 
-## Changing the variable types on imported datasets
-
-```{r}
-## from the 'labelled' package, the unlabelled function can be useful for simple transformation of a whole dataset. (https://cran.r-project.org/web/packages/labelled/vignettes/intro_labelled.html)
-# see:
-glimpse(small_evs)
-# vs.
-glimpse(small_evs |> labelled::unlabelled())
-```
-
-
 ## Computing new variables
 
 ```{r}
-evs1 <- evs1 %>% mutate(computed_v32_34= v32 + v33 + v34)
+evs <- evs %>% mutate(computed_v32_34 = v32 + v33 + v34)
 ```  
 
 
