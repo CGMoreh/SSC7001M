@@ -1,0 +1,69 @@
+---
+title: "The title of your study"
+author: "Your name"
+date: "10/01/2022"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=F}
+
+# Load/install necessary packages
+
+pacman::p_load(
+  tidyverse,   # general data management tools
+  mosaic,      # formula-type syntax for descriptive statistics
+  ggformula,   # ggplot2 powered graphing using 'mosaic' formula-syntax
+  summarytools,# summery statistics tables
+  kableExtra,  # publication-quality tabulation
+  sjlabelled,  # data import from other software (alternative to 'haven') and labels management
+  knitr,       # exporting .Rmd to Word, Html etc.
+  jtools,     # model summary tabulations
+  lme4,         # multilevel modelling
+  flextable,
+  huxtable
+  )
+```
+
+
+```{r import data, include=F}
+# Load the Osterman data
+
+ost <- haven::read_dta("https://cgmoreh.github.io/SSC7001M/data/osterman.dta")
+```
+
+```{r reduce data, include=FALSE}
+# Select variables and observations
+set.seed(1234) # random number seed to always get the same sampling result when we 'slice_sample'
+ost <- ost %>%
+        select("trustindex3", "cntry", "facntr", "mocntr", "female", "agea", "eduyrs25", "paredu_a_high") %>%
+        filter(cntry %in% c("GB", "IE", "DE", "FR", "HU", "PL", "PT", "ES")) %>%  
+        group_by(cntry) %>% slice_sample(n=50) %>%
+        labelled::unlabelled() %>% as_tibble() %>%
+        mutate(cntry = as_factor(cntry),
+               fmnoncntr = ifelse(facntr==0 | mocntr==0, 1, 0)) %>%
+        sjlabelled::var_labels(trustindex3 = "Social trust scale",
+                               eduyrs25 = "Years of full-time education",
+                               paredu_a_high = "High parental education",
+                               fmnoncntr = "Least one parent born abroad")
+```
+
+
+```{r echo=FALSE}
+mod_single <- lm(trustindex3 ~ eduyrs25 + agea + female + paredu_a_high + fmnoncntr, data = ost)
+```
+
+We can check some summary results:
+
+```{r, render=knitr::normal_print}
+jtools::summ(mod_single)
+```
+
+
+```{r}
+export_summs(mod_single, error_pos = "right")
+```
+
