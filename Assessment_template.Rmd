@@ -2,11 +2,11 @@
 title: "The title of your study"
 author: "Your name"
 date: "10/01/2022"
-output: word_document
+# output: word_document  
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ```{r, include=F}
@@ -58,12 +58,25 @@ mod_single <- lm(trustindex3 ~ eduyrs25 + agea + female + paredu_a_high + fmnonc
 
 We can check some summary results:
 
-```{r, render=knitr::normal_print}
-jtools::summ(mod_single)
+```{r, render=knitr::normal_print, results='asis'}
+jtools::summ(mod_single, model.info = FALSE, model.fit = FALSE, digits = 3) 
 ```
 
+Another 1:
 
 ```{r}
+tidy(mod_single, digits = 3)
+```
+
+Another 2:
+
+```{r, results='asis'}
 export_summs(mod_single, error_pos = "right")
+```
+
+Another 3:
+
+```{r}
+coef(summary(mod_single)) %>% kable()
 ```
 
