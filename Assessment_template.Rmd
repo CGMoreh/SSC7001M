@@ -1,15 +1,24 @@
 ---
-title: "The title of your study"
-author: "Your name"
-date: "10/01/2022"
-# output: word_document  
+output: word_document  
 ---
 
-```{r setup, include=FALSE}
+# About this 'template':
+
+This document provides some guidance on possible settings that can help exporting your analysis to a Word document for further processing. The expectation is that you have already gained familiarity with editing R Markdown documents from the [R for Data Science](https://r4ds.had.co.nz/r-markdown.html) book, which was on the module reading list, particularly Chapters 27, 29 and 30. It assumes, therefore, that you are familiar with the purpose of yaml headers (i.e. the settings between the two --- marks at the top of this .Rmd document). There are numerous settings that can be included in the yaml header, but for our purposes specifying the output format (Word document) is the only essential one.
+
+Options relating to how the R code chunks (i.e. the command included between the two ``` marks throughout) are being rendered when written (i.e. "knitted") to the output document format can be set both in the header of the individual code chunks, or as a global setting that applies to all chunks. The first code chunk below is a global setting chunk that applies three settings to all the code-fields in this document:
+- The code itself won't be printed to the output document (echo = FALSE)
+
+
+To learn more about R Markdown documents, these two resources are extremely useful:
+- Xie, Allaire and Grolemund (2021) [R Markdown: The Definitive Guide]()
+
+
+```{r Setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-```{r, include=F}
+```{r include=FALSE}
 
 # Load/install necessary packages
 
@@ -24,31 +33,70 @@ pacman::p_load(
   jtools,     # model summary tabulations
   lme4,         # multilevel modelling
   flextable,
-  huxtable
+  huxtable,
+  pander
   )
+```
+
+```{r}
+st_options(descr.silent = TRUE)
 ```
 
 
 ```{r import data, include=F}
 # Load the Osterman data
-
 ost <- haven::read_dta("https://cgmoreh.github.io/SSC7001M/data/osterman.dta")
+ost <- sjlabelled::read_stata("https://cgmoreh.github.io/SSC7001M/data/osterman.dta")
 ```
 
 ```{r reduce data, include=FALSE}
 # Select variables and observations
 set.seed(1234) # random number seed to always get the same sampling result when we 'slice_sample'
 ost <- ost %>%
-        select("trustindex3", "cntry", "facntr", "mocntr", "female", "agea", "eduyrs25", "paredu_a_high") %>%
+        select("trustindex3", "ppltrst", "pplfair", "cntry", "facntr", "mocntr", "female", "agea", "eduyrs25", "paredu_a_high") %>%
         filter(cntry %in% c("GB", "IE", "DE", "FR", "HU", "PL", "PT", "ES")) %>%  
-        group_by(cntry) %>% slice_sample(n=50) %>%
-        labelled::unlabelled() %>% as_tibble() %>%
-        mutate(cntry = as_factor(cntry),
+        group_by(cntry) %>% slice_sample(n=50) %>% ungroup() %>%
+        mutate(across(c("ppltrst", "pplfair"), sjlabelled::as_label),
+              cntry = as_factor(cntry),
                fmnoncntr = ifelse(facntr==0 | mocntr==0, 1, 0)) %>%
         sjlabelled::var_labels(trustindex3 = "Social trust scale",
                                eduyrs25 = "Years of full-time education",
                                paredu_a_high = "High parental education",
                                fmnoncntr = "Least one parent born abroad")
+```
+
+
+```{r eval=FALSE, include=FALSE}
+widow_data <- widow_data %>% mutate_at(c("worry", "sleepprobs" , "breathlessness" , "agitated" , "depression" , "nowakeup" , "panic" , "nothingness" , "pain" , "hopelessness" , "worrysleep" , "nointerests" , "anxious" , "suicide" ), funs(recode(., `0`=0, `1`=1, `2`=1, `3`=1)))
+```
+
+```{r}
+worry <- sample(x = 0:3, size  = 100, replace = TRUE)
+sleepprobs <- sample(x = 0:3, size  = 100, replace = TRUE)
+breathlessness <- sample(x = 0:3, size  = 100, replace = TRUE)
+example <- data.frame(worry, sleepprobs, breathlessness)
+```
+
+
+
+```{r, render=knitr::normal_print, results='asis'}
+ost %>% freq(ppltrst, headings = FALSE)
+```
+
+```{r}
+ost %>% freq(pplfair) 
+# %>% pander()
+```
+
+```{r,  render=knitr::normal_print, results='asis'}
+# ost <- ost %>% mutate(across(.cols = everything(), as.numeric))
+summarytools::descr(ost,
+      stats     = c("mean", "sd", "med", "min", "max", "n.valid"),
+      transpose = TRUE,
+      style="simple",
+      silent = TRUE,
+      headings  = FALSE,
+      )
 ```
 
 
