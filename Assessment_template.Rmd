@@ -6,46 +6,41 @@ output: word_document
 
 This document provides some guidance on possible settings that can help exporting your analysis to a Word document for further processing. The expectation is that you have already gained familiarity with editing R Markdown documents from the [R for Data Science](https://r4ds.had.co.nz/r-markdown.html) book, which was on the module reading list, particularly Chapters 27, 29 and 30. It assumes, therefore, that you are familiar with the purpose of yaml headers (i.e. the settings between the two --- marks at the top of this .Rmd document). There are numerous settings that can be included in the yaml header, but for our purposes specifying the output format (Word document) is the only essential one.
 
-Options relating to how the R code chunks (i.e. the command included between the two ``` marks throughout) are being rendered when written (i.e. "knitted") to the output document format can be set both in the header of the individual code chunks, or as a global setting that applies to all chunks. The first code chunk below is a global setting chunk that applies three settings to all the code-fields in this document:
-- The code itself won't be printed to the output document (echo = FALSE)
+Options relating to how the R code chunks (i.e. the command included between the two \`\`\` marks throughout) are being rendered when written (i.e. "knitted") to the output document format can be set both in the header of the individual code chunks, or as a global setting that applies to all chunks. The first code chunk below is a global setting chunk that applies the following settings to all the code-fields in this document: - The code itself won't be printed to the output document (echo = FALSE) -
 
+To learn more about R Markdown documents, these two resources are extremely useful: - Xie, Allaire, and Grolemund (2021) [R Markdown: The Definitive Guide](https://bookdown.org/yihui/rmarkdown/) - Xie, Dervieux, and Riederer (2022) [R Markdown Cookbook](https://bookdown.org/yihui/rmarkdown-cookbook/)
 
-To learn more about R Markdown documents, these two resources are extremely useful:
-- Xie, Allaire and Grolemund (2021) [R Markdown: The Definitive Guide]()
-
+These resources go far beyond what you need to know at this stage, but they can be helpful for searching particular settings/issues that come up in your own coding.
 
 ```{r Setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, 
+                      results = 'asis', render = knitr::normal_print)
 ```
 
 ```{r include=FALSE}
 
-# Load/install necessary packages
+# Load/install necessary packages using the 'pacman' package;
+# install.packages("pacman") # first, if 'pacman' is not yet installed
+
+if (!require("pacman")) install.packages("pacman") ## installs 'pacman' if not yet installed
 
 pacman::p_load(
-  tidyverse,   # general data management tools
+  tidyverse,   # general data management tools ('dplyr', etc.)
   mosaic,      # formula-type syntax for descriptive statistics
   ggformula,   # ggplot2 powered graphing using 'mosaic' formula-syntax
-  summarytools,# summery statistics tables
-  kableExtra,  # publication-quality tabulation
+  lme4,        # multilevel modelling
+  summarytools,# summary statistics tables
   sjlabelled,  # data import from other software (alternative to 'haven') and labels management
-  knitr,       # exporting .Rmd to Word, Html etc.
-  jtools,     # model summary tabulations
-  lme4,         # multilevel modelling
-  flextable,
-  huxtable,
-  pander
+  sjmisc,      # data transformation on variables (recoding,grouping, missing values, etc)
+  sjPlot,      # Graphing and tabulation tools for regression model results
+  jtools       # Graphing and tabulation tools for regression model results
   )
-```
-
-```{r}
-st_options(descr.silent = TRUE)
 ```
 
 
 ```{r import data, include=F}
-# Load the Osterman data
-ost <- haven::read_dta("https://cgmoreh.github.io/SSC7001M/data/osterman.dta")
+# Load data and perform required data transformations
+
 ost <- sjlabelled::read_stata("https://cgmoreh.github.io/SSC7001M/data/osterman.dta")
 ```
 
@@ -65,6 +60,27 @@ ost <- ost %>%
                                fmnoncntr = "Least one parent born abroad")
 ```
 
+```{r}
+
+evs <- sjlabelled::read_stata("https://cgmoreh.github.io/SSC7001M/data/evs5.dta")
+
+evs2 <- evs %>%
+  select("country", "v1", "v31":"v37", "v225", "v234", "v227", "age", "v102", "v105") %>%
+  sjlabelled::set_na(na = c(-1:-99), as.tag = TRUE) %>%
+  sjlabelled::as_label() %>%
+  filter(country %in% c("Portugal", "Germany", "Great Britain", "Russia")) %>%
+  sjmisc::var_rename(v1 = importance.work,
+                     v31 = soc.trust,
+                     v32 = trust.fam,
+                     v33 = trust.neighb)
+  
+```
+
+
+```{r eval=FALSE, include=FALSE}
+evs2 %>% as_label() %>% frq()
+```
+
 
 ```{r eval=FALSE, include=FALSE}
 widow_data <- widow_data %>% mutate_at(c("worry", "sleepprobs" , "breathlessness" , "agitated" , "depression" , "nowakeup" , "panic" , "nothingness" , "pain" , "hopelessness" , "worrysleep" , "nointerests" , "anxious" , "suicide" ), funs(recode(., `0`=0, `1`=1, `2`=1, `3`=1)))
@@ -77,9 +93,7 @@ breathlessness <- sample(x = 0:3, size  = 100, replace = TRUE)
 example <- data.frame(worry, sleepprobs, breathlessness)
 ```
 
-
-
-```{r, render=knitr::normal_print, results='asis'}
+```{r}
 ost %>% freq(ppltrst, headings = FALSE)
 ```
 
@@ -88,7 +102,7 @@ ost %>% freq(pplfair)
 # %>% pander()
 ```
 
-```{r,  render=knitr::normal_print, results='asis'}
+```{r Chunk 10}
 # ost <- ost %>% mutate(across(.cols = everything(), as.numeric))
 summarytools::descr(ost,
       stats     = c("mean", "sd", "med", "min", "max", "n.valid"),
@@ -99,32 +113,26 @@ summarytools::descr(ost,
       )
 ```
 
-
 ```{r echo=FALSE}
 mod_single <- lm(trustindex3 ~ eduyrs25 + agea + female + paredu_a_high + fmnoncntr, data = ost)
 ```
 
 We can check some summary results:
 
-```{r, render=knitr::normal_print, results='asis'}
-jtools::summ(mod_single, model.info = FALSE, model.fit = FALSE, digits = 3) 
+<br>
+
+```{r}
+jtools::summ(mod_single)#, model.info = FALSE, model.fit = FALSE, digits = 3) 
+```
+
+Plot:
+
+```{r}
+jtools::plot_summs(mod_single) 
 ```
 
 Another 1:
 
-```{r}
-tidy(mod_single, digits = 3)
+```{r, render = knitr::knit_print}
+jtools::export_summs(mod_single, error_pos = "right")
 ```
-
-Another 2:
-
-```{r, results='asis'}
-export_summs(mod_single, error_pos = "right")
-```
-
-Another 3:
-
-```{r}
-coef(summary(mod_single)) %>% kable()
-```
-

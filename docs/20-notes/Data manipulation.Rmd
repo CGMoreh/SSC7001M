@@ -5,7 +5,7 @@ output:
   rmdformats::readthedown:
       code_download: true
       highlight: tango
-      number_sections: true
+      number_sections: false
 
 ---
 
@@ -43,7 +43,7 @@ Let's load some useful additional packages:
 
 ```{r}
 if (!require("pacman")) install.packages("pacman") ## installs 'pacman' if not yet installed
-pacman::p_load(tidyverse, sjlabelled, haven, labelled, summarytools, mosaic, ggformula) ## loads/installs other CRAN packages using 'pacman'
+pacman::p_load(tidyverse, sjlabelled, sjmisc, haven, labelled, summarytools, mosaic, ggformula) ## loads/installs other CRAN packages using 'pacman'
 ```
 
 You can see the suite of packages that are loaded when you load the `Tidyverse` library using the following command:
@@ -153,7 +153,7 @@ iris
 
 Apart from the `generate_dictionary()` function from the `labelled` package (which we have used before), the `dfSummary()` function from `summarytools` is another (probably nicer and more universally applicable) tool for generating a so-called "data dictionary". The easiest way to use it is to open it in the output viewer using the `view()` function:
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 summarytools::dfSummary(iris) %>% view()
 ```
 
@@ -184,7 +184,7 @@ rm(small_evs)
 
 Let's have a look at the data dictionary:
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 view(dfSummary(evs))
 
 # or "dfSummary(evs) %>% view()", using a pipe workflow as done earlier
@@ -226,6 +226,8 @@ sjlabelled::get_labels(evs$country, values ="p")
 We can see in the list that the country label is 'Great Britain' and it is coded as 826, so we can filter the data using the following command (assigning the reduced dataset to a new object in this case, but we could also overwrite the existing one:
 
 ```{r}
+# Notice the use of the double-equal == operator to compare equality (select if country code is equal to 826)
+
 gb_only <- evs %>% filter(country==826)
 ```
 
@@ -235,6 +237,21 @@ We could also make the selection using the variable label instead of the numeric
 gb_only <- evs %>% filter(as_character(country)=="Great Britain")
 
 # Or, alternatively: gb_only <- evs %>% filter(as_label(country)=="Great Britain")
+```
+
+To combine more than one item, such as selecting not one but two countries (e.g. Great Britain and Germany), we can use the `%in%` operator and the `c(...)` function:
+
+```{r}
+# select if country label/name is equal to one of the labels/names on the list combining Great Britain and Germany
+
+gb_de <- evs %>% filter(as_character(country) %in% c("Great Britain", "Germany"))
+
+```
+
+A table of the data:
+
+```{r echo=FALSE, results='asis'}
+gb_de %>% as_character() %>% freq(country, report.nas = FALSE, headings = FALSE)
 ```
 
 The 'filter' command is highly flexible and also allows to combine multiple criteria if needed, say only British respondents aged between 25 and 35:
