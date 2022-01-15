@@ -2061,11 +2061,11 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   html {
     /*-- Main font sizes --*/
-    --title-size:      50px;
-    --body-size:       1.0rem;                     /* edited */
-    --code-size:       0.9rem;                     /* edited */
+    --title-size:      20px;
+    --body-size:       0.8rem;                     /* edited */
+    --code-size:       0.8rem;                     /* edited */
     --aside-size:      12px;
-    --fig-cap-size:    13px;
+    --fig-cap-size:    12px;
     /*-- Main font colors --*/
     --title-color:     #000000;
     --heading-color:   rgba(0, 0, 0, 0.8);
@@ -2083,7 +2083,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-byline {
     --heading-size:    0.6rem;
     --heading-color:   rgba(0, 0, 0, 0.5);
-    --body-size:       0.8rem;
+    --body-size:       0.5rem;
     --body-color:      rgba(0, 0, 0, 0.8);
   }
 
@@ -2105,11 +2105,15 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   /* These properties only apply to Distill sites and blogs  */
 
   .distill-site-header {
-    --title-size:       20px;                      /* edited */
+    --title-size:       18px;                      /* edited */
     --text-color:       #FFFFFF;                   /* edited */
-    --text-size:        20px;                      /* edited */
+    --text-size:        16px;                      /* edited */
     --hover-color:      #383838;                   /* edited */
     --bkgd-color:       rgb(249, 83, 85);          /* edited */
+  }
+
+  .distill-site-header {
+      height: 50px;                               /* CM edited */
   }
 
   .distill-site-footer {
@@ -2144,6 +2148,10 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   ul > li::marker {
     color: rgb(249, 83, 85);
+  }
+
+  div.main-container {
+    max-width: 1800px !important;
   }
   </style>
   <!--/radix_placeholder_site_in_header-->
