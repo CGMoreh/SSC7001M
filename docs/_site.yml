@@ -49,8 +49,9 @@ navbar:
     - text: "Data"
       href: "./data/data-documentation.html"
   right:
-    - icon: fab ga_github
+    - icon: fab fa-github
+      href: "https://github.com/CGMoreh/SSC7001M"
     
 output: 
   distill::distill_article:
-    css: custom.css
+    css: custom2.css

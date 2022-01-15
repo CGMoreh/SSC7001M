@@ -14,11 +14,11 @@
 
 html {
   /*-- Main font sizes --*/
-  --title-size:      50px;
+  --title-size:      20px;
   --body-size:       1.06rem;
-  --code-size:       14px;
-  --aside-size:      12px;
-  --fig-cap-size:    13px;
+  --code-size:       12px;
+  --aside-size:      10px;
+  --fig-cap-size:    10px;
   /*-- Main font colors --*/
   --title-color:     #000000;
   --header-color:    rgba(0, 0, 0, 0.8);
@@ -34,16 +34,16 @@ html {
 
 /*-- ARTICLE METADATA --*/
 d-byline {
-  --heading-size:    0.6rem;
+  --heading-size:    0.7rem;
   --heading-color:   rgba(0, 0, 0, 0.5);
-  --body-size:       0.8rem;
+  --body-size:       0.5rem;
   --body-color:      rgba(0, 0, 0, 0.8);
 }
 
 /*-- ARTICLE TABLE OF CONTENTS --*/
 .d-contents {
-  --heading-size:    18px;
-  --contents-size:   13px;
+  --heading-size:    16px;
+  --contents-size:   12px;
 }
 
 /*-- ARTICLE APPENDIX --*/
@@ -58,16 +58,16 @@ d-appendix {
 /* These properties only apply to Distill sites and blogs  */
 
 .distill-site-header {
-  --title-size:       20px;
+  --title-size:       18px;
   --text-color:       rgba(255, 255, 255, 0.8);
-  --text-size:        20px;
+  --text-size:        16px;
   --hover-color:      white;
   --bkgd-color:       #0F2E3D;
 }
 
 .distill-site-footer {
   --text-color:       rgba(255, 255, 255, 0.8);
-  --text-size:        15px;
+  --text-size:        12px;
   --hover-color:      white;
   --bkgd-color:       #0F2E3D;
 }
@@ -98,11 +98,11 @@ d-appendix {
 }
 
 d-title{
-  margin-top: 20px;
+  margin-top: 18px;
 }
 
 h1, .h1, h2, .h2, h3, .h3 {
-    margin-top: 30px;
+    margin-top: 16px;
 }
 
 div.main-container {
