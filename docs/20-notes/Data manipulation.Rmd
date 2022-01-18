@@ -290,6 +290,10 @@ For example let's select from the already slimmed dataset only cases that come f
 # Get a list of variable labels with values prefixed (i.e. ="p" or ="as.prefix")
 
 sjlabelled::get_labels(evs.slim$country, values ="as.prefix")
+
+# Or, equivalently, first selecting the variable(s); this allows listing several variables within the select() function
+# evs %>% select(country) %>% 
+#  sjlabelled::get_labels(values = "as.prefix")
 ```
 
 We can see in the list that the country label is 'Great Britain' and it is coded as 826, so we can filter the data using the following command (assigning the reduced dataset to a new object in this case, but we could also overwrite the existing one:
@@ -347,7 +351,7 @@ Data-frame summaries are great tools for getting a summary overview of a whole d
 
 ```{r eval=FALSE}
 
-evs.slim.gb %>% dfSummary() %>% view()
+evs.slim.gb %>% summarytools::dfSummary() %>% view()
 
 # or equivalently: 
 # view(dfSummary(evs.slim.gb))
@@ -359,7 +363,16 @@ evs.slim.gb %>% dfSummary(valid.col = FALSE, graph.magnif = .7, plain.ascii = FA
   print(max.tbl.height = 300)
 ```
 
-The resulting output can then be opened in a separate web browser window and saved as an HTML file (or saving can be done automatically by replacing the `view()` command with `print( file = "somename.html")`). This is a good way of getting a detailed overview of an entire dataset and identify where data transformations are necessary. It is also a nice way of producing a codebook for an already cleansed dataset.
+```{r eval=FALSE, include=FALSE}
+
+## A similar function is sjPlot::view_df() , which is more focused on labelled data, so it's not ideal for data overviews because it doesn't show statistics for numeric variables, just primarily as a codebook of labels and values
+
+evs.slim.gb %>% as_character(country) %>% 
+  sjPlot::view_df(show.string.values = T, show.frq = T, show.prc = T)
+```
+
+
+This output can then be opened in a separate web browser window and saved as an HTML file (or saving can be done automatically by replacing the `view()` command with `print( file = "somename.html")`). This is a good way of getting a detailed overview of an entire dataset and identify where data transformations are necessary. It is also a nice way of producing a codebook for an already cleansed dataset.
 
 The `sjmisc` package also has a function called `descr()` for summarising datasets, which is particularly useful if you have labelled data imported from other software. By default, without any additional settings, a call to `sjmisc::descr()` displays a wide variety of summary statistics (see the [function description](https://rdrr.io/cran/sjmisc/man/descr.html)). Using the 'show' argument, we can select only those that we are interested in, for example:
 
@@ -378,6 +391,8 @@ evs.slim.gb %>% sjmisc::descr(show = c("type", "label", "range", "md", "NA.prc")
 evs.slim.gb %>% sjmisc::descr(show = c("type", "label", "range", "md", "NA.prc")) %>% kable()
 
 ```
+
+<br>
 
 From these tables we find, for instance, that there are no missing data points, but there are many negative values in each variable that probably need to be set as missing values (NAs), that the variable type probably need changing for categorical variables, and that variables would benefit from some more intuitive names.
 
@@ -442,7 +457,7 @@ evs.slim.gb <- evs.slim.gb %>%
 
 We can rename several variables in one go. For example, let's rename **<tt>v54</tt>** to **<tt>rel.now</tt>**, **<tt>v55</tt>** to **<tt>rel.as.child</tt>**, **<tt>v102</tt>** to **<tt>pol.lr</tt>**, and **<tt>v225</tt>** to **<tt>sex</tt>**:
 
-```{r}
+```{r attr.source='.numberLines'}
 
 # Break down command chains into separate lines to make complex code easier to read and troubleshoot
 
@@ -463,9 +478,9 @@ We've seen in the tables above that negative values need recoding to missing val
 
 ```{r}
 
-# Setting 'as.tag = TRUE' let's us store the lables of the missing values, just in case we'll need them again
+# Setting 'as.tag = TRUE' let's us store the labels of the missing values, just in case we'll need them again
  
-evs.slim.gb <- evs.slim.gb %>% set_na(ppl.trust.yn, na = c(-1:-10), as.tag = TRUE)
+evs.slim.gb <- evs.slim.gb %>% set_na(ppl.trust.yn, na = c(-1:-10))
 ```
 
 The result is:
@@ -483,7 +498,7 @@ Instead of recoding variables individually, we can recode all the negative value
 
 ## recode all negative values to missing in the entire dataset, keeping labels as tags:
 
-evs.slim.gb <- evs.slim.gb %>% set_na(na = c(-1:-99), as.tag = TRUE)
+evs.slim.gb <- evs.slim.gb %>% set_na(na = c(-1:-99))
 ```
 
 ## I need to recode variables
