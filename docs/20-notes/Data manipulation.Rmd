@@ -371,6 +371,12 @@ evs.slim.gb %>% as_character(country) %>%
   sjPlot::view_df(show.string.values = T, show.frq = T, show.prc = T)
 ```
 
+```{r eval=FALSE, include=FALSE}
+## Modelsummary also has a very similar data-frame tabulation funcction
+evs.slim.gb %>% modelsummary::datasummary_skim()
+```
+
+
 
 This output can then be opened in a separate web browser window and saved as an HTML file (or saving can be done automatically by replacing the `view()` command with `print( file = "somename.html")`). This is a good way of getting a detailed overview of an entire dataset and identify where data transformations are necessary. It is also a nice way of producing a codebook for an already cleansed dataset.
 

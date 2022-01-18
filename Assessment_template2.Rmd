@@ -2,6 +2,19 @@
 output: word_document  
 ---
 
+This document provides some guidance on possible settings that can help exporting your analysis to a Word document for further processing. The expectation is that you have already gained familiarity with editing R Markdown documents from the [R for Data Science](https://r4ds.had.co.nz/r-markdown.html) book, which was on the module reading list, particularly Chapters 27, 29 and 30. It assumes, therefore, that you are familiar with the purpose of yaml headers (i.e. the settings between the two --- marks at the top of this .Rmd document). There are numerous settings that can be included in the yaml header, but for our purposes specifying the output format (Word document) is the only essential one.
+
+Options relating to how the R code chunks (i.e. the command included between the two \``` marks throughout) are being rendered when written (i.e. "knitted") to the output document format can be set both in the header of the individual code chunks, or as a global setting that applies to all chunks. The first code chunk below is a global setting chunk that applies the following settings to all the code-fields in this document: - The code itself won't be printed to the output document (echo = FALSE) -
+
+To learn more about R Markdown documents, these two resources are extremely useful: 
+
+  * Xie, Allaire, and Grolemund (2021) [R Markdown: The Definitive Guide](https://bookdown.org/yihui/rmarkdown/) 
+  
+  * Xie, Dervieux, and Riederer (2022) [R Markdown Cookbook](https://bookdown.org/yihui/rmarkdown-cookbook/)
+
+These resources go far beyond what you need to know at this stage, but they can be helpful for searching particular settings/issues that come up in your own coding.
+
+Below is a recommended structure and some example code for tabulations that seems to work well with Word documents.
 
 ```{r Setup, include=FALSE}
 # Keep these options as they appear to produce the best results when kniting to Word documents
