@@ -2,6 +2,19 @@
 output: word_document  
 ---
 
+This document contains settings that help exporting your analysis to a Word document. The expectation is that you have already gained familiarity with editing R Markdown documents from the [R for Data Science](https://r4ds.had.co.nz/r-markdown.html) book, which was on the module reading list, particularly Chapters 27, 29 and 30. It assumes, therefore, that you are familiar with the purpose of yaml headers (i.e. the settings between the two sets of - - - marks at the top of an `.Rmd` document). There are numerous settings that can be included in the yaml header, but for our purposes specifying the output format (Word document) is the only essential one.
+
+Options relating to how code chunks (i.e. the commands included between two sets of \`\`\` marks throughout) are rendered when written (i.e. "knitted") to the output document format can be set both in the header of the individual code chunks, or as a global setting that applies to all chunks. The first code chunk below (in the `.Rmd` version) is a global setting chunk that applies some useful setting for the purpose of printing outputs only to Word documents.
+
+To learn more about R Markdown documents, these two resources are extremely useful: 
+
+  * Xie, Allaire, and Grolemund (2021) [R Markdown: The Definitive Guide](https://bookdown.org/yihui/rmarkdown/) 
+  
+  * Xie, Dervieux, and Riederer (2022) [R Markdown Cookbook](https://bookdown.org/yihui/rmarkdown-cookbook/)
+
+These resources go far beyond what you need to know at this stage, but they can be helpful for searching particular settings/issues that come up in your own coding.
+
+Below is a recommended structure and some example code for tabulations that seems to work well with Word documents.
 
 ```{r Setup, include=FALSE}
 # Keep these options as they appear to produce the best results when kniting to Word documents
@@ -18,16 +31,16 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE,
 if (!require("pacman")) install.packages("pacman") ## installs 'pacman' if not yet installed
 
 pacman::p_load(
-  tidyverse,   # general data management tools ('dplyr', etc.)
-  mosaic,      # formula-type syntax for descriptive statistics
-  ggformula,   # ggplot2 powered graphing using 'mosaic' formula-syntax
-  lme4,        # multilevel modelling
-  summarytools,# summary statistics tables
-  sjlabelled,  # data import from other software (alternative to 'haven') and labels management
-  sjmisc,      # data transformation on variables (recoding,grouping, missing values, etc)
-  sjPlot,      # Graphing and tabulation tools for regression model results
-  jtools,      # Graphing and tabulation tools for regression model results
-  parameters,  # ibid
+  tidyverse,    # general data management tools ('dplyr', etc.)
+  mosaic,       # formula-type syntax for descriptive statistics
+  ggformula,    # ggplot2 powered graphing using 'mosaic' formula-syntax
+  lme4,         # multilevel modelling
+  summarytools, # summary statistics tables
+  sjlabelled,   # data import from other software (alternative to 'haven') and labels management
+  sjmisc,       # data transformation on variables (recoding,grouping, missing values, etc)
+  sjPlot,       # Graphing and tabulation tools for regression model results
+  jtools,       # Graphing and tabulation tools for regression model results
+  parameters    # ibid
   )
 ```
 
@@ -82,6 +95,7 @@ Another option is using another function also called `descr()`, but from the `sj
 
 ```{r}
 # Note that the results of the 'descr()' command need to be passed on to 'print_md()' for it to look good in Word
+# It may also be useful to first treat some variables as of certain types (e.g. as_factor(), as_numeric() as below)
 
 ost %>% as_factor() %>%  as_numeric(trustindex3, agea, eduyrs25) %>% 
   select("trustindex3", "ppltrst", "pplfair", "cntry", "facntr", "mocntr", "female", "agea", "eduyrs25", "paredu_a_high") %>%  
@@ -89,7 +103,6 @@ ost %>% as_factor() %>%  as_numeric(trustindex3, agea, eduyrs25) %>%
 ```
 
 Here, on the other hand, what's inconvenient is that the order of the statistics (column headings) cannot be changed. That's probably easier to do manually in Word, however, if needed.
-
 
 ## Results
 

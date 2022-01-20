@@ -180,7 +180,8 @@ pacman::p_load(
   sjlabelled,   # data import from other software (alternative to 'haven') and labels management
   sjmisc,       # data transformation on variables (recoding,grouping, missing values, etc)
   sjPlot,       # Graphing and tabulation tools for regression model results
-  jtools        # Graphing and tabulation tools for regression model results
+  jtools,        # Graphing and tabulation tools for regression model results
+  modelsummary
   )
 ```
 
@@ -372,10 +373,12 @@ evs.slim.gb %>% as_character(country) %>%
 ```
 
 ```{r eval=FALSE, include=FALSE}
-## Modelsummary also has a very similar data-frame tabulation funcction
+## Modelsummary also has a very similar data-frame tabulation function
 evs.slim.gb %>% modelsummary::datasummary_skim()
 ```
-
+```{r eval=F, include=F}
+modelsummary::datasummary(All(evs.slim.gb) ~ (Mean + SD)*Arguments(fmt = "%.2f", na.rm = TRUE) + Median + Min + Max + NUnique + N, align = "lccccccc", fmt = '%g', data = evs.slim.gb)
+```
 
 
 This output can then be opened in a separate web browser window and saved as an HTML file (or saving can be done automatically by replacing the `view()` command with `print( file = "somename.html")`). This is a good way of getting a detailed overview of an entire dataset and identify where data transformations are necessary. It is also a nice way of producing a codebook for an already cleansed dataset.
@@ -476,7 +479,7 @@ evs.slim.gb <- evs.slim.gb %>%
     )
 ```
 
-We now have more intuitive variable names, but as we transform/recode our variables it may become useful to rename some of them again later to better reflect their actual meaning. Also, note that we haven't renamed all the variables - <tt>v33</tt>, <tt>v35</tt>, <tt>v36</tt> and <tt>v37</tt> remain unchanged - and that's for a reason, as we'll see in a moment.
+We now have more intuitive variable names, but as we transform/recode our variables it may come useful to rename some of them again later to better reflect their actual meaning. Also, note that we haven't renamed all the variables - <tt>v33</tt>, <tt>v35</tt>, <tt>v36</tt> and <tt>v37</tt> remain unchanged - and that's for a reason, as we'll see in a moment.
 
 ## I need to assign missing (NA) values
 
@@ -500,7 +503,7 @@ evs.slim.gb %>% frq(ppl.trust.yn) %>% kable()
 
 Instead of recoding variables individually, we can recode all the negative values in a dataset to missing:
 
-```{r eval=FALSE, include=FALSE}
+```{r}
 
 ## recode all negative values to missing in the entire dataset, keeping labels as tags:
 
@@ -509,12 +512,49 @@ evs.slim.gb <- evs.slim.gb %>% set_na(na = c(-1:-99))
 
 ## I need to recode variables
 
+Recoding variables can cover many practical needs. Here, let's cover four very common requirements that often emerge in the manipulation of survey-based social science data: (1) reordering the values of ordinal variables; (2) collapsing categories; (3) shifting the range of values; and (4) recoding numeric scales into equal-rnaged groups.
+
+In order to maintain and manage value and variable labels, we will use some functions from the `{sjmisc}` package, although similar operations can be done using `{dplyr}` and base ***R*** operations.   
+
+### (1) reordering the values of ordinal variables
+
+We can very easily reverse the value order in ordered variables using the `rec()` function. In our data, we have several variables that fall into this category (<tt>v33</tt> to <tt>v37</tt>, <tt>rel.now</tt> and <tt>rel.as.child</tt>).Additionally, we can also reverse the order of values of binary variables (e.g. <tt>ppl.trust.yn</tt>). Before actually altering our data, we can check what the results will be:  
+
+```{r, eval=FALSE}
+evs.slim.gb %>% 
+  sjmisc::rec(v33, rec = "rev") %>% frq(v33, v33_r)
+```
+```{r, echo=FALSE}
+evs.slim.gb %>% 
+  sjmisc::rec(rel.now, rec = "rev") %>%  frq(v33, v33_r) %>% kable()
+```
+
+```{r, eval=FALSE}
+evs.slim.gb %>% 
+  sjmisc::rec(rel.now, rec = "rev") %>%  frq(rel.now, rel.now_r)
+```
+```{r, echo=FALSE}
+evs.slim.gb %>% 
+  sjmisc::rec(rel.now, rec = "rev") %>%  frq(rel.now, rel.now_r) %>% kable()
+```
+
+Once we know that the results are what we wish, we can reverse all variables at once, and setting the 'suffix' to empty ("") allows to overwrite the existing variables (by default, new variables suffixed by "_r" would be created, which is often the safer option; we can also set our own suffixes):
+
 ```{r}
-evs.slim.gb %>% recode_to(ppl.trust.yn, suffix = "") %>% frq(ppl.trust.yn)
+evs.slim.gb <- evs.slim.gb %>% 
+  sjmisc::rec(ppl.trust.yn, v33:v37, rel.now, rel.as.child, rec = "rev", suffix = "")
+```
+
+### (2) collapsing categories
+
+The `rec()` function from `{sjmisc}` allows specifying in detail how values should be recoded. These are many options apropriate for different purposes, so [read more about the function here](https://rdrr.io/cran/sjmisc/man/rec.html). In this example, let's recode the two 'religiosity' variables so that we collapse their 7 categories to three: rarely (1, 2, 3), moderately (4, 5), often (6, 7):
+
+```{r}
+evs.slim.gb %>% 
+  sjmisc::rec(rel.now, rel.as.child, rec = "1:3=1; 4,5=2; 6:max=3") %>%  frq(rel.now, rel.now_r)
 ```
 
 
-We can recode the values themselves:
 
 ```{r eval=FALSE, include=FALSE}
 evs.slim.gb <- evs.slim.gb %>% mutate(no_trust2 = recode(no_trust,
@@ -541,6 +581,24 @@ Recoding several variables by collapsing categories:
 evs.slim.gb <- evs.slim.gb %>% mutate_at(c("v32", "v34"), funs(recode(., `1`=1, `2`=1, `3`=0, `4`=0)))
 ```
 
+
+### (3) shifting the range of values
+
+Recode binary variables to be coded 0 and 1, keeping value labels:
+
+```{r}
+
+# The setting 'lowest =" is by default set to 0 so can be excluded
+
+evs.slim.gb %>% sjmisc::recode_to(ppl.trust.yn, sex, suffix = "", lowest = 0) %>% frq(ppl.trust.yn, sex)
+```
+
+
+
+
+
+
+
 ## Computing new variables
 
 ```{r eval=FALSE, include=FALSE}
@@ -565,3 +623,13 @@ evs.slim.gb %>%
 ```
 
 Same grouping can be done with frq/desc ...
+```{r}
+
+```
+
+
+```{r}
+
+  
+```
+
