@@ -4,9 +4,11 @@ author: "C Moreh"
 output:
   rmdformats::readthedown:
       code_download: false
-      highlight: tango
       number_sections: false
-
+      highlight_downlit: true
+ 
+# distill::distill_article:
+  #   toc: true
 ---
 
 ```{r knitr options, include=FALSE}
@@ -518,22 +520,22 @@ In order to maintain and manage value and variable labels, we will use some func
 
 ### (1) reordering the values of ordinal variables
 
-We can very easily reverse the value order in ordered variables using the `rec()` function. In our data, we have several variables that fall into this category (<tt>v33</tt> to <tt>v37</tt>, <tt>rel.now</tt> and <tt>rel.as.child</tt>).Additionally, we can also reverse the order of values of binary variables (e.g. <tt>ppl.trust.yn</tt>). Before actually altering our data, we can check what the results will be:  
+We can very easily reverse the value order in ordered variables using the `rec()` function. In our data, we have several variables that fall into this category (<tt>v33</tt> to <tt>v37</tt>, <tt>rel.now</tt> and <tt>rel.as.child</tt>). Additionally, we can also reverse the order of values of binary variables (e.g. <tt>ppl.trust.yn</tt>). Before actually altering our data, we can check what the results will be:  
 
-```{r, eval=FALSE}
+```{r}
 evs.slim.gb %>% 
   sjmisc::rec(v33, rec = "rev") %>% frq(v33, v33_r)
 ```
-```{r, echo=FALSE}
+```{r echo=FALSE}
 evs.slim.gb %>% 
-  sjmisc::rec(rel.now, rec = "rev") %>%  frq(v33, v33_r) %>% kable()
+  sjmisc::rec(v33, rec = "rev") %>%  frq(v33, v33_r) %>% kable()
 ```
 
 ```{r, eval=FALSE}
 evs.slim.gb %>% 
   sjmisc::rec(rel.now, rec = "rev") %>%  frq(rel.now, rel.now_r)
 ```
-```{r, echo=FALSE}
+```{r echo=FALSE}
 evs.slim.gb %>% 
   sjmisc::rec(rel.now, rec = "rev") %>%  frq(rel.now, rel.now_r) %>% kable()
 ```
