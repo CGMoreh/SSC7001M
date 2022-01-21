@@ -152,7 +152,7 @@ x2 <- x %>%
 Instead of programming your own functions in the ***R*** language, you can rely on functions written by other people and bundled within a package that performs some set task. There are a large number of reliable, tested and oft-used packages containing functions that are particularly useful for social scientists.  
 
 Some particularly useful packages:
-  - the `tidyverse` bundle of packages, which includes the `dplyr` package (for data manipulation) and additional R packages for reading in (`readr`), transforming (`tidyr`) and visualizing (`ggplot2`) datasets. It also ports the `%>%` so-called pipe operator that helps write more human-readable code
+  - the ```tidyverse``` bundle of packages, which includes the ```dplyr``` package (for data manipulation) and additional R packages for reading in (`readr`), transforming (`tidyr`) and visualizing (`ggplot2`) datasets. It also ports the `%>%` so-called pipe operator that helps write more human-readable code
   - to import datasets in non-native formats and to manage attached labels (a concept familiar from other statistical packages but foreign to ***R***), load the `sjlabelled` package (an alternative to `haven` and `labelled`, which work in a similar way but provide less functionality) 
   - the `summarytools` package can be useful for making simple summary tables and crosstabulations
   - the `sjmisc` package contains very useful functions for undertaking data transformations on labelled variables (recoding, grouping, missing values, etc); also has some useful tabulation functions
