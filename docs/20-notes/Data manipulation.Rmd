@@ -11,10 +11,6 @@ output:
   #   toc: true
 ---
 
-```{r knitr options, include=FALSE}
-knitr::opts_chunk$set(fig.width=6, fig.asp = 0.618, warning=FALSE, comment=NA, prompt=FALSE, message = F, strip.white = F)
-```
-
 ```{css echo=FALSE}
 body {
   counter-reset: counter-rchunks;
@@ -38,6 +34,14 @@ pre.r::before {
   top: 0em;
   color: rgb(48, 63, 159);
 }
+
+.bc-b {
+  background-color: beige;
+}
+```
+
+```{r knitr options, include=FALSE}
+knitr::opts_chunk$set(fig.width=6, fig.asp = 0.618, warning=FALSE, comment=NA, prompt=FALSE, message = F, strip.white = F, class.source = "bc-b", attr.source='.numberLines')
 ```
 
 Working with real-life data requires a lot of pre-processing before we are able to carry out out main analyses. This pre-processing can involve importing data from various storage formats, applying and changing overall characteristics, filtering and ordering rows (cases), computing, adding and renaming columns (variables), recoding variable values, and computing summary statistics for variables of interest to determine any need to recode variables. These are the main data manipulation techniques that this document will cover. While the procedures we learn here are the ones you will probably require for your own small-scale data analysis projects, some data manipulation requirements are specific to given data sets and they may require some techniques not covered here. Should that be the case, get in touch at [c.moreh\@yorksj.ac.uk](mailto:c.moreh@yorksj.ac.uk?subject=SSC7001M coding help) and describe the problem you need to solve.
@@ -549,9 +553,10 @@ evs.slim.gb <- evs.slim.gb %>%
 
 ### (2) collapsing categories
 
-The `rec()` function from `{sjmisc}` allows specifying in detail how values should be recoded. These are many options apropriate for different purposes, so [read more about the function here](https://rdrr.io/cran/sjmisc/man/rec.html). In this example, let's recode the two 'religiosity' variables so that we collapse their 7 categories to three: rarely (1, 2, 3), moderately (4, 5), often (6, 7):
+The `sjmisc::rec()` function from `{sjmisc}` allows specifying in detail how values should be recoded. These are many options apropriate for different purposes, so [read more about the function here](https://rdrr.io/cran/sjmisc/man/rec.html). In this example, let's recode the two 'religiosity' variables so that we collapse their 7 categories to three: rarely (1, 2, 3), moderately (4, 5), often (6, 7):
 
 ```{r}
+
 evs.slim.gb %>% 
   sjmisc::rec(rel.now, rel.as.child, rec = "1:3=1; 4,5=2; 6:max=3") %>%  frq(rel.now, rel.now_r)
 ```
