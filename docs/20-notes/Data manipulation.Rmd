@@ -41,7 +41,7 @@ pre.r::before {
 ```
 
 ```{r knitr options, include=FALSE}
-knitr::opts_chunk$set(fig.width=6, fig.asp = 0.618, warning=FALSE, comment=NA, prompt=FALSE, message = F, strip.white = F, class.source = "bc-b", attr.source='.numberLines')
+knitr::opts_chunk$set(fig.width=6, fig.asp = 0.618, fig.show = 'hold', warning=FALSE, comment=NA, prompt=FALSE, message = F, strip.white = F, class.source = "bc-b", attr.source='.numberLines', results = 'hold')
 ```
 
 Working with real-life data requires a lot of pre-processing before we are able to carry out out main analyses. This pre-processing can involve importing data from various storage formats, applying and changing overall characteristics, filtering and ordering rows (cases), computing, adding and renaming columns (variables), recoding variable values, and computing summary statistics for variables of interest to determine any need to recode variables. These are the main data manipulation techniques that this document will cover. While the procedures we learn here are the ones you will probably require for your own small-scale data analysis projects, some data manipulation requirements are specific to given data sets and they may require some techniques not covered here. Should that be the case, get in touch at [c.moreh\@yorksj.ac.uk](mailto:c.moreh@yorksj.ac.uk?subject=SSC7001M coding help) and describe the problem you need to solve.
@@ -186,7 +186,7 @@ pacman::p_load(
   sjlabelled,   # data import from other software (alternative to 'haven') and labels management
   sjmisc,       # data transformation on variables (recoding,grouping, missing values, etc)
   sjPlot,       # Graphing and tabulation tools for regression model results
-  jtools,        # Graphing and tabulation tools for regression model results
+  jtools,       # Graphing and tabulation tools for regression model results
   modelsummary
   )
 ```
@@ -244,7 +244,13 @@ Wee see that the loaded **evs** dataset contains `r format(nrow(evs), big.mark="
 
 # Data transformation workflow
 
-In each data analysis project we encounter specific data manipulation challenges. Some data transformation tasks are very common in a majority of projects using large survey-based social science data, and we can think about performing these tasks in terms of a workflow, a logical step-by-step order in which to manipulate the data to end up with a dataset that can easily be submitted to statistical analysis. Let's follow such a hypothetical workflow to cover some of these most common requirements. Our hypothetical data analysis aim will be to estimate and report on a model predicting <tt>*trust in strangers*</tt> from <tt>*age*</tt>, <tt>*sex*</tt>, <tt>*religiosity*</tt>, and <tt>*political ideology*</tt> among the UK population.
+In each data analysis project we encounter specific data manipulation challenges. Some data transformation tasks are very common in a majority of projects using large survey-based social science data, and we can think about performing these tasks in terms of a workflow, a logical step-by-step order in which to manipulate the data to end up with a dataset that can easily be submitted to statistical analysis. 
+
+Let's follow such a hypothetical workflow to cover some of these most common requirements. Our hypothetical data analysis aim will be to estimate and report on a model predicting <tt>*trust in strangers*</tt> from <tt>*age*</tt>, <tt>*sex*</tt>, <tt>*religiosity*</tt>, and <tt>*political ideology*</tt> among the UK population:
+
+$$
+Trust\_in\_strangers = \beta_0 + \beta_1(Age) + \beta_2(Sex) + \beta_3(Religiosity) + \beta_4(Political\_ideology)
+$$
 
 Let's see what challenges we face and address them step-by-step.
 
@@ -395,14 +401,14 @@ The `sjmisc` package also has a function called `descr()` for summarising datase
 library(kableExtra)
 ```
 
-```{r eval=FALSE, include=T}
+```{r echo=TRUE}
 
 # Useful variables were selected from those available in the function
 # 'Character' type variables are not included in tables in this function, so if it is appropriate for your purposes, any 'character' variables may need coercing to 'factor' or 'label' first for inclusion
 
 evs.slim.gb %>% sjmisc::descr(show = c("type", "label", "range", "md", "NA.prc"))
 ```
-```{r echo=FALSE}
+```{r eval=FALSE, include=FALSE}
 evs.slim.gb %>% sjmisc::descr(show = c("type", "label", "range", "md", "NA.prc")) %>% kable()
 
 ```
@@ -442,12 +448,12 @@ evs.slim.gb %>% count( as_label(v31) )
 
 Function `frq()` (from `sjmisc::`) produces more complex frequency tables that handle labelled variables better. For example, this is a frequency table of the same variable <tt>v31</tt>:
 
-```{r eval=FALSE, include=TRUE}
+```{r echo=TRUE}
 
 evs.slim.gb %>% frq(v31)
 ```
 
-```{r echo=FALSE}
+```{r eval=FALSE, include=FALSE}
 evs.slim.gb %>% frq(v31) %>% kable()
 ```
 
@@ -499,11 +505,11 @@ evs.slim.gb <- evs.slim.gb %>% set_na(ppl.trust.yn, na = c(-1:-10))
 ```
 
 The result is:
-```{r eval=FALSE}
+```{r echo=TRUE}
 
 evs.slim.gb %>% frq(ppl.trust.yn)
 ```
-```{r echo=FALSE}
+```{r eval=FALSE, include=FALSE}
 evs.slim.gb %>% frq(ppl.trust.yn) %>% kable()
 ```
 
@@ -530,21 +536,21 @@ We can very easily reverse the value order in ordered variables using the `rec()
 evs.slim.gb %>% 
   sjmisc::rec(v33, rec = "rev") %>% frq(v33, v33_r)
 ```
-```{r echo=FALSE}
+```{r eval=FALSE, include=FALSE}
 evs.slim.gb %>% 
   sjmisc::rec(v33, rec = "rev") %>%  frq(v33, v33_r) %>% kable()
 ```
 
-```{r, eval=FALSE}
+```{r}
 evs.slim.gb %>% 
   sjmisc::rec(rel.now, rec = "rev") %>%  frq(rel.now, rel.now_r)
 ```
-```{r echo=FALSE}
+```{r eval=FALSE, include=FALSE}
 evs.slim.gb %>% 
   sjmisc::rec(rel.now, rec = "rev") %>%  frq(rel.now, rel.now_r) %>% kable()
 ```
 
-Once we know that the results are what we wish, we can reverse all variables at once, and setting the 'suffix' to empty ("") allows to overwrite the existing variables (by default, new variables suffixed by "_r" would be created, which is often the safer option; we can also set our own suffixes):
+Once we know that the results are what we wish, we can reverse all variables at once, and setting the 'suffix' to empty ("") overwrites the existing variables (by default, new variables suffixed by "_r" would be created, which is often the safer option; we can also set our own suffixes):
 
 ```{r}
 evs.slim.gb <- evs.slim.gb %>% 
@@ -553,64 +559,111 @@ evs.slim.gb <- evs.slim.gb %>%
 
 ### (2) collapsing categories
 
-The `sjmisc::rec()` function from `{sjmisc}` allows specifying in detail how values should be recoded. These are many options apropriate for different purposes, so [read more about the function here](https://rdrr.io/cran/sjmisc/man/rec.html). In this example, let's recode the two 'religiosity' variables so that we collapse their 7 categories to three: rarely (1, 2, 3), moderately (4, 5), often (6, 7):
+The `sjmisc::rec()` function from `{sjmisc}` allows specifying in detail how values should be recoded. There are many options appropriate for different purposes, so [read more about the function here](https://rdrr.io/cran/sjmisc/man/rec.html). In this example, let's recode the two 'religiosity' variables so that we collapse their 7 categories to three: rarely (1, 2, 3), moderately (4, 5), often (6, 7):
+
+```{r echo=TRUE}
+
+# Note that:
+# each recode pair has to be separated by a ;
+# multiple old values that should be recoded into a new single value may be separated with comma
+# minimum and maximum values are indicated by min (or lo) and max (or hi)
+# a value range is indicated by a colon
+# value labels for new values can be assigned inside the recode pattern by writing the value label in square brackets after defining the new value in a recode pair; otherwise they can be done separateky after the recode too
+# In the code below I'm using a combination of these on purpose for demonstration
+
+evs.slim.gb <- evs.slim.gb %>% 
+  sjmisc::rec(rel.now, 
+              rel.as.child, 
+              rec = "1:3=1 [Rarely]; 4,5=2 [Moderately]; 6:max=3 [Often]")
+```
+
+This is the result, comparing the old variable with the recoded one:
 
 ```{r}
-
 evs.slim.gb %>% 
-  sjmisc::rec(rel.now, rel.as.child, rec = "1:3=1; 4,5=2; 6:max=3") %>%  frq(rel.now, rel.now_r)
-```
-
-
-
-```{r eval=FALSE, include=FALSE}
-evs.slim.gb <- evs.slim.gb %>% mutate(no_trust2 = recode(no_trust,
-                                         `1`=0, 
-                                         `2`=1))
-```
-
-But we need to be careful as we then lose the labels:
-```{r eval=FALSE, include=FALSE}
-get_labels(evs.slim.gb$no_trust2, values = "p")
-```
-
-We could recode to character strings instead, but again we need careful because character variable values are then ordered alphabetically:
-
-```{r eval=FALSE, include=FALSE}
-evs.slim.gb <- evs.slim.gb %>% mutate(no_trust3 = recode(no_trust,
-                                         `1`="trust", 
-                                         `2`="no trust"))
-```
-
-Recoding several variables by collapsing categories:
-
-```{r eval=FALSE, include=FALSE}
-evs.slim.gb <- evs.slim.gb %>% mutate_at(c("v32", "v34"), funs(recode(., `1`=1, `2`=1, `3`=0, `4`=0)))
+  frq(rel.now, rel.now_r, rel.as.child, rel.as.child_r)
 ```
 
 
 ### (3) shifting the range of values
 
-Recode binary variables to be coded 0 and 1, keeping value labels:
+The `recode_to` function from `{sjmisc}` is a very comfortable option for recoding binary variables to 0 and 1, while keeping the original value labels. In fact, what it does is to shift the category values to start form any "lowest" value we supply, or to end with any "highest" value, so it is not restricted to binary variables. 
+
+For example, we can recode to 0/1 dummies our <tt>*ppl.trust.yn*</tt> and <tt>*sex*</tt> variables, making it easy to include them in a regression model as indicator variables:
+
+```{r eval=FALSE, include=TRUE}
+# Note: by default, new variables are created with the "_r0" suffix; to overwrite the original variables, we can specify the option 'suffix = ""'
+# The setting 'lowest = ' is by default set to 0 so it could be excluded
+
+evs.slim.gb <- evs.slim.gb %>% 
+  sjmisc::recode_to(ppl.trust.yn, sex, lowest = 0, suffix = "")
+
+```
+
+The result, compared tot he original variables, would be:
+```{r echo=FALSE}
+
+evs.slim.gb %>% frq(ppl.trust.yn, sex)
+
+evs.slim.gb <- evs.slim.gb %>% 
+  sjmisc::recode_to(ppl.trust.yn, sex, lowest = 0, suffix = "")
+
+evs.slim.gb %>% frq(ppl.trust.yn, sex)
+```
+
+Recoded to 0/1 values, these variables are now more clearly 'indicator' variables, where the value 1 indicates the meaning of the variable. To make it more explicit for ourselves, we could then rename them to something like <tt>*Trusting*</tt> and <tt>*Female*</tt>, respectively:
 
 ```{r}
+evs.slim.gb <- evs.slim.gb %>% 
+  sjmisc::var_rename(
+    ppl.trust.yn = Trusting,
+    sex = Female
+    )
 
-# The setting 'lowest =" is by default set to 0 so can be excluded
-
-evs.slim.gb %>% sjmisc::recode_to(ppl.trust.yn, sex, suffix = "", lowest = 0) %>% frq(ppl.trust.yn, sex)
+# Or: dplyr::rename(newname = oldname)
 ```
 
 
+## I need to compute a new variable
 
+We often need to create new variables based on the values of other variables. In our case, we would find it useful to create a numeric scale measuring the theoretical construct <tt>*trust in strangers*</tt>, which is our variable of interest in this hypothetical analysis. We have in the dataset four variables that can be taken to measure trust in strangers (<tt>v33</tt>, <tt>v35</tt>, <tt>v36</tt> and <tt>v37</tt>, which we haven't renamed on purpose, because we will not use them individually, and which are measured on 4-point ordinal scales running from 1 to 4), and the <tt>Trusting</tt> variable, which is binary. 
 
-
-
-
-## Computing new variables
+There are many ways to go about this and it is ultimately a theoretical decision. For our purposes, we'll simply create a variable that sums up the values on the five variables we want to use to measure <tt>*trust in strangers*</tt>; to give more weight to the general dichotomous social trust variable (<tt>*Trusting</tt>), we'll make it's value 1 equal to the highest value of the other component variables. Let's do the following operations:
+  1. Let's shift the coding range of all component variables to start from 0 (as in the previous step); the scales will then be 0 to 3;
+  2. Let's use only observations that have missing response (NA) on fewer than three out of the five variables;
+  3. Let's create a new variable called "trust_in_strangers" by:
+    3.1. multiplying the value of <tt>*Trusting*</tt> by 3 (0/1 will become 0/3);
+    3.2. then adding up the values of the five variables
 
 ```{r eval=FALSE, include=FALSE}
-evs.slim.gb <- evs.slim.gb %>% mutate(computed_v32_34 = v32 + v33 + v34)
+evs.slim.gb <- evs.slim.gb %>% 
+  sjmisc::recode_to(v33:v37, lowest = 0, suffix = "") %>%             # 1 #
+  filter(rowSums(across(c(Trusting, v33:v37), ~ is.na(.))) < 3) %>%   # 2 #
+  mutate(trust_in_strangers = (Trusting * 3) + v33 + v35 + v36 + v37) # 3 #
 ```  
+
+## I need to set the variable types
+
+We can also have a final look at our variables and check if the variable types are recorded correctly. If not, we can set the appropriate types (e.g. our two religiosity variables should be factors):
+
+```{r}
+evs.slim.gb <-  evs.slim.gb %>% 
+  as_factor(rel.now, rel.as.child)
+```
+
+
+## All ready for analysis
+
+The data is now ready to undertake the regression that we planned:
+
+```{r}
+lm(trust_in_strangers ~ age + Female + rel.now + rel.as.child + pol.lr, data = evs.slim.gb) %>% 
+  summary()
+```
+
+```{r include=FALSE}
+knitr::knit_exit()
+```
 
 
 ## Summary statistics by group
@@ -630,13 +683,3 @@ evs.slim.gb %>%
 ```
 
 Same grouping can be done with frq/desc ...
-```{r}
-
-```
-
-
-```{r}
-
-  
-```
-
