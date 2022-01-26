@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 
 This document was converted from the `.Rnw` version using the command: `mdsr::Rnw2Rmd("D:\\MyGitHub\\SSC7001M\\Readings\\working_with_factors.Rnw")`
 
