@@ -182,8 +182,9 @@
       <li><a href="#i-need-to-rename-my-variables">I need to rename my variables</a></li>
       <li><a href="#i-need-to-assign-missing-na-values">I need to assign missing (NA) values</a></li>
       <li><a href="#i-need-to-recode-variables">I need to recode variables</a></li>
-      <li><a href="#computing-new-variables">Computing new variables</a></li>
-      <li><a href="#summary-statistics-by-group">Summary statistics by group</a></li>
+      <li><a href="#i-need-to-compute-a-new-variable">I need to compute a new variable</a></li>
+      <li><a href="#i-need-to-set-the-variable-types">I need to set the variable types</a></li>
+      <li><a href="#all-ready-for-analysis">All ready for analysis</a></li>
       </ul>
 </li>
       </ul>
@@ -354,7 +355,7 @@ pre.r::before {
 <span id="cb6-14"><a href="#cb6-14"></a>  sjlabelled,   <span class="co"># data import from other software (alternative to 'haven') and labels management</span></span>
 <span id="cb6-15"><a href="#cb6-15"></a>  sjmisc,       <span class="co"># data transformation on variables (recoding,grouping, missing values, etc)</span></span>
 <span id="cb6-16"><a href="#cb6-16"></a>  sjPlot,       <span class="co"># Graphing and tabulation tools for regression model results</span></span>
-<span id="cb6-17"><a href="#cb6-17"></a>  jtools,        <span class="co"># Graphing and tabulation tools for regression model results</span></span>
+<span id="cb6-17"><a href="#cb6-17"></a>  jtools,       <span class="co"># Graphing and tabulation tools for regression model results</span></span>
 <span id="cb6-18"><a href="#cb6-18"></a>  modelsummary</span>
 <span id="cb6-19"><a href="#cb6-19"></a>  )</span></code></pre></div>
 <p>You can check the suite of packages that are loaded when you load the <code>Tidyverse</code> library using the following command:</p>
@@ -386,33 +387,37 @@ pre.r::before {
 <pre><code>[1] "read_data"  "read_sas"   "read_spss"  "read_stata"</code></pre>
 <p>Once a dataset is loaded, you can have a quick look at some of its characteristics (which you can also check manually in the Environment panel of RStudio or by opening the dataset in the Viewer).</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="co"># Number of rows (as first element), and the number of columns (as the second element); the 'dimensions' of the object:</span></span>
-<span id="cb13-2"><a href="#cb13-2"></a><span class="fu">dim</span>(evs)</span></code></pre></div>
-<pre><code>[1] 56491   466</code></pre>
-<div class="sourceCode" id="cb15"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a></span>
-<span id="cb15-2"><a href="#cb15-2"></a><span class="co"># Or separately, the number of rows (cases, observations):</span></span>
-<span id="cb15-3"><a href="#cb15-3"></a><span class="fu">nrow</span>(evs)</span></code></pre></div>
-<pre><code>[1] 56491</code></pre>
-<div class="sourceCode" id="cb17"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a></span>
-<span id="cb17-2"><a href="#cb17-2"></a><span class="co"># And number of columns (variables):</span></span>
-<span id="cb17-3"><a href="#cb17-3"></a><span class="fu">ncol</span>(evs)</span></code></pre></div>
-<pre><code>[1] 466</code></pre>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="fu">dim</span>(evs)</span>
+<span id="cb13-3"><a href="#cb13-3"></a></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="co"># Or separately, the number of rows (cases, observations):</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="fu">nrow</span>(evs)</span>
+<span id="cb13-6"><a href="#cb13-6"></a></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="co"># And number of columns (variables):</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a><span class="fu">ncol</span>(evs)</span></code></pre></div>
+<pre><code>[1] 56491   466
+[1] 56491
+[1] 466</code></pre>
 <p>Wee see that the loaded <strong>evs</strong> dataset contains 56,491 observations and 466 variables. That’s a very large dataset that would benefit from some data reduction and transformation before being used for the actual statistical analysis we want to undertake.</p>
 </div>
 <div id="data-transformation-workflow" class="section level1">
 <h1>Data transformation workflow</h1>
-<p>In each data analysis project we encounter specific data manipulation challenges. Some data transformation tasks are very common in a majority of projects using large survey-based social science data, and we can think about performing these tasks in terms of a workflow, a logical step-by-step order in which to manipulate the data to end up with a dataset that can easily be submitted to statistical analysis. Let’s follow such a hypothetical workflow to cover some of these most common requirements. Our hypothetical data analysis aim will be to estimate and report on a model predicting <tt><em>trust in strangers</em></tt> from <tt><em>age</em></tt>, <tt><em>sex</em></tt>, <tt><em>religiosity</em></tt>, and <tt><em>political ideology</em></tt> among the UK population.</p>
+<p>In each data analysis project we encounter specific data manipulation challenges. Some data transformation tasks are very common in a majority of projects using large survey-based social science data, and we can think about performing these tasks in terms of a workflow, a logical step-by-step order in which to manipulate the data to end up with a dataset that can easily be submitted to statistical analysis.</p>
+<p>Let’s follow such a hypothetical workflow to cover some of these most common requirements. Our hypothetical data analysis aim will be to estimate and report on a model predicting <tt><em>trust in strangers</em></tt> from <tt><em>age</em></tt>, <tt><em>sex</em></tt>, <tt><em>religiosity</em></tt>, and <tt><em>political ideology</em></tt> among the UK population:</p>
+<p><span class="math display">\[
+Trust\_in\_strangers = \beta_0 + \beta_1(Age) + \beta_2(Sex) + \beta_3(Religiosity) + \beta_4(Political\_ideology)
+\]</span></p>
 <p>Let’s see what challenges we face and address them step-by-step.</p>
 <div id="there-are-too-many-variables-columns-in-the-dataset" class="section level2">
 <h2>There are too many variables (columns) in the dataset</h2>
 <p>Sometimes (often? always?) it’s useful to select only a few variables that we are interested in using for analysis. With externally imported data we probably have access to the survey documentation and a data codebook (e.g. <a href="https://europeanvaluesstudy.eu/methodology-data-documentation/survey-2017/pre-release-evs-2017/documentation-survey-2017/" class="uri">https://europeanvaluesstudy.eu/methodology-data-documentation/survey-2017/pre-release-evs-2017/documentation-survey-2017/</a>). We can identify variables of interest in that documentation and select them either when importing the data or as a later step, using the <code>select()</code> function from <code>dplyr</code>. We can either mention the location number of the variables we want to keep or, more usefully, the names of the variables. We separate the variable names using a comma, or we can specify a range of variables using “<strong>:</strong>”, as in the example below, where we keep all the variables between <tt>v35</tt> and <tt>v37</tt> from the <strong>evs</strong> dataset as well as other variables that are useful for addressing our hypothetical data analysis aim<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>evs <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="st">"country"</span>, <span class="st">"v31"</span>, <span class="st">"v33"</span>, <span class="st">"v35"</span><span class="sc">:</span><span class="st">"v37"</span>, <span class="st">"v54"</span>, <span class="st">"v55"</span>, <span class="st">"v102"</span>, <span class="st">"v225"</span>, <span class="st">"age"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>evs <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="st">"country"</span>, <span class="st">"v31"</span>, <span class="st">"v33"</span>, <span class="st">"v35"</span><span class="sc">:</span><span class="st">"v37"</span>, <span class="st">"v54"</span>, <span class="st">"v55"</span>, <span class="st">"v102"</span>, <span class="st">"v225"</span>, <span class="st">"age"</span>)</span></code></pre></div>
 <p>There are also several special functions that can be used inside <code>select()</code>, such as <code>starts_with()</code>, <code>ends_with()</code>, <code>contains()</code>, <code>matches()</code>, <code>one_of()</code>, etc. (read more <a href="https://rdrr.io/cran/dplyr/man/select.html">here</a>).</p>
 <p>To actually collapse the loaded dataset to the selected variables, we have to assign (with “&lt;-”) an object name. If we assign the same name as an already loaded dataset object, the data will be overwritten:</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="co"># We can save the reduced dataset to a new data frame object called 'evs.slim'(because we have reduced the number of its columns)</span></span>
-<span id="cb20-2"><a href="#cb20-2"></a>evs.slim <span class="ot">&lt;-</span> evs <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="st">"country"</span>, <span class="st">"v31"</span>, <span class="st">"v33"</span>, <span class="st">"v35"</span><span class="sc">:</span><span class="st">"v37"</span>, <span class="st">"v54"</span>, <span class="st">"v55"</span>, <span class="st">"v102"</span>, <span class="st">"v225"</span>, <span class="st">"age"</span>)</span>
-<span id="cb20-3"><a href="#cb20-3"></a></span>
-<span id="cb20-4"><a href="#cb20-4"></a><span class="co"># Or we can overwrite the already existing data frame object called 'evs'</span></span>
-<span id="cb20-5"><a href="#cb20-5"></a>evs <span class="ot">&lt;-</span> evs <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="st">"country"</span>, <span class="st">"v31"</span>, <span class="st">"v33"</span>, <span class="st">"v35"</span><span class="sc">:</span><span class="st">"v37"</span>, <span class="st">"v54"</span>, <span class="st">"v55"</span>, <span class="st">"v102"</span>, <span class="st">"v225"</span>, <span class="st">"age"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="co"># We can save the reduced dataset to a new data frame object called 'evs.slim'(because we have reduced the number of its columns)</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a>evs.slim <span class="ot">&lt;-</span> evs <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="st">"country"</span>, <span class="st">"v31"</span>, <span class="st">"v33"</span>, <span class="st">"v35"</span><span class="sc">:</span><span class="st">"v37"</span>, <span class="st">"v54"</span>, <span class="st">"v55"</span>, <span class="st">"v102"</span>, <span class="st">"v225"</span>, <span class="st">"age"</span>)</span>
+<span id="cb16-3"><a href="#cb16-3"></a></span>
+<span id="cb16-4"><a href="#cb16-4"></a><span class="co"># Or we can overwrite the already existing data frame object called 'evs'</span></span>
+<span id="cb16-5"><a href="#cb16-5"></a>evs <span class="ot">&lt;-</span> evs <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="st">"country"</span>, <span class="st">"v31"</span>, <span class="st">"v33"</span>, <span class="st">"v35"</span><span class="sc">:</span><span class="st">"v37"</span>, <span class="st">"v54"</span>, <span class="st">"v55"</span>, <span class="st">"v102"</span>, <span class="st">"v225"</span>, <span class="st">"age"</span>)</span></code></pre></div>
 </div>
 <div id="i-dont-need-all-the-observations-rows" class="section level2">
 <h2>I don’t need all the observations (rows)</h2>
@@ -451,10 +456,14 @@ pre.r::before {
 </ul>
 <p>One frequent mistake is to use <strong>=</strong> instead of <strong>==</strong> when testing for equality. When you are testing for equality, you should always use <strong>==</strong> (not <strong>=</strong>).</p>
 <p>For example let’s select from the already slimmed dataset only cases that come from respondents in the United Kingdom. The <tt>country</tt> variable codes the country of data collection. We can get a list of variable labels using <code>get_labels()</code> from <code>sjlabelled</code>, which has the option to also request that labels be prefixed with their values, which is useful to see for recoding purposes (read more about the <code>sjlabelled</code> package and its functions <a href="https://rdrr.io/cran/sjlabelled/">here</a>):</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a></span>
-<span id="cb21-2"><a href="#cb21-2"></a><span class="co"># Get a list of variable labels with values prefixed (i.e. ="p" or ="as.prefix")</span></span>
-<span id="cb21-3"><a href="#cb21-3"></a></span>
-<span id="cb21-4"><a href="#cb21-4"></a>sjlabelled<span class="sc">::</span><span class="fu">get_labels</span>(evs.slim<span class="sc">$</span>country, <span class="at">values =</span><span class="st">"as.prefix"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a></span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="co"># Get a list of variable labels with values prefixed (i.e. ="p" or ="as.prefix")</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a></span>
+<span id="cb17-4"><a href="#cb17-4"></a>sjlabelled<span class="sc">::</span><span class="fu">get_labels</span>(evs.slim<span class="sc">$</span>country, <span class="at">values =</span><span class="st">"as.prefix"</span>)</span>
+<span id="cb17-5"><a href="#cb17-5"></a></span>
+<span id="cb17-6"><a href="#cb17-6"></a><span class="co"># Or, equivalently, first selecting the variable(s); this allows listing several variables within the select() function</span></span>
+<span id="cb17-7"><a href="#cb17-7"></a><span class="co"># evs %&gt;% select(country) %&gt;% </span></span>
+<span id="cb17-8"><a href="#cb17-8"></a><span class="co">#  sjlabelled::get_labels(values = "as.prefix")</span></span></code></pre></div>
 <pre><code> [1] "[8] Albania"                 "[31] Azerbaijan"            
  [3] "[40] Austria"                "[51] Armenia"               
  [5] "[70] Bosnia and Herzegovina" "[100] Bulgaria"             
@@ -473,49 +482,45 @@ pre.r::before {
 [31] "[724] Spain"                 "[752] Sweden"               
 [33] "[756] Switzerland"           "[807] North Macedonia"      
 [35] "[826] Great Britain"        </code></pre>
-<div class="sourceCode" id="cb23"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a></span>
-<span id="cb23-2"><a href="#cb23-2"></a><span class="co"># Or, equivalently, first selecting the variable(s); this allows listing several variables within the select() function</span></span>
-<span id="cb23-3"><a href="#cb23-3"></a><span class="co"># evs %&gt;% select(country) %&gt;% </span></span>
-<span id="cb23-4"><a href="#cb23-4"></a><span class="co">#  sjlabelled::get_labels(values = "as.prefix")</span></span></code></pre></div>
 <p>We can see in the list that the country label is ‘Great Britain’ and it is coded as 826, so we can filter the data using the following command (assigning the reduced dataset to a new object in this case, but we could also overwrite the existing one:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a></span>
-<span id="cb24-2"><a href="#cb24-2"></a><span class="co"># Notice the use of the double-equal == operator to compare equality (select if country code is equal to 826)</span></span>
-<span id="cb24-3"><a href="#cb24-3"></a></span>
-<span id="cb24-4"><a href="#cb24-4"></a>evs.slim.gb <span class="ot">&lt;-</span> evs.slim <span class="sc">%&gt;%</span> <span class="fu">filter</span>(country<span class="sc">==</span><span class="dv">826</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a></span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="co"># Notice the use of the double-equal == operator to compare equality (select if country code is equal to 826)</span></span>
+<span id="cb19-3"><a href="#cb19-3"></a></span>
+<span id="cb19-4"><a href="#cb19-4"></a>evs.slim.gb <span class="ot">&lt;-</span> evs.slim <span class="sc">%&gt;%</span> <span class="fu">filter</span>(country<span class="sc">==</span><span class="dv">826</span>)</span></code></pre></div>
 <p>We could also make the selection using the variable label instead of the numeric code, but because the ‘country’ variable is currently stored as a labelled <strong>numeric</strong> vector, that wouldn’t work straight away because operations are performed on the <em>values</em> rather than the <em>labels</em> (read all there is to know about vector types in <strong><em>R</em></strong> in <a href="https://r4ds.had.co.nz/vectors.html?q=typeof#vector-basics">R for Data Science</a>). Instead, we need to convert the variable to another type first, such as <strong>character</strong> (i.e. text) or labelled <strong>factor</strong> (i.e. categorical) variable (the <code>sjlabelled</code> package has functions to replace values of a variable with their associated value labels; read more about <a href="https://rdrr.io/cran/sjlabelled/man/as_factor.html"><code>as_factor()</code></a> and <a href="https://rdrr.io/cran/sjlabelled/man/as_label.html"><code>as_label()</code></a>. Setting the appropriate variable types for statistical analysis is a separate and complex data wrangling step and we’ll loot at it in more detail below. But it’s often useful to constrain variables to a given type as part of other data manipulation tasks; for example, here we can constrain the <tt>country</tt> variable to be of type <strong>character</strong>/<strong>label</strong> for the purpose of <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code>ing, so that we can refer to its levels by their label, without actually changing its type in the dataset:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a></span>
-<span id="cb25-2"><a href="#cb25-2"></a>evs.slim.gb <span class="ot">&lt;-</span> evs.slim <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">as_character</span>(country)<span class="sc">==</span><span class="st">"Great Britain"</span>)</span>
-<span id="cb25-3"><a href="#cb25-3"></a></span>
-<span id="cb25-4"><a href="#cb25-4"></a><span class="co"># Or, alternatively: </span></span>
-<span id="cb25-5"><a href="#cb25-5"></a><span class="co"># ... filter(as_label(country)=="Great Britain")</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a></span>
+<span id="cb20-2"><a href="#cb20-2"></a>evs.slim.gb <span class="ot">&lt;-</span> evs.slim <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">as_character</span>(country)<span class="sc">==</span><span class="st">"Great Britain"</span>)</span>
+<span id="cb20-3"><a href="#cb20-3"></a></span>
+<span id="cb20-4"><a href="#cb20-4"></a><span class="co"># Or, alternatively: </span></span>
+<span id="cb20-5"><a href="#cb20-5"></a><span class="co"># ... filter(as_label(country)=="Great Britain")</span></span></code></pre></div>
 <p>To combine more than one item, such as selecting not one but several countries (e.g. Great Britain and Germany), we can use the <code>%in%</code> operator and the <code>c(...)</code> function:</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a></span>
-<span id="cb26-2"><a href="#cb26-2"></a><span class="co"># Select if country label/name is equal to one of the labels/names listed inside c(...)</span></span>
-<span id="cb26-3"><a href="#cb26-3"></a></span>
-<span id="cb26-4"><a href="#cb26-4"></a>evs.slim.gb_de <span class="ot">&lt;-</span> evs.slim <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">as_character</span>(country) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Great Britain"</span>, <span class="st">"Germany"</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a></span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="co"># Select if country label/name is equal to one of the labels/names listed inside c(...)</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a></span>
+<span id="cb21-4"><a href="#cb21-4"></a>evs.slim.gb_de <span class="ot">&lt;-</span> evs.slim <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">as_character</span>(country) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Great Britain"</span>, <span class="st">"Germany"</span>))</span></code></pre></div>
 <p>The ‘filter’ command is highly flexible and also allows to combine multiple criteria if needed, say only British respondents aged between 25 and 35:</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a></span>
-<span id="cb27-2"><a href="#cb27-2"></a>evs.slim.gb<span class="fl">.25</span>_35 <span class="ot">&lt;-</span> evs.slim <span class="sc">%&gt;%</span> </span>
-<span id="cb27-3"><a href="#cb27-3"></a>  <span class="fu">filter</span>(<span class="fu">as_character</span>(country) <span class="sc">==</span> <span class="st">"Great Britain"</span>,</span>
-<span id="cb27-4"><a href="#cb27-4"></a>         age <span class="sc">&gt;=</span> <span class="dv">25</span> <span class="sc">&amp;</span> age <span class="sc">&lt;=</span> <span class="dv">35</span></span>
-<span id="cb27-5"><a href="#cb27-5"></a>         )</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a></span>
+<span id="cb22-2"><a href="#cb22-2"></a>evs.slim.gb<span class="fl">.25</span>_35 <span class="ot">&lt;-</span> evs.slim <span class="sc">%&gt;%</span> </span>
+<span id="cb22-3"><a href="#cb22-3"></a>  <span class="fu">filter</span>(<span class="fu">as_character</span>(country) <span class="sc">==</span> <span class="st">"Great Britain"</span>,</span>
+<span id="cb22-4"><a href="#cb22-4"></a>         age <span class="sc">&gt;=</span> <span class="dv">25</span> <span class="sc">&amp;</span> age <span class="sc">&lt;=</span> <span class="dv">35</span></span>
+<span id="cb22-5"><a href="#cb22-5"></a>         )</span></code></pre></div>
 </div>
 <div id="i-dont-need-all-the-objects-in-my-environment" class="section level2">
 <h2>I don’t need all the objects in my Environment</h2>
 <p>Saving different versions of the transformed <strong>evs</strong> dataset under different names in the working memory is useful for keeping track of intermediary transformations and cross-checking the changes we have made. But after a while the Environment becomes cluttered with objects that we no longer need. We can remove redundant objects from the Environment using the <code><a href="https://rdrr.io/r/base/rm.html">rm()</a></code>/<code><a href="https://rdrr.io/r/base/rm.html">remove()</a></code> function. Within the function we can list the objects we want to remove (e.g. <code>rm(evs.slim.gb_de, evs.slim)</code>; or we can remove all objects using <code>rm(list = ls())</code> (here the <code><a href="https://rdrr.io/r/base/ls.html">ls()</a></code> function writes a list of all the objects in the Environment, then <code><a href="https://rdrr.io/r/base/rm.html">rm()</a></code> is applied to that list); or we can remove all objects apart from one/few selected ones that we keep:</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a></span>
-<span id="cb28-2"><a href="#cb28-2"></a><span class="co"># Keep only the 'evs.slim.gb' data frame object</span></span>
-<span id="cb28-3"><a href="#cb28-3"></a></span>
-<span id="cb28-4"><a href="#cb28-4"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">setdiff</span>(<span class="fu">ls</span>(), <span class="st">"evs.slim.gb"</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a></span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="co"># Keep only the 'evs.slim.gb' data frame object</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a></span>
+<span id="cb23-4"><a href="#cb23-4"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">setdiff</span>(<span class="fu">ls</span>(), <span class="st">"evs.slim.gb"</span>))</span></code></pre></div>
 </div>
 <div id="i-want-to-make-basic-descriptive-summaries-of-my-data" class="section level2">
 <h2>I want to make basic descriptive summaries of my data</h2>
 <p>Data-frame summaries are great tools for getting a summary overview of a whole dataset. Apart from the <code>generate_dictionary()</code> function from the <code>labelled</code> package (which we have used before), the <code>dfSummary()</code> function from <code>summarytools</code> is another (probably nicer and more universally applicable) simple tool for generating a so-called “data dictionary”. The simplest way to use it is to open it in the output viewer using the <code>view()</code> function:</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a></span>
-<span id="cb29-2"><a href="#cb29-2"></a>evs.slim.gb <span class="sc">%&gt;%</span> summarytools<span class="sc">::</span><span class="fu">dfSummary</span>() <span class="sc">%&gt;%</span> <span class="fu">view</span>()</span>
-<span id="cb29-3"><a href="#cb29-3"></a></span>
-<span id="cb29-4"><a href="#cb29-4"></a><span class="co"># or equivalently: </span></span>
-<span id="cb29-5"><a href="#cb29-5"></a><span class="co"># view(dfSummary(evs.slim.gb))</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a></span>
+<span id="cb24-2"><a href="#cb24-2"></a>evs.slim.gb <span class="sc">%&gt;%</span> summarytools<span class="sc">::</span><span class="fu">dfSummary</span>() <span class="sc">%&gt;%</span> <span class="fu">view</span>()</span>
+<span id="cb24-3"><a href="#cb24-3"></a></span>
+<span id="cb24-4"><a href="#cb24-4"></a><span class="co"># or equivalently: </span></span>
+<span id="cb24-5"><a href="#cb24-5"></a><span class="co"># view(dfSummary(evs.slim.gb))</span></span></code></pre></div>
 <p>The resulting ‘data frame summary’ will look something like this:</p>
 <table>
 <colgroup>
@@ -544,7 +549,7 @@ pre.r::before {
 <td>country code (ISO 3166-1 numeric code)</td>
 <td>1 distinct value</td>
 <td>826 : 1788 (100.0%)</td>
-<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHUAAAAXCAQAAACfMchmAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfmARYHCyng0iTuAAAAYElEQVRYw+3XQQoAEBCF4Rk5nRs4oRvM9diibFDy5n272chfFFrFi/B6A0xl6onYDwXu4mZdpIqk13u7yobJ0QFmKiKmImIqIqYiYioiR6nTc9/2VvmCwv3blhwdYKYiapF5Becy9uLlAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDIyLTAxLTIyVDA3OjExOjQxKzAwOjAw17AtZgAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyMi0wMS0yMlQwNzoxMTo0MSswMDowMKbtldoAAAAASUVORK5CYII="></td>
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHUAAAAXCAQAAACfMchmAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfmARoLCSWYnkybAAAAYElEQVRYw+3XQQoAEBCF4Rk5nRs4oRvM9diibFDy5n272chfFFrFi/B6A0xl6onYDwXu4mZdpIqk13u7yobJ0QFmKiKmImIqIqYiYioiR6nTc9/2VvmCwv3blhwdYKYiapF5Becy9uLlAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDIyLTAxLTI2VDExOjA5OjM3KzAwOjAwhSf8XQAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyMi0wMS0yNlQxMTowOTozNyswMDowMPR6ROEAAAAASUVORK5CYII="></td>
 <td>0<br>
 (0.0%)</td>
 </tr>
@@ -561,7 +566,7 @@ IQR (CV) : 1 (0.3)</td>
 -1 : 9 ( 0.5%)<br>
 1 : 736 (41.2%)<br>
 2 : 1042 (58.3%)</td>
-<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEoAAABJBAMAAABoaq3sAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAD1BMVEX////9/v2mpqbw8PD///+xh0SBAAAAAnRSTlMAAHaTzTgAAAABYktHRACIBR1IAAAAB3RJTUUH5gEWBwsp4NIk7gAAAElJREFUSMdjYBi8QFEQLxhVNaoKhypBKqoarH4cVTU80hdxqpSwAnRVysZYgNGoqqGmirjYpn36ggN8rkd4Y1TVsFJFXJoYjAAAz4jll+G4P6AAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjItMDEtMjJUMDc6MTE6NDErMDA6MDDXsC1mAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIyLTAxLTIyVDA3OjExOjQxKzAwOjAwpu2V2gAAAABJRU5ErkJggg=="></td>
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEoAAABJBAMAAABoaq3sAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAD1BMVEX////9/v2mpqbw8PD///+xh0SBAAAAAnRSTlMAAHaTzTgAAAABYktHRACIBR1IAAAAB3RJTUUH5gEaCwklmJ5MmwAAAElJREFUSMdjYBi8QFEQLxhVNaoKhypBKqoarH4cVTU80hdxqpSwAnRVysZYgNGoqqGmirjYpn36ggN8rkd4Y1TVsFJFXJoYjAAAz4jll+G4P6AAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjItMDEtMjZUMTE6MDk6MzcrMDA6MDCFJ/xdAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIyLTAxLTI2VDExOjA5OjM3KzAwOjAw9HpE4QAAAABJRU5ErkJggg=="></td>
 <td>0<br>
 (0.0%)</td>
 </tr>
@@ -579,7 +584,7 @@ IQR (CV) : 0 (0.4)</td>
 2 : 1163 (65.0%)<br>
 3 : 191 (10.7%)<br>
 4 : 44 ( 2.5%)</td>
-<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFEAAABZBAMAAAC08tVoAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAD1BMVEX////9/v2mpqbw8PD///+xh0SBAAAAAnRSTlMAAHaTzTgAAAABYktHRACIBR1IAAAAB3RJTUUH5gEWBwsp4NIk7gAAAGVJREFUSMft0rENwCAMRFFGiDeIYQPYf7dIKZICjE9EKZDv16856VLapyxeByUlJF24IPObzmVpT5SUA4l/Sdw+Pdno7BcZUcaW+Jf+ezIi70WVktKS+JfEbeHJispCGVLiD9mhCypAHQHBzvIqAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDIyLTAxLTIyVDA3OjExOjQxKzAwOjAw17AtZgAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyMi0wMS0yMlQwNzoxMTo0MSswMDowMKbtldoAAAAASUVORK5CYII="></td>
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFEAAABZBAMAAAC08tVoAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAD1BMVEX////9/v2mpqbw8PD///+xh0SBAAAAAnRSTlMAAHaTzTgAAAABYktHRACIBR1IAAAAB3RJTUUH5gEaCwklmJ5MmwAAAGVJREFUSMft0rENwCAMRFFGiDeIYQPYf7dIKZICjE9EKZDv16856VLapyxeByUlJF24IPObzmVpT5SUA4l/Sdw+Pdno7BcZUcaW+Jf+ezIi70WVktKS+JfEbeHJispCGVLiD9mhCypAHQHBzvIqAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDIyLTAxLTI2VDExOjA5OjM3KzAwOjAwhSf8XQAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyMi0wMS0yNlQxMTowOTozNyswMDowMPR6ROEAAAAASUVORK5CYII="></td>
 <td>0<br>
 (0.0%)</td>
 </tr>
@@ -597,7 +602,7 @@ IQR (CV) : 1 (0.3)</td>
 2 : 977 (54.6%)<br>
 3 : 551 (30.8%)<br>
 4 : 202 (11.3%)</td>
-<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEYAAABZBAMAAABxgE/5AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAD1BMVEX////9/v2mpqbw8PD///+xh0SBAAAAAnRSTlMAAHaTzTgAAAABYktHRACIBR1IAAAAB3RJTUUH5gEWBwsp4NIk7gAAAFxJREFUSMft0rkNACAMA0BWyAgJG8D+u1HR8IQUQQrIrq+wZKcUL0xKYL415GSEzybDfGcsuxP5GNHSO9d9CsyTxrL7rY/xwoydYd43lt19P8aqyXNTmMDGsmmkNFZI/EVhm+jzAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDIyLTAxLTIyVDA3OjExOjQxKzAwOjAw17AtZgAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyMi0wMS0yMlQwNzoxMTo0MSswMDowMKbtldoAAAAASUVORK5CYII="></td>
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEYAAABZBAMAAABxgE/5AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAD1BMVEX////9/v2mpqbw8PD///+xh0SBAAAAAnRSTlMAAHaTzTgAAAABYktHRACIBR1IAAAAB3RJTUUH5gEaCwklmJ5MmwAAAFxJREFUSMft0rkNACAMA0BWyAgJG8D+u1HR8IQUQQrIrq+wZKcUL0xKYL415GSEzybDfGcsuxP5GNHSO9d9CsyTxrL7rY/xwoydYd43lt19P8aqyXNTmMDGsmmkNFZI/EVhm+jzAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDIyLTAxLTI2VDExOjA5OjM3KzAwOjAwhSf8XQAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyMi0wMS0yNlQxMTowOTozNyswMDowMPR6ROEAAAAASUVORK5CYII="></td>
 <td>0<br>
 (0.0%)</td>
 </tr>
@@ -616,7 +621,7 @@ IQR (CV) : 0 (0.4)</td>
 2 : 1205 (67.4%)<br>
 3 : 228 (12.8%)<br>
 4 : 58 ( 3.2%)</td>
-<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFMAAABrBAMAAAD5taPzAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAD1BMVEX////9/v2mpqbw8PD///+xh0SBAAAAAnRSTlMAAHaTzTgAAAABYktHRACIBR1IAAAAB3RJTUUH5gEWBwsp4NIk7gAAAHFJREFUWMPt1MsNgCAQRVFKkA507AD7780Y44LNfIho0HvXJ1HMw5TGaslmExTaldqyhYqYr3DRdYNC3TSwLMu1UTnzHeuoQH9MA3PJdo9MW2uuvoAa9OM0MJeue735xkKhr/+19WfXxypQqJsGljVKO5UOR/u8mOejAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDIyLTAxLTIyVDA3OjExOjQxKzAwOjAw17AtZgAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyMi0wMS0yMlQwNzoxMTo0MSswMDowMKbtldoAAAAASUVORK5CYII="></td>
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFMAAABrBAMAAAD5taPzAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAD1BMVEX////9/v2mpqbw8PD///+xh0SBAAAAAnRSTlMAAHaTzTgAAAABYktHRACIBR1IAAAAB3RJTUUH5gEaCwklmJ5MmwAAAHFJREFUWMPt1MsNgCAQRVFKkA507AD7780Y44LNfIho0HvXJ1HMw5TGaslmExTaldqyhYqYr3DRdYNC3TSwLMu1UTnzHeuoQH9MA3PJdo9MW2uuvoAa9OM0MJeue735xkKhr/+19WfXxypQqJsGljVKO5UOR/u8mOejAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDIyLTAxLTI2VDExOjA5OjM3KzAwOjAwhSf8XQAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyMi0wMS0yNlQxMTowOTozNyswMDowMPR6ROEAAAAASUVORK5CYII="></td>
 <td>0<br>
 (0.0%)</td>
 </tr>
@@ -635,7 +640,7 @@ IQR (CV) : 0 (0.4)</td>
 2 : 1263 (70.6%)<br>
 3 : 215 (12.0%)<br>
 4 : 49 ( 2.7%)</td>
-<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFcAAABrBAMAAADwXgOJAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAD1BMVEX////9/v2mpqbw8PD///+xh0SBAAAAAnRSTlMAAHaTzTgAAAABYktHRACIBR1IAAAAB3RJTUUH5gEWBwsp4NIk7gAAAHBJREFUWMPt1sENgCAUBFFKkA4AO8D+ezPEk/HAfkSUOHN+F8xCdG7OohdawODXsGLbcEoGvGYwuAM2rU6gzeMvRfGAWwkMvmLTkLzSqPFXCqevUQn8S2wa0tN7Fu/gcUAw+Cb+yMvPbzx4PDatbrZ2WmdV61Etag8AAAAldEVYdGRhdGU6Y3JlYXRlADIwMjItMDEtMjJUMDc6MTE6NDErMDA6MDDXsC1mAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIyLTAxLTIyVDA3OjExOjQxKzAwOjAwpu2V2gAAAABJRU5ErkJggg=="></td>
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFcAAABrBAMAAADwXgOJAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAD1BMVEX////9/v2mpqbw8PD///+xh0SBAAAAAnRSTlMAAHaTzTgAAAABYktHRACIBR1IAAAAB3RJTUUH5gEaCwklmJ5MmwAAAHBJREFUWMPt1sENgCAUBFFKkA4AO8D+ezPEk/HAfkSUOHN+F8xCdG7OohdawODXsGLbcEoGvGYwuAM2rU6gzeMvRfGAWwkMvmLTkLzSqPFXCqevUQn8S2wa0tN7Fu/gcUAw+Cb+yMvPbzx4PDatbrZ2WmdV61Etag8AAAAldEVYdGRhdGU6Y3JlYXRlADIwMjItMDEtMjZUMTE6MDk6MzcrMDA6MDCFJ/xdAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIyLTAxLTI2VDExOjA5OjM3KzAwOjAw9HpE4QAAAABJRU5ErkJggg=="></td>
 <td>0<br>
 (0.0%)</td>
 </tr>
@@ -655,7 +660,7 @@ IQR (CV) : 3 (0.3)</td>
 5 : 150 ( 8.4%)<br>
 6 : 122 ( 6.8%)<br>
 7 : 1052 (58.8%)</td>
-<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEoAAAB6BAMAAADqhNjvAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAD1BMVEX////9/v2mpqbw8PD///+xh0SBAAAAAnRSTlMAAHaTzTgAAAABYktHRACIBR1IAAAAB3RJTUUH5gEWBwsqedt1VAAAAHlJREFUWMPt1rERwCAMA0BW8Ag4G8D+u4UiRZoIcSliB6n+wncWnEuJG/dqIJc6utQ+iuuE4SwpH2Gm700qv+K2bTir/arU9FLbKK4ThrP8y/lUjenRI5JKorhtG476JfVKfdPCuYp6m0gluOVQbq/jOU3qV4rrRMScZ7xJju8UIcgAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjItMDEtMjJUMDc6MTE6NDErMDA6MDDXsC1mAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIyLTAxLTIyVDA3OjExOjQxKzAwOjAwpu2V2gAAAABJRU5ErkJggg=="></td>
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEoAAAB6BAMAAADqhNjvAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAD1BMVEX////9/v2mpqbw8PD///+xh0SBAAAAAnRSTlMAAHaTzTgAAAABYktHRACIBR1IAAAAB3RJTUUH5gEaCwklmJ5MmwAAAHlJREFUWMPt1rERwCAMA0BW8Ag4G8D+u4UiRZoIcSliB6n+wncWnEuJG/dqIJc6utQ+iuuE4SwpH2Gm700qv+K2bTir/arU9FLbKK4ThrP8y/lUjenRI5JKorhtG476JfVKfdPCuYp6m0gluOVQbq/jOU3qV4rrRMScZ7xJju8UIcgAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjItMDEtMjZUMTE6MDk6MzcrMDA6MDCFJ/xdAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIyLTAxLTI2VDExOjA5OjM3KzAwOjAw9HpE4QAAAABJRU5ErkJggg=="></td>
 <td>0<br>
 (0.0%)</td>
 </tr>
@@ -676,7 +681,7 @@ IQR (CV) : 5 (0.6)</td>
 5 : 77 ( 4.3%)<br>
 6 : 83 ( 4.6%)<br>
 7 : 517 (28.9%)</td>
-<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAACKBAMAAAAefdSnAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAD1BMVEX////9/v2mpqbw8PD///+xh0SBAAAAAnRSTlMAAHaTzTgAAAABYktHRACIBR1IAAAAB3RJTUUH5gEWBwsqedt1VAAAAHdJREFUSMft1sENgCAQBEBaoISDDqD/3jQaIx6skQONj93vPC7Z5YFz30S8DmEe+G4Ie6SCmLcQRgC2ax6qyPX4mURAAEu07dGE9XgiDAJsl0P9C6YOJW2ImfAUYImWPUIbon4LhH6A7ZqGKiP6X3KEcAOwxLezAKn19yhgz7JwAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDIyLTAxLTIyVDA3OjExOjQyKzAwOjAw5lg3+wAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyMi0wMS0yMlQwNzoxMTo0MiswMDowMJcFj0cAAAAASUVORK5CYII="></td>
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAACKBAMAAAAefdSnAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAD1BMVEX////9/v2mpqbw8PD///+xh0SBAAAAAnRSTlMAAHaTzTgAAAABYktHRACIBR1IAAAAB3RJTUUH5gEaCwkmAZcdIQAAAHdJREFUSMft1sENgCAQBEBaoISDDqD/3jQaIx6skQONj93vPC7Z5YFz30S8DmEe+G4Ie6SCmLcQRgC2ax6qyPX4mURAAEu07dGE9XgiDAJsl0P9C6YOJW2ImfAUYImWPUIbon4LhH6A7ZqGKiP6X3KEcAOwxLezAKn19yhgz7JwAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDIyLTAxLTI2VDExOjA5OjM3KzAwOjAwhSf8XQAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyMi0wMS0yNlQxMTowOTozNyswMDowMPR6ROEAAAAASUVORK5CYII="></td>
 <td>0<br>
 (0.0%)</td>
 </tr>
@@ -690,7 +695,7 @@ min &lt; med &lt; max:<br>
 -2 &lt; 5 &lt; 10<br>
 IQR (CV) : 2 (0.5)</td>
 <td>12 distinct values</td>
-<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG0AAABPBAMAAAATslZYAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAD1BMVEX////9/v2mpqbw8PD///+xh0SBAAAAAnRSTlMAAHaTzTgAAAABYktHRACIBR1IAAAAB3RJTUUH5gEWBwsqedt1VAAAAIRJREFUWMPt1g0KgCAMBWCPUDcoO8Luf7cSGowxawtBk/dABPFj/iCY0vxZK8lXdmN8eXEHEcHBwcHBwcHB/c1Zfx+Ps2qO6vQevU7XbO3ynaiT83s5eaYRJ2uy0/fjdXr9cG0c30fUyX4UV/ayGU6/O+1Kb7mn9tXxWqKOWy+Xg2E3c05ioVn8Wl0ZtAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wMS0yMlQwNzoxMTo0MiswMDowMOZYN/sAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDEtMjJUMDc6MTE6NDIrMDA6MDCXBY9HAAAAAElFTkSuQmCC"></td>
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG0AAABPBAMAAAATslZYAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAD1BMVEX////9/v2mpqbw8PD///+xh0SBAAAAAnRSTlMAAHaTzTgAAAABYktHRACIBR1IAAAAB3RJTUUH5gEaCwkmAZcdIQAAAIRJREFUWMPt1g0KgCAMBWCPUDcoO8Luf7cSGowxawtBk/dABPFj/iCY0vxZK8lXdmN8eXEHEcHBwcHBwcHB/c1Zfx+Ps2qO6vQevU7XbO3ynaiT83s5eaYRJ2uy0/fjdXr9cG0c30fUyX4UV/ayGU6/O+1Kb7mn9tXxWqKOWy+Xg2E3c05ioVn8Wl0ZtAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wMS0yNlQxMTowOTozOCswMDowMHNvjLQAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDEtMjZUMTE6MDk6MzgrMDA6MDACMjQIAAAAAElFTkSuQmCC"></td>
 <td>0<br>
 (0.0%)</td>
 </tr>
@@ -704,7 +709,7 @@ Mean : 1.6<br>
 Max : 2</td>
 <td>1 : 792 (44.3%)<br>
 2 : 996 (55.7%)</td>
-<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEcAAAAnBAMAAACvakh2AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAD1BMVEX////9/v2mpqbw8PD///+xh0SBAAAAAnRSTlMAAHaTzTgAAAABYktHRACIBR1IAAAAB3RJTUUH5gEWBwsqedt1VAAAADdJREFUOMtjYBicQAk7UBQEAQGoImVjrGBU0RBQRFQEC+ID1FekhA8o4PcdBIwqGtSKiIrgwQYAVEaXrNzgWngAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjItMDEtMjJUMDc6MTE6NDIrMDA6MDDmWDf7AAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIyLTAxLTIyVDA3OjExOjQyKzAwOjAwlwWPRwAAAABJRU5ErkJggg=="></td>
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEcAAAAnBAMAAACvakh2AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAD1BMVEX////9/v2mpqbw8PD///+xh0SBAAAAAnRSTlMAAHaTzTgAAAABYktHRACIBR1IAAAAB3RJTUUH5gEaCwkmAZcdIQAAADdJREFUOMtjYBicQAk7UBQEAQGoImVjrGBU0RBQRFQEC+ID1FekhA8o4PcdBIwqGtSKiIrgwQYAVEaXrNzgWngAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjItMDEtMjZUMTE6MDk6MzgrMDA6MDBzb4y0AAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIyLTAxLTI2VDExOjA5OjM4KzAwOjAwAjI0CAAAAABJRU5ErkJggg=="></td>
 <td>0<br>
 (0.0%)</td>
 </tr>
@@ -718,7 +723,7 @@ min &lt; med &lt; max:<br>
 -2 &lt; 54 &lt; 82<br>
 IQR (CV) : 28 (0.3)</td>
 <td>67 distinct values</td>
-<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG0AAABPBAMAAAATslZYAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAD1BMVEX////9/v2mpqbw8PD///+xh0SBAAAAAnRSTlMAAHaTzTgAAAABYktHRACIBR1IAAAAB3RJTUUH5gEWBwsqedt1VAAAAKZJREFUWMPt1w0KgCAMBtCOUJ6g5g3a/e+WrtJ+lNyIENsIKvieg1iFXdd+DQ8FAKf7vtBZnJnOUCuBQ0/UNeDcCEwljnLBublBLHM+Fxz6o9RRE4Fb8wAyF8/q0g62keE6u7WsxxkaMYG75A/OLTmKHOLbbn1/+O6e/42jRyZwdKnuA2fid53nUnl16v7ocv+9R5fJq6vZxf0kz9mwr6jbAbN213ItsAXK/GBpGPQAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjItMDEtMjJUMDc6MTE6NDIrMDA6MDDmWDf7AAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIyLTAxLTIyVDA3OjExOjQyKzAwOjAwlwWPRwAAAABJRU5ErkJggg=="></td>
+<td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG0AAABPBAMAAAATslZYAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAD1BMVEX////9/v2mpqbw8PD///+xh0SBAAAAAnRSTlMAAHaTzTgAAAABYktHRACIBR1IAAAAB3RJTUUH5gEaCwkmAZcdIQAAAKZJREFUWMPt1w0KgCAMBtCOUJ6g5g3a/e+WrtJ+lNyIENsIKvieg1iFXdd+DQ8FAKf7vtBZnJnOUCuBQ0/UNeDcCEwljnLBublBLHM+Fxz6o9RRE4Fb8wAyF8/q0g62keE6u7WsxxkaMYG75A/OLTmKHOLbbn1/+O6e/42jRyZwdKnuA2fid53nUnl16v7ocv+9R5fJq6vZxf0kz9mwr6jbAbN213ItsAXK/GBpGPQAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjItMDEtMjZUMTE6MDk6MzgrMDA6MDBzb4y0AAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIyLTAxLTI2VDExOjA5OjM4KzAwOjAwAjI0CAAAAABJRU5ErkJggg=="></td>
 <td>0<br>
 (0.0%)</td>
 </tr>
@@ -726,11 +731,11 @@ IQR (CV) : 28 (0.3)</td>
 </table>
 <p>This output can then be opened in a separate web browser window and saved as an HTML file (or saving can be done automatically by replacing the <code>view()</code> command with <code>print( file = "somename.html")</code>). This is a good way of getting a detailed overview of an entire dataset and identify where data transformations are necessary. It is also a nice way of producing a codebook for an already cleansed dataset.</p>
 <p>The <code>sjmisc</code> package also has a function called <code>descr()</code> for summarising datasets, which is particularly useful if you have labelled data imported from other software. By default, without any additional settings, a call to <code><a href="https://strengejacke.github.io/sjmisc/reference/descr.html">sjmisc::descr()</a></code> displays a wide variety of summary statistics (see the <a href="https://rdrr.io/cran/sjmisc/man/descr.html">function description</a>). Using the ‘show’ argument, we can select only those that we are interested in, for example:</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a></span>
-<span id="cb30-2"><a href="#cb30-2"></a><span class="co"># Useful variables were selected from those available in the function</span></span>
-<span id="cb30-3"><a href="#cb30-3"></a><span class="co"># 'Character' type variables are not included in tables in this function, so if it is appropriate for your purposes, any 'character' variables may need coercing to 'factor' or 'label' first for inclusion</span></span>
-<span id="cb30-4"><a href="#cb30-4"></a></span>
-<span id="cb30-5"><a href="#cb30-5"></a>evs.slim.gb <span class="sc">%&gt;%</span> sjmisc<span class="sc">::</span><span class="fu">descr</span>(<span class="at">show =</span> <span class="fu">c</span>(<span class="st">"type"</span>, <span class="st">"label"</span>, <span class="st">"range"</span>, <span class="st">"md"</span>, <span class="st">"NA.prc"</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a></span>
+<span id="cb25-2"><a href="#cb25-2"></a><span class="co"># Useful variables were selected from those available in the function</span></span>
+<span id="cb25-3"><a href="#cb25-3"></a><span class="co"># 'Character' type variables are not included in tables in this function, so if it is appropriate for your purposes, any 'character' variables may need coercing to 'factor' or 'label' first for inclusion</span></span>
+<span id="cb25-4"><a href="#cb25-4"></a></span>
+<span id="cb25-5"><a href="#cb25-5"></a>evs.slim.gb <span class="sc">%&gt;%</span> sjmisc<span class="sc">::</span><span class="fu">descr</span>(<span class="at">show =</span> <span class="fu">c</span>(<span class="st">"type"</span>, <span class="st">"label"</span>, <span class="st">"range"</span>, <span class="st">"md"</span>, <span class="st">"NA.prc"</span>))</span></code></pre></div>
 <table>
 <thead><tr>
 <th style="text-align:left;">
@@ -1013,16 +1018,16 @@ age: respondent (constructed) (Q64)
 <p><br></p>
 <p>From these tables we find, for instance, that there are no missing data points, but there are many negative values in each variable that probably need to be set as missing values (NAs), that the variable type probably need changing for categorical variables, and that variables would benefit from some more intuitive names.</p>
 <p>The <code>count()</code> and <code>summarise()</code> functions (from <code>dplyr</code>) come handy for quick tabulations of single variables. For example:</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a></span>
-<span id="cb31-2"><a href="#cb31-2"></a>evs.slim.gb <span class="sc">%&gt;%</span> <span class="fu">count</span>(v31)</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a></span>
+<span id="cb26-2"><a href="#cb26-2"></a>evs.slim.gb <span class="sc">%&gt;%</span> <span class="fu">count</span>(v31)</span></code></pre></div>
 <pre><code>  v31    n
 1  -2    1
 2  -1    9
 3   1  736
 4   2 1042</code></pre>
 <p>The same frequency table can be produced with a combination of <code>group_by()</code> and <code>summarise()</code>:</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a></span>
-<span id="cb33-2"><a href="#cb33-2"></a>evs.slim.gb <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(v31) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>())</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a></span>
+<span id="cb28-2"><a href="#cb28-2"></a>evs.slim.gb <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(v31) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>())</span></code></pre></div>
 <pre><code># A tibble: 4 x 2
     v31     n
   &lt;dbl&gt; &lt;int&gt;
@@ -1032,267 +1037,35 @@ age: respondent (constructed) (Q64)
 4     2  1042</code></pre>
 <p>This latter option is a bit of an overkill compared to <code>count()</code>, but has the advantage that it is very flexible and can be expanded to achieve complex summaries by grouping variables, as we’ll see later.</p>
 <p>In either case, to see value labels instead of numeric values, we could coerce the variable type to be treated for the purpose of this operation as a labelled ‘factor’ variable:</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a></span>
-<span id="cb35-2"><a href="#cb35-2"></a>evs.slim.gb <span class="sc">%&gt;%</span> <span class="fu">count</span>( <span class="fu">as_label</span>(v31) )</span>
-<span id="cb35-3"><a href="#cb35-3"></a></span>
-<span id="cb35-4"><a href="#cb35-4"></a><span class="co"># or equivalently:</span></span>
-<span id="cb35-5"><a href="#cb35-5"></a><span class="co"># evs.slim.gb %&gt;% as_label(v31) %&gt;% count(v31)</span></span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a></span>
+<span id="cb30-2"><a href="#cb30-2"></a>evs.slim.gb <span class="sc">%&gt;%</span> <span class="fu">count</span>( <span class="fu">as_label</span>(v31) )</span>
+<span id="cb30-3"><a href="#cb30-3"></a></span>
+<span id="cb30-4"><a href="#cb30-4"></a><span class="co"># or equivalently:</span></span>
+<span id="cb30-5"><a href="#cb30-5"></a><span class="co"># evs.slim.gb %&gt;% as_label(v31) %&gt;% count(v31)</span></span></code></pre></div>
 <pre><code>               as_label(v31)    n
 1                  no answer    1
 2                  dont know    9
 3 most people can be trusted  736
 4     can not be too careful 1042</code></pre>
 <p>Function <code>frq()</code> (from <code>sjmisc::</code>) produces more complex frequency tables that handle labelled variables better. For example, this is a frequency table of the same variable <tt>v31</tt>:</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a></span>
-<span id="cb37-2"><a href="#cb37-2"></a>evs.slim.gb <span class="sc">%&gt;%</span> <span class="fu">frq</span>(v31)</span></code></pre></div>
-<table class="kable_wrapper"><tbody><tr>
-<td>
-<table>
-<thead><tr>
-<th style="text-align:right;">
-val
-</th>
-<th style="text-align:left;">
-label
-</th>
-<th style="text-align:right;">
-frq
-</th>
-<th style="text-align:right;">
-raw.prc
-</th>
-<th style="text-align:right;">
-valid.prc
-</th>
-<th style="text-align:right;">
-cum.prc
-</th>
-</tr></thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
--10
-</td>
-<td style="text-align:left;">
-multiple answers Mail
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
--9
-</td>
-<td style="text-align:left;">
-no follow-up
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
--8
-</td>
-<td style="text-align:left;">
-follow-up non response
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
--5
-</td>
-<td style="text-align:left;">
-other missing
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
--4
-</td>
-<td style="text-align:left;">
-item not included
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
--3
-</td>
-<td style="text-align:left;">
-not applicable
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
--2
-</td>
-<td style="text-align:left;">
-no answer
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-<td style="text-align:right;">
-0.06
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
--1
-</td>
-<td style="text-align:left;">
-dont know
-</td>
-<td style="text-align:right;">
-9
-</td>
-<td style="text-align:right;">
-0.50
-</td>
-<td style="text-align:right;">
-0.50
-</td>
-<td style="text-align:right;">
-0.56
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-most people can be trusted
-</td>
-<td style="text-align:right;">
-736
-</td>
-<td style="text-align:right;">
-41.16
-</td>
-<td style="text-align:right;">
-41.16
-</td>
-<td style="text-align:right;">
-41.72
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-can not be too careful
-</td>
-<td style="text-align:right;">
-1042
-</td>
-<td style="text-align:right;">
-58.28
-</td>
-<td style="text-align:right;">
-58.28
-</td>
-<td style="text-align:right;">
-100.00
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr></tbody></table>
+<div class="sourceCode" id="cb32"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a></span>
+<span id="cb32-2"><a href="#cb32-2"></a>evs.slim.gb <span class="sc">%&gt;%</span> <span class="fu">frq</span>(v31)</span></code></pre></div>
+<pre><code>people can be trusted/can't be too careful (Q7) (v31) &lt;numeric&gt; 
+# total N=1788 valid N=1788 mean=1.57 sd=0.53
+
+Value |                      Label |    N | Raw % | Valid % | Cum. %
+--------------------------------------------------------------------
+  -10 |      multiple answers Mail |    0 |  0.00 |    0.00 |   0.00
+   -9 |               no follow-up |    0 |  0.00 |    0.00 |   0.00
+   -8 |     follow-up non response |    0 |  0.00 |    0.00 |   0.00
+   -5 |              other missing |    0 |  0.00 |    0.00 |   0.00
+   -4 |          item not included |    0 |  0.00 |    0.00 |   0.00
+   -3 |             not applicable |    0 |  0.00 |    0.00 |   0.00
+   -2 |                  no answer |    1 |  0.06 |    0.06 |   0.06
+   -1 |                  dont know |    9 |  0.50 |    0.50 |   0.56
+    1 | most people can be trusted |  736 | 41.16 |   41.16 |  41.72
+    2 |     can not be too careful | 1042 | 58.28 |   58.28 | 100.00
+ &lt;NA&gt; |                       &lt;NA&gt; |    0 |  0.00 |    &lt;NA&gt; |   &lt;NA&gt;</code></pre>
 <p>We see, for instance, that levels (categories) coded with negative values (-1 to -10) can indeed be excluded from the analysis by setting them to NA (missing). Recoding variables involves a lot of subjective decision-making; for example, in some contexts it may make sense to include “don’t know” answers into the analysis because <em>not knowing</em> something may have a substantive interpretation relevant to the research question. In the case above, however, the small number of “not knowers” can safely be excluded from the analysis. We’ll look at how to recode variables in a moment, but let’s move from general to specific and first address the issue of having very uninformative variable names.</p>
 </div>
 <div id="i-need-to-rename-my-variables" class="section level2">
@@ -1300,128 +1073,46 @@ NA
 <p>It’s always a good idea to rename the variables you want to use to names that are more intuitive to you. Often, even when variables have apparently more human-readable names, they may not accurately reflect what the variable entails.</p>
 <p>There are several convenient options for renaming variables (columns), such as the <code>rename()</code> and <code>rename_with()</code> functions in <code>dplyr</code> or the <code>var_rename()</code>/<code>rename_variables()</code> function in <code>sjmisc</code>. The main difference is that in case of <code>rename()</code> the command is <em>new variable name</em> = <em>old variable name</em>, whereas in <code>var_rename()</code> it is the other way around, <em>old</em> = <em>new</em>.</p>
 <p>Let’s rename the <strong>v31</strong> variable we tabulated earlier (labelled: “people can be trusted/can’t be too careful (Q7)” ) to <strong>ppl.trust.yn</strong> (to mind mind some shorthand for “people can be trusted, yes or no”). The new name will be longer to type, so it’s a trade-off between brevity and clarity. Unless you are very intimately familiar with a survey and it’s variable naming conventions, I recommend erring on the side of clarity:</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a></span>
-<span id="cb38-2"><a href="#cb38-2"></a>evs.slim.gb <span class="ot">&lt;-</span> evs.slim.gb <span class="sc">%&gt;%</span></span>
-<span id="cb38-3"><a href="#cb38-3"></a>  <span class="fu">rename</span>(<span class="at">ppl.trust.yn =</span> v31)</span>
-<span id="cb38-4"><a href="#cb38-4"></a></span>
-<span id="cb38-5"><a href="#cb38-5"></a><span class="co"># Or:</span></span>
-<span id="cb38-6"><a href="#cb38-6"></a><span class="co"># ... %&gt;% sjmisc::var_rename(v31 = ppl.trust.yn)</span></span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a></span>
+<span id="cb34-2"><a href="#cb34-2"></a>evs.slim.gb <span class="ot">&lt;-</span> evs.slim.gb <span class="sc">%&gt;%</span></span>
+<span id="cb34-3"><a href="#cb34-3"></a>  <span class="fu">rename</span>(<span class="at">ppl.trust.yn =</span> v31)</span>
+<span id="cb34-4"><a href="#cb34-4"></a></span>
+<span id="cb34-5"><a href="#cb34-5"></a><span class="co"># Or:</span></span>
+<span id="cb34-6"><a href="#cb34-6"></a><span class="co"># ... %&gt;% sjmisc::var_rename(v31 = ppl.trust.yn)</span></span></code></pre></div>
 <p>We can rename several variables in one go. For example, let’s rename <strong><tt>v54</tt></strong> to <strong><tt>rel.now</tt></strong>, <strong><tt>v55</tt></strong> to <strong><tt>rel.as.child</tt></strong>, <strong><tt>v102</tt></strong> to <strong><tt>pol.lr</tt></strong>, and <strong><tt>v225</tt></strong> to <strong><tt>sex</tt></strong>:</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a></span>
-<span id="cb39-2"><a href="#cb39-2"></a><span class="co"># Break down command chains into separate lines to make complex code easier to read and troubleshoot</span></span>
-<span id="cb39-3"><a href="#cb39-3"></a></span>
-<span id="cb39-4"><a href="#cb39-4"></a>evs.slim.gb <span class="ot">&lt;-</span> evs.slim.gb <span class="sc">%&gt;%</span> </span>
-<span id="cb39-5"><a href="#cb39-5"></a>  <span class="fu">rename</span>(</span>
-<span id="cb39-6"><a href="#cb39-6"></a>    <span class="at">rel.now =</span> v54,</span>
-<span id="cb39-7"><a href="#cb39-7"></a>    <span class="at">rel.as.child =</span> v55,</span>
-<span id="cb39-8"><a href="#cb39-8"></a>    <span class="at">pol.lr =</span> v102,</span>
-<span id="cb39-9"><a href="#cb39-9"></a>    <span class="at">sex =</span> v225</span>
-<span id="cb39-10"><a href="#cb39-10"></a>    )</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a></span>
+<span id="cb35-2"><a href="#cb35-2"></a>evs.slim.gb <span class="ot">&lt;-</span> evs.slim.gb <span class="sc">%&gt;%</span> </span>
+<span id="cb35-3"><a href="#cb35-3"></a>  <span class="fu">rename</span>(</span>
+<span id="cb35-4"><a href="#cb35-4"></a>    <span class="at">rel.now =</span> v54,</span>
+<span id="cb35-5"><a href="#cb35-5"></a>    <span class="at">rel.as.child =</span> v55,</span>
+<span id="cb35-6"><a href="#cb35-6"></a>    <span class="at">pol.lr =</span> v102,</span>
+<span id="cb35-7"><a href="#cb35-7"></a>    <span class="at">sex =</span> v225</span>
+<span id="cb35-8"><a href="#cb35-8"></a>    )</span>
+<span id="cb35-9"><a href="#cb35-9"></a></span>
+<span id="cb35-10"><a href="#cb35-10"></a><span class="co"># Note: Break down command chains into separate lines to make complex code easier to read and troubleshoot</span></span></code></pre></div>
 <p>We now have more intuitive variable names, but as we transform/recode our variables it may come useful to rename some of them again later to better reflect their actual meaning. Also, note that we haven’t renamed all the variables - <tt>v33</tt>, <tt>v35</tt>, <tt>v36</tt> and <tt>v37</tt> remain unchanged - and that’s for a reason, as we’ll see in a moment.</p>
 </div>
 <div id="i-need-to-assign-missing-na-values" class="section level2">
 <h2>I need to assign missing (NA) values</h2>
 <p>We’ve seen in the tables above that negative values need recoding to missing values, so that they are not included in our statistical analyses. Missing values in <strong><em>R</em></strong> are denoted with <em>NA</em>. Let’s recode the variable we have just renamed to <strong><tt>ppl.trust.yn</tt></strong>, and which we have tabulated earlier [Code bloc 21]. The <code>set_na()</code> function from <code>sjlabelled</code> is very useful for this purpose:</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a></span>
-<span id="cb40-2"><a href="#cb40-2"></a><span class="co"># Setting 'as.tag = TRUE' let's us store the labels of the missing values, just in case we'll need them again</span></span>
-<span id="cb40-3"><a href="#cb40-3"></a> </span>
-<span id="cb40-4"><a href="#cb40-4"></a>evs.slim.gb <span class="ot">&lt;-</span> evs.slim.gb <span class="sc">%&gt;%</span> <span class="fu">set_na</span>(ppl.trust.yn, <span class="at">na =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span><span class="sc">:-</span><span class="dv">10</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a></span>
+<span id="cb36-2"><a href="#cb36-2"></a>evs.slim.gb <span class="ot">&lt;-</span> evs.slim.gb <span class="sc">%&gt;%</span> <span class="fu">set_na</span>(ppl.trust.yn, <span class="at">na =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span><span class="sc">:-</span><span class="dv">10</span>))</span>
+<span id="cb36-3"><a href="#cb36-3"></a></span>
+<span id="cb36-4"><a href="#cb36-4"></a><span class="co"># Adding option 'as.tag = TRUE' let's us store the labels of the missing values, just in case we'll need them again</span></span></code></pre></div>
 <p>The result is:</p>
-<div class="sourceCode" id="cb41"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a></span>
-<span id="cb41-2"><a href="#cb41-2"></a>evs.slim.gb <span class="sc">%&gt;%</span> <span class="fu">frq</span>(ppl.trust.yn)</span></code></pre></div>
-<table class="kable_wrapper"><tbody><tr>
-<td>
-<table>
-<thead><tr>
-<th style="text-align:right;">
-val
-</th>
-<th style="text-align:left;">
-label
-</th>
-<th style="text-align:right;">
-frq
-</th>
-<th style="text-align:right;">
-raw.prc
-</th>
-<th style="text-align:right;">
-valid.prc
-</th>
-<th style="text-align:right;">
-cum.prc
-</th>
-</tr></thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-most people can be trusted
-</td>
-<td style="text-align:right;">
-736
-</td>
-<td style="text-align:right;">
-41.16
-</td>
-<td style="text-align:right;">
-41.39
-</td>
-<td style="text-align:right;">
-41.39
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-can not be too careful
-</td>
-<td style="text-align:right;">
-1042
-</td>
-<td style="text-align:right;">
-58.28
-</td>
-<td style="text-align:right;">
-58.61
-</td>
-<td style="text-align:right;">
-100.00
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:right;">
-0.56
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr></tbody></table>
+<div class="sourceCode" id="cb37"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a></span>
+<span id="cb37-2"><a href="#cb37-2"></a>evs.slim.gb <span class="sc">%&gt;%</span> <span class="fu">frq</span>(ppl.trust.yn)</span></code></pre></div>
+<pre><code>people can be trusted/can't be too careful (Q7) (ppl.trust.yn) &lt;numeric&gt; 
+# total N=1788 valid N=1778 mean=1.59 sd=0.49
+
+Value |                      Label |    N | Raw % | Valid % | Cum. %
+--------------------------------------------------------------------
+    1 | most people can be trusted |  736 | 41.16 |   41.39 |  41.39
+    2 |     can not be too careful | 1042 | 58.28 |   58.61 | 100.00
+ &lt;NA&gt; |                       &lt;NA&gt; |   10 |  0.56 |    &lt;NA&gt; |   &lt;NA&gt;</code></pre>
 <p>Instead of recoding variables individually, we can recode all the negative values in a dataset to missing:</p>
-<div class="sourceCode" id="cb42"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a></span>
-<span id="cb42-2"><a href="#cb42-2"></a><span class="do">## recode all negative values to missing in the entire dataset, keeping labels as tags:</span></span>
-<span id="cb42-3"><a href="#cb42-3"></a></span>
-<span id="cb42-4"><a href="#cb42-4"></a>evs.slim.gb <span class="ot">&lt;-</span> evs.slim.gb <span class="sc">%&gt;%</span> <span class="fu">set_na</span>(<span class="at">na =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span><span class="sc">:-</span><span class="dv">99</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a></span>
+<span id="cb39-2"><a href="#cb39-2"></a>evs.slim.gb <span class="ot">&lt;-</span> evs.slim.gb <span class="sc">%&gt;%</span> <span class="fu">set_na</span>(<span class="at">na =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span><span class="sc">:-</span><span class="dv">99</span>))</span></code></pre></div>
 </div>
 <div id="i-need-to-recode-variables" class="section level2">
 <h2>I need to recode variables</h2>
@@ -1430,8 +1121,9 @@ NA
 <div id="reordering-the-values-of-ordinal-variables" class="section level3">
 <h3>(1) reordering the values of ordinal variables</h3>
 <p>We can very easily reverse the value order in ordered variables using the <code>rec()</code> function. In our data, we have several variables that fall into this category (<tt>v33</tt> to <tt>v37</tt>, <tt>rel.now</tt> and <tt>rel.as.child</tt>). Additionally, we can also reverse the order of values of binary variables (e.g. <tt>ppl.trust.yn</tt>). Before actually altering our data, we can check what the results will be:</p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a>evs.slim.gb <span class="sc">%&gt;%</span> </span>
-<span id="cb43-2"><a href="#cb43-2"></a>  sjmisc<span class="sc">::</span><span class="fu">rec</span>(v33, <span class="at">rec =</span> <span class="st">"rev"</span>) <span class="sc">%&gt;%</span> <span class="fu">frq</span>(v33, v33_r)</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a></span>
+<span id="cb40-2"><a href="#cb40-2"></a>evs.slim.gb <span class="sc">%&gt;%</span> </span>
+<span id="cb40-3"><a href="#cb40-3"></a>  sjmisc<span class="sc">::</span><span class="fu">rec</span>(v33, <span class="at">rec =</span> <span class="st">"rev"</span>) <span class="sc">%&gt;%</span> <span class="fu">frq</span>(v33, v33_r)</span></code></pre></div>
 <pre><code>how much you trust: people in your neighborhood (Q8B) (v33) &lt;numeric&gt; 
 # total N=1788 valid N=1772 mean=1.95 sd=0.64
 
@@ -1453,645 +1145,61 @@ Value |                  Label |    N | Raw % | Valid % | Cum. %
     3 |         trust somewhat | 1163 | 65.04 |   65.63 |  78.89
     4 |       trust completely |  374 | 20.92 |   21.11 | 100.00
  &lt;NA&gt; |                   &lt;NA&gt; |   16 |  0.89 |    &lt;NA&gt; |   &lt;NA&gt;</code></pre>
-<table class="kable_wrapper"><tbody><tr>
-<td>
-<table>
-<thead><tr>
-<th style="text-align:right;">
-val
-</th>
-<th style="text-align:left;">
-label
-</th>
-<th style="text-align:right;">
-frq
-</th>
-<th style="text-align:right;">
-raw.prc
-</th>
-<th style="text-align:right;">
-valid.prc
-</th>
-<th style="text-align:right;">
-cum.prc
-</th>
-</tr></thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-trust completely
-</td>
-<td style="text-align:right;">
-374
-</td>
-<td style="text-align:right;">
-20.92
-</td>
-<td style="text-align:right;">
-21.11
-</td>
-<td style="text-align:right;">
-21.11
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-trust somewhat
-</td>
-<td style="text-align:right;">
-1163
-</td>
-<td style="text-align:right;">
-65.04
-</td>
-<td style="text-align:right;">
-65.63
-</td>
-<td style="text-align:right;">
-86.74
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-do not trust very much
-</td>
-<td style="text-align:right;">
-191
-</td>
-<td style="text-align:right;">
-10.68
-</td>
-<td style="text-align:right;">
-10.78
-</td>
-<td style="text-align:right;">
-97.52
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:left;">
-do not trust at all
-</td>
-<td style="text-align:right;">
-44
-</td>
-<td style="text-align:right;">
-2.46
-</td>
-<td style="text-align:right;">
-2.48
-</td>
-<td style="text-align:right;">
-100.00
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:right;">
-16
-</td>
-<td style="text-align:right;">
-0.89
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-<td>
-<table>
-<thead><tr>
-<th style="text-align:right;">
-val
-</th>
-<th style="text-align:left;">
-label
-</th>
-<th style="text-align:right;">
-frq
-</th>
-<th style="text-align:right;">
-raw.prc
-</th>
-<th style="text-align:right;">
-valid.prc
-</th>
-<th style="text-align:right;">
-cum.prc
-</th>
-</tr></thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-do not trust at all
-</td>
-<td style="text-align:right;">
-44
-</td>
-<td style="text-align:right;">
-2.46
-</td>
-<td style="text-align:right;">
-2.48
-</td>
-<td style="text-align:right;">
-2.48
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-do not trust very much
-</td>
-<td style="text-align:right;">
-191
-</td>
-<td style="text-align:right;">
-10.68
-</td>
-<td style="text-align:right;">
-10.78
-</td>
-<td style="text-align:right;">
-13.26
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-trust somewhat
-</td>
-<td style="text-align:right;">
-1163
-</td>
-<td style="text-align:right;">
-65.04
-</td>
-<td style="text-align:right;">
-65.63
-</td>
-<td style="text-align:right;">
-78.89
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:left;">
-trust completely
-</td>
-<td style="text-align:right;">
-374
-</td>
-<td style="text-align:right;">
-20.92
-</td>
-<td style="text-align:right;">
-21.11
-</td>
-<td style="text-align:right;">
-100.00
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:right;">
-16
-</td>
-<td style="text-align:right;">
-0.89
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr></tbody></table>
-<div class="sourceCode" id="cb45"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a>evs.slim.gb <span class="sc">%&gt;%</span> </span>
-<span id="cb45-2"><a href="#cb45-2"></a>  sjmisc<span class="sc">::</span><span class="fu">rec</span>(rel.now, <span class="at">rec =</span> <span class="st">"rev"</span>) <span class="sc">%&gt;%</span>  <span class="fu">frq</span>(rel.now, rel.now_r)</span></code></pre></div>
-<table class="kable_wrapper"><tbody><tr>
-<td>
-<table>
-<thead><tr>
-<th style="text-align:right;">
-val
-</th>
-<th style="text-align:left;">
-label
-</th>
-<th style="text-align:right;">
-frq
-</th>
-<th style="text-align:right;">
-raw.prc
-</th>
-<th style="text-align:right;">
-valid.prc
-</th>
-<th style="text-align:right;">
-cum.prc
-</th>
-</tr></thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-more than once week
-</td>
-<td style="text-align:right;">
-78
-</td>
-<td style="text-align:right;">
-4.36
-</td>
-<td style="text-align:right;">
-4.36
-</td>
-<td style="text-align:right;">
-4.36
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-once a week
-</td>
-<td style="text-align:right;">
-127
-</td>
-<td style="text-align:right;">
-7.10
-</td>
-<td style="text-align:right;">
-7.10
-</td>
-<td style="text-align:right;">
-11.47
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-once a month
-</td>
-<td style="text-align:right;">
-104
-</td>
-<td style="text-align:right;">
-5.82
-</td>
-<td style="text-align:right;">
-5.82
-</td>
-<td style="text-align:right;">
-17.28
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:left;">
-only on specific holy days
-</td>
-<td style="text-align:right;">
-155
-</td>
-<td style="text-align:right;">
-8.67
-</td>
-<td style="text-align:right;">
-8.67
-</td>
-<td style="text-align:right;">
-25.95
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-once a year
-</td>
-<td style="text-align:right;">
-150
-</td>
-<td style="text-align:right;">
-8.39
-</td>
-<td style="text-align:right;">
-8.39
-</td>
-<td style="text-align:right;">
-34.34
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-6
-</td>
-<td style="text-align:left;">
-less often
-</td>
-<td style="text-align:right;">
-122
-</td>
-<td style="text-align:right;">
-6.82
-</td>
-<td style="text-align:right;">
-6.82
-</td>
-<td style="text-align:right;">
-41.16
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-7
-</td>
-<td style="text-align:left;">
-never, practically never
-</td>
-<td style="text-align:right;">
-1052
-</td>
-<td style="text-align:right;">
-58.84
-</td>
-<td style="text-align:right;">
-58.84
-</td>
-<td style="text-align:right;">
-100.00
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-<td>
-<table>
-<thead><tr>
-<th style="text-align:right;">
-val
-</th>
-<th style="text-align:left;">
-label
-</th>
-<th style="text-align:right;">
-frq
-</th>
-<th style="text-align:right;">
-raw.prc
-</th>
-<th style="text-align:right;">
-valid.prc
-</th>
-<th style="text-align:right;">
-cum.prc
-</th>
-</tr></thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-never, practically never
-</td>
-<td style="text-align:right;">
-1052
-</td>
-<td style="text-align:right;">
-58.84
-</td>
-<td style="text-align:right;">
-58.84
-</td>
-<td style="text-align:right;">
-58.84
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-less often
-</td>
-<td style="text-align:right;">
-122
-</td>
-<td style="text-align:right;">
-6.82
-</td>
-<td style="text-align:right;">
-6.82
-</td>
-<td style="text-align:right;">
-65.66
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-once a year
-</td>
-<td style="text-align:right;">
-150
-</td>
-<td style="text-align:right;">
-8.39
-</td>
-<td style="text-align:right;">
-8.39
-</td>
-<td style="text-align:right;">
-74.05
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:left;">
-only on specific holy days
-</td>
-<td style="text-align:right;">
-155
-</td>
-<td style="text-align:right;">
-8.67
-</td>
-<td style="text-align:right;">
-8.67
-</td>
-<td style="text-align:right;">
-82.72
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-once a month
-</td>
-<td style="text-align:right;">
-104
-</td>
-<td style="text-align:right;">
-5.82
-</td>
-<td style="text-align:right;">
-5.82
-</td>
-<td style="text-align:right;">
-88.53
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-6
-</td>
-<td style="text-align:left;">
-once a week
-</td>
-<td style="text-align:right;">
-127
-</td>
-<td style="text-align:right;">
-7.10
-</td>
-<td style="text-align:right;">
-7.10
-</td>
-<td style="text-align:right;">
-95.64
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-7
-</td>
-<td style="text-align:left;">
-more than once week
-</td>
-<td style="text-align:right;">
-78
-</td>
-<td style="text-align:right;">
-4.36
-</td>
-<td style="text-align:right;">
-4.36
-</td>
-<td style="text-align:right;">
-100.00
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr></tbody></table>
-<p>Once we know that the results are what we wish, we can reverse all variables at once, and setting the ‘suffix’ to empty ("“) allows to overwrite the existing variables (by default, new variables suffixed by”_r" would be created, which is often the safer option; we can also set our own suffixes):</p>
-<div class="sourceCode" id="cb46"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a>evs.slim.gb <span class="ot">&lt;-</span> evs.slim.gb <span class="sc">%&gt;%</span> </span>
-<span id="cb46-2"><a href="#cb46-2"></a>  sjmisc<span class="sc">::</span><span class="fu">rec</span>(ppl.trust.yn, v33<span class="sc">:</span>v37, rel.now, rel.as.child, <span class="at">rec =</span> <span class="st">"rev"</span>, <span class="at">suffix =</span> <span class="st">""</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a></span>
+<span id="cb42-2"><a href="#cb42-2"></a>evs.slim.gb <span class="sc">%&gt;%</span> </span>
+<span id="cb42-3"><a href="#cb42-3"></a>  sjmisc<span class="sc">::</span><span class="fu">rec</span>(rel.now, <span class="at">rec =</span> <span class="st">"rev"</span>) <span class="sc">%&gt;%</span>  <span class="fu">frq</span>(rel.now, rel.now_r)</span></code></pre></div>
+<pre><code>how often attend religious services (Q15) (rel.now) &lt;numeric&gt; 
+# total N=1788 valid N=1788 mean=5.65 sd=1.91
+
+Value |                      Label |    N | Raw % | Valid % | Cum. %
+--------------------------------------------------------------------
+    1 |        more than once week |   78 |  4.36 |    4.36 |   4.36
+    2 |                once a week |  127 |  7.10 |    7.10 |  11.47
+    3 |               once a month |  104 |  5.82 |    5.82 |  17.28
+    4 | only on specific holy days |  155 |  8.67 |    8.67 |  25.95
+    5 |                once a year |  150 |  8.39 |    8.39 |  34.34
+    6 |                 less often |  122 |  6.82 |    6.82 |  41.16
+    7 |   never, practically never | 1052 | 58.84 |   58.84 | 100.00
+ &lt;NA&gt; |                       &lt;NA&gt; |    0 |  0.00 |    &lt;NA&gt; |   &lt;NA&gt;
+
+how often attend religious services (Q15) (rel.now_r) &lt;numeric&gt; 
+# total N=1788 valid N=1788 mean=2.35 sd=1.91
+
+Value |                      Label |    N | Raw % | Valid % | Cum. %
+--------------------------------------------------------------------
+    1 |   never, practically never | 1052 | 58.84 |   58.84 |  58.84
+    2 |                 less often |  122 |  6.82 |    6.82 |  65.66
+    3 |                once a year |  150 |  8.39 |    8.39 |  74.05
+    4 | only on specific holy days |  155 |  8.67 |    8.67 |  82.72
+    5 |               once a month |  104 |  5.82 |    5.82 |  88.53
+    6 |                once a week |  127 |  7.10 |    7.10 |  95.64
+    7 |        more than once week |   78 |  4.36 |    4.36 | 100.00
+ &lt;NA&gt; |                       &lt;NA&gt; |    0 |  0.00 |    &lt;NA&gt; |   &lt;NA&gt;</code></pre>
+<p>Once we know that the results are what we wish, we can reverse all variables at once, and setting the ‘suffix’ to empty ("“) overwrites the existing variables (by default, new variables suffixed by”_r" would be created, which is often the safer option; we can also set our own suffixes):</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a></span>
+<span id="cb44-2"><a href="#cb44-2"></a>evs.slim.gb <span class="ot">&lt;-</span> evs.slim.gb <span class="sc">%&gt;%</span> </span>
+<span id="cb44-3"><a href="#cb44-3"></a>  sjmisc<span class="sc">::</span><span class="fu">rec</span>(ppl.trust.yn, v33<span class="sc">:</span>v37, rel.now, rel.as.child, <span class="at">rec =</span> <span class="st">"rev"</span>, <span class="at">suffix =</span> <span class="st">""</span>)</span></code></pre></div>
 </div>
 <div id="collapsing-categories" class="section level3">
 <h3>(2) collapsing categories</h3>
-<p>The <code><a href="https://strengejacke.github.io/sjmisc/reference/rec.html">sjmisc::rec()</a></code> function from <a href="https://strengejacke.github.io/sjmisc/">sjmisc</a> allows specifying in detail how values should be recoded. These are many options apropriate for different purposes, so <a href="https://rdrr.io/cran/sjmisc/man/rec.html">read more about the function here</a>. In this example, let’s recode the two ‘religiosity’ variables so that we collapse their 7 categories to three: rarely (1, 2, 3), moderately (4, 5), often (6, 7):</p>
-<div class="sourceCode" id="cb47"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a>evs.slim.gb <span class="sc">%&gt;%</span> </span>
-<span id="cb47-2"><a href="#cb47-2"></a>  sjmisc<span class="sc">::</span><span class="fu">rec</span>(rel.now, rel.as.child, <span class="at">rec =</span> <span class="st">"1:3=1; 4,5=2; 6:max=3"</span>) <span class="sc">%&gt;%</span>  <span class="fu">frq</span>(rel.now, rel.now_r)</span></code></pre></div>
+<p>The <code><a href="https://strengejacke.github.io/sjmisc/reference/rec.html">sjmisc::rec()</a></code> function from <a href="https://strengejacke.github.io/sjmisc/">sjmisc</a> allows specifying in detail how values should be recoded. There are many options appropriate for different purposes, so <a href="https://rdrr.io/cran/sjmisc/man/rec.html">read more about the function here</a>. In this example, let’s recode the two ‘religiosity’ variables so that we collapse their 7 categories to three: rarely (1, 2, 3), moderately (4, 5), often (6, 7):</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a></span>
+<span id="cb45-2"><a href="#cb45-2"></a>evs.slim.gb <span class="ot">&lt;-</span> evs.slim.gb <span class="sc">%&gt;%</span> </span>
+<span id="cb45-3"><a href="#cb45-3"></a>  sjmisc<span class="sc">::</span><span class="fu">rec</span>(rel.now, </span>
+<span id="cb45-4"><a href="#cb45-4"></a>              rel.as.child, </span>
+<span id="cb45-5"><a href="#cb45-5"></a>              <span class="at">rec =</span> <span class="st">"1:3=1 [Rarely]; 4,5=2 [Moderately]; 6:max=3 [Often]"</span>)</span>
+<span id="cb45-6"><a href="#cb45-6"></a></span>
+<span id="cb45-7"><a href="#cb45-7"></a><span class="co"># Note that:</span></span>
+<span id="cb45-8"><a href="#cb45-8"></a><span class="co"># each recode pair has to be separated by a ;</span></span>
+<span id="cb45-9"><a href="#cb45-9"></a><span class="co"># multiple old values that should be recoded into a new single value may be separated with comma</span></span>
+<span id="cb45-10"><a href="#cb45-10"></a><span class="co"># minimum and maximum values are indicated by min (or lo) and max (or hi)</span></span>
+<span id="cb45-11"><a href="#cb45-11"></a><span class="co"># a value range is indicated by a colon</span></span>
+<span id="cb45-12"><a href="#cb45-12"></a><span class="co"># value labels for new values can be assigned inside the recode pattern by writing the value label in square brackets after defining the new value in a recode pair; otherwise they can be done separateky after the recode too</span></span>
+<span id="cb45-13"><a href="#cb45-13"></a><span class="co"># In the code below I'm using a combination of these on purpose for demonstration</span></span></code></pre></div>
+<p>This is the result, comparing the old variable with the recoded one:</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a></span>
+<span id="cb46-2"><a href="#cb46-2"></a>evs.slim.gb <span class="sc">%&gt;%</span> </span>
+<span id="cb46-3"><a href="#cb46-3"></a>  <span class="fu">frq</span>(rel.now, rel.now_r, rel.as.child, rel.as.child_r)</span></code></pre></div>
 <pre><code>how often attend religious services (Q15) (rel.now) &lt;numeric&gt; 
 # total N=1788 valid N=1788 mean=2.35 sd=1.91
 
@@ -2109,24 +1217,66 @@ Value |                      Label |    N | Raw % | Valid % | Cum. %
 how often attend religious services (Q15) (rel.now_r) &lt;numeric&gt; 
 # total N=1788 valid N=1788 mean=1.37 sd=0.68
 
-Value |    N | Raw % | Valid % | Cum. %
----------------------------------------
-    1 | 1324 | 74.05 |   74.05 |  74.05
-    2 |  259 | 14.49 |   14.49 |  88.53
-    3 |  205 | 11.47 |   11.47 | 100.00
- &lt;NA&gt; |    0 |  0.00 |    &lt;NA&gt; |   &lt;NA&gt;</code></pre>
-<p>But we need to be careful as we then lose the labels:</p>
-<p>We could recode to character strings instead, but again we need careful because character variable values are then ordered alphabetically:</p>
-<p>Recoding several variables by collapsing categories:</p>
+Value |      Label |    N | Raw % | Valid % | Cum. %
+----------------------------------------------------
+    1 |     Rarely | 1324 | 74.05 |   74.05 |  74.05
+    2 | Moderately |  259 | 14.49 |   14.49 |  88.53
+    3 |      Often |  205 | 11.47 |   11.47 | 100.00
+ &lt;NA&gt; |       &lt;NA&gt; |    0 |  0.00 |    &lt;NA&gt; |   &lt;NA&gt;
+
+how often attend religious services 12 years old (Q16) (rel.as.child) &lt;numeric&gt; 
+# total N=1788 valid N=1783 mean=4.15 sd=2.33
+
+Value |                      Label |   N | Raw % | Valid % | Cum. %
+-------------------------------------------------------------------
+    1 |   never, practically never | 517 | 28.91 |   29.00 |  29.00
+    2 |                 less often |  83 |  4.64 |    4.66 |  33.65
+    3 |                once a year |  77 |  4.31 |    4.32 |  37.97
+    4 | only on specific holy days | 131 |  7.33 |    7.35 |  45.32
+    5 |               once a month | 131 |  7.33 |    7.35 |  52.66
+    6 |                once a week | 609 | 34.06 |   34.16 |  86.82
+    7 |        more than once week | 235 | 13.14 |   13.18 | 100.00
+ &lt;NA&gt; |                       &lt;NA&gt; |   5 |  0.28 |    &lt;NA&gt; |   &lt;NA&gt;
+
+how often attend religious services 12 years old (Q16) (rel.as.child_r) &lt;numeric&gt; 
+# total N=1788 valid N=1783 mean=2.09 sd=0.92
+
+Value |      Label |   N | Raw % | Valid % | Cum. %
+---------------------------------------------------
+    1 |     Rarely | 677 | 37.86 |   37.97 |  37.97
+    2 | Moderately | 262 | 14.65 |   14.69 |  52.66
+    3 |      Often | 844 | 47.20 |   47.34 | 100.00
+ &lt;NA&gt; |       &lt;NA&gt; |   5 |  0.28 |    &lt;NA&gt; |   &lt;NA&gt;</code></pre>
 </div>
 <div id="shifting-the-range-of-values" class="section level3">
 <h3>(3) shifting the range of values</h3>
-<p>Recode binary variables to be coded 0 and 1, keeping value labels:</p>
-<div class="sourceCode" id="cb49"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a></span>
-<span id="cb49-2"><a href="#cb49-2"></a><span class="co"># The setting 'lowest =" is by default set to 0 so can be excluded</span></span>
-<span id="cb49-3"><a href="#cb49-3"></a></span>
-<span id="cb49-4"><a href="#cb49-4"></a>evs.slim.gb <span class="sc">%&gt;%</span> sjmisc<span class="sc">::</span><span class="fu">recode_to</span>(ppl.trust.yn, sex, <span class="at">suffix =</span> <span class="st">""</span>, <span class="at">lowest =</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span> <span class="fu">frq</span>(ppl.trust.yn, sex)</span></code></pre></div>
+<p>The <code>recode_to</code> function from <a href="https://strengejacke.github.io/sjmisc/">sjmisc</a> is a very comfortable option for recoding binary variables to 0 and 1, while keeping the original value labels. In fact, what it does is to shift the category values to start form any “lowest” value we supply, or to end with any “highest” value, so it is not restricted to binary variables.</p>
+<p>For example, we can recode to 0/1 dummies our <tt><em>ppl.trust.yn</em></tt> and <tt><em>sex</em></tt> variables, making it easy to include them in a regression model as indicator variables:</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a></span>
+<span id="cb48-2"><a href="#cb48-2"></a>evs.slim.gb <span class="ot">&lt;-</span> evs.slim.gb <span class="sc">%&gt;%</span> </span>
+<span id="cb48-3"><a href="#cb48-3"></a>  sjmisc<span class="sc">::</span><span class="fu">recode_to</span>(ppl.trust.yn, sex, <span class="at">lowest =</span> <span class="dv">0</span>, <span class="at">suffix =</span> <span class="st">""</span>)</span>
+<span id="cb48-4"><a href="#cb48-4"></a></span>
+<span id="cb48-5"><a href="#cb48-5"></a><span class="co"># Note: by default, new variables are created with the "_r0" suffix; to overwrite the original variables, we can specify the option 'suffix = ""'</span></span>
+<span id="cb48-6"><a href="#cb48-6"></a><span class="co"># The setting 'lowest = ' is by default set to 0 so it could be excluded</span></span></code></pre></div>
+<p>The result, compared to the original variables, would be:</p>
 <pre><code>people can be trusted/can't be too careful (Q7) (ppl.trust.yn) &lt;numeric&gt; 
+# total N=1788 valid N=1778 mean=1.41 sd=0.49
+
+Value |                      Label |    N | Raw % | Valid % | Cum. %
+--------------------------------------------------------------------
+    1 |     can not be too careful | 1042 | 58.28 |   58.61 |  58.61
+    2 | most people can be trusted |  736 | 41.16 |   41.39 | 100.00
+ &lt;NA&gt; |                       &lt;NA&gt; |   10 |  0.56 |    &lt;NA&gt; |   &lt;NA&gt;
+
+sex respondent (Q63) (sex) &lt;numeric&gt; 
+# total N=1788 valid N=1788 mean=1.56 sd=0.50
+
+Value |  Label |   N | Raw % | Valid % | Cum. %
+-----------------------------------------------
+    1 |   male | 792 | 44.30 |   44.30 |  44.30
+    2 | female | 996 | 55.70 |   55.70 | 100.00
+ &lt;NA&gt; |   &lt;NA&gt; |   0 |  0.00 |    &lt;NA&gt; |   &lt;NA&gt;
+people can be trusted/can't be too careful (Q7) (ppl.trust.yn) &lt;numeric&gt; 
 # total N=1788 valid N=1778 mean=0.41 sd=0.49
 
 Value |                      Label |    N | Raw % | Valid % | Cum. %
@@ -2143,15 +1293,101 @@ Value |  Label |   N | Raw % | Valid % | Cum. %
     0 |   male | 792 | 44.30 |   44.30 |  44.30
     1 | female | 996 | 55.70 |   55.70 | 100.00
  &lt;NA&gt; |   &lt;NA&gt; |   0 |  0.00 |    &lt;NA&gt; |   &lt;NA&gt;</code></pre>
+<p>Recoded to 0/1 values, these variables are now more clearly ‘indicator’ variables, where the value 1 indicates the meaning of the variable. To make it more explicit for ourselves, we could then rename them to something like <tt><em>Trusting</em></tt> and <tt><em>Female</em></tt>, respectively:</p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a></span>
+<span id="cb50-2"><a href="#cb50-2"></a>evs.slim.gb <span class="ot">&lt;-</span> evs.slim.gb <span class="sc">%&gt;%</span> </span>
+<span id="cb50-3"><a href="#cb50-3"></a>  sjmisc<span class="sc">::</span><span class="fu">var_rename</span>(</span>
+<span id="cb50-4"><a href="#cb50-4"></a>    <span class="at">ppl.trust.yn =</span> Trusting,</span>
+<span id="cb50-5"><a href="#cb50-5"></a>    <span class="at">sex =</span> Female</span>
+<span id="cb50-6"><a href="#cb50-6"></a>    )</span>
+<span id="cb50-7"><a href="#cb50-7"></a></span>
+<span id="cb50-8"><a href="#cb50-8"></a><span class="co"># Or: dplyr::rename(newname = oldname)</span></span></code></pre></div>
 </div>
 </div>
-<div id="computing-new-variables" class="section level2">
-<h2>Computing new variables</h2>
+<div id="i-need-to-compute-a-new-variable" class="section level2">
+<h2>I need to compute a new variable</h2>
+<p>We often need to create new variables based on the values of other variables. In our case, we would find it useful to create a numeric scale measuring the theoretical construct <tt><em>trust in strangers</em></tt>, which is our variable of interest in this hypothetical analysis. We have in the dataset four variables that can be taken to measure trust in strangers (<tt><em>v33</em></tt>, <tt><em>v35</em></tt>, <tt><em>v36</em></tt> and <tt><em>v37</em></tt>, which we haven’t renamed on purpose, because we will not use them individually, and which are measured on 4-point ordinal scales running from 1 to 4), and the <tt><em>Trusting</em></tt> variable, which is binary.</p>
+<p>There are many ways to go about this and it is ultimately a theoretical and substantive decision. For instance, one can decide to compute a summative scale, where the values of individual items are simply added up, or an averaging scale, where the mean across the items are taken. Missing data also needs to be thought about when computing scales. A participant may be missing data on all items or on just a subset. A decision needs to be made about what to do in both cases.</p>
+<p>For our purposes, we’ll create a variable that sums up the values on the five variables we want to use to measure <tt><em>trust in strangers</em></tt>; to give more weight to the general dichotomous social trust variable (<tt><em>Trusting</em></tt>), we’ll make it’s indicator value (1) equal to the highest value of the other component variables. We’ll also set the scale to start from 0 and exclude cases with missing answers (NA) on three or more of the component variables.</p>
+<p>Let’s do the following operations in one pipeline: 1. Shift the coding range of all component variables to start from 0 (as in the previous step); the scales will then be 0 to 3; 2. Keep only observations that have missing response (NA) on fewer than three out of the five variables; 3. Create a new numeric variable (<code>as.numeric</code>) called “trust_in_strangers” by … 3.1. multiplying the value of <tt><em>Trusting</em></tt> by 3 (0/1 will become 0/3) and .. 3.2. adding up the values of the five variables</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a></span>
+<span id="cb51-2"><a href="#cb51-2"></a>evs.slim.gb <span class="ot">&lt;-</span> evs.slim.gb <span class="sc">%&gt;%</span> </span>
+<span id="cb51-3"><a href="#cb51-3"></a>  sjmisc<span class="sc">::</span><span class="fu">recode_to</span>(v33<span class="sc">:</span>v37, <span class="at">lowest =</span> <span class="dv">0</span>, <span class="at">suffix =</span> <span class="st">""</span>) <span class="sc">%&gt;%</span>             <span class="co"># 1 #</span></span>
+<span id="cb51-4"><a href="#cb51-4"></a>  <span class="fu">filter</span>(<span class="fu">rowSums</span>(<span class="fu">across</span>(<span class="fu">c</span>(Trusting, v33<span class="sc">:</span>v37), <span class="sc">~</span> <span class="fu">is.na</span>(.))) <span class="sc">&lt;</span> <span class="dv">3</span>) <span class="sc">%&gt;%</span>   <span class="co"># 2 #</span></span>
+<span id="cb51-5"><a href="#cb51-5"></a>  <span class="fu">mutate</span>(<span class="at">trust_in_strangers =</span> <span class="fu">as.numeric</span>(                             <span class="co"># 3 #</span></span>
+<span id="cb51-6"><a href="#cb51-6"></a>                (Trusting <span class="sc">*</span> <span class="dv">3</span>) <span class="sc">+</span>                                      <span class="co"># 3.1 #</span></span>
+<span id="cb51-7"><a href="#cb51-7"></a>                  v33 <span class="sc">+</span> v35 <span class="sc">+</span> v36 <span class="sc">+</span> v37))                             <span class="co"># 3.2 #</span></span></code></pre></div>
+<p>Step (2) is a bit convoluted, using the <code>rowSums</code> bas <strong><em>R</em></strong> function to count the missing values (is.na) <code>across()</code> the specified variables, and <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> out observations where this count is higher than or equal to 3.</p>
+<p>The newly created variable <tt><em>trust_in_strangers</em></tt> looks like this:</p>
+<div class="sourceCode" id="cb52"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a></span>
+<span id="cb52-2"><a href="#cb52-2"></a><span class="co"># Type of variable:</span></span>
+<span id="cb52-3"><a href="#cb52-3"></a><span class="fu">class</span>(evs.slim.gb<span class="sc">$</span>trust_in_strangers)</span>
+<span id="cb52-4"><a href="#cb52-4"></a></span>
+<span id="cb52-5"><a href="#cb52-5"></a><span class="co"># Number of observations:</span></span>
+<span id="cb52-6"><a href="#cb52-6"></a><span class="fu">length</span>(evs.slim.gb<span class="sc">$</span>trust_in_strangers)</span>
+<span id="cb52-7"><a href="#cb52-7"></a></span>
+<span id="cb52-8"><a href="#cb52-8"></a><span class="co"># Summary statistics:</span></span>
+<span id="cb52-9"><a href="#cb52-9"></a><span class="fu">summary</span>(evs.slim.gb<span class="sc">$</span>trust_in_strangers)</span></code></pre></div>
+<pre><code>[1] "numeric"
+[1] 1781
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+  0.000   7.000   8.000   8.715  11.000  15.000      98 </code></pre>
 </div>
-<div id="summary-statistics-by-group" class="section level2">
-<h2>Summary statistics by group</h2>
-<p>We can produce some useful summary statistics by goups of another variable. For example, let’s look at the average value of the variable ‘no_trust’ (i.e. the proportions in this case) by country:</p>
-<p>Same grouping can be done with frq/desc …</p>
+<div id="i-need-to-set-the-variable-types" class="section level2">
+<h2>I need to set the variable types</h2>
+<p>We can also have a final look at our variables and check if the variable types are recorded correctly. If not, we can set the appropriate types (e.g. our two religiosity variables should be factors (i.e. categorical variables)):</p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1"></a></span>
+<span id="cb54-2"><a href="#cb54-2"></a>evs.slim.gb <span class="ot">&lt;-</span>  evs.slim.gb <span class="sc">%&gt;%</span> </span>
+<span id="cb54-3"><a href="#cb54-3"></a>  <span class="fu">as_factor</span>(rel.now, rel.as.child)</span></code></pre></div>
+</div>
+<div id="all-ready-for-analysis" class="section level2">
+<h2>All ready for analysis</h2>
+<p>The data is now ready to undertake the regression that we planned:</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode numberSource r bc-b numberLines"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1"></a><span class="fu">lm</span>(trust_in_strangers <span class="sc">~</span> age <span class="sc">+</span> Female <span class="sc">+</span> rel.now <span class="sc">+</span> rel.as.child <span class="sc">+</span> pol.lr, <span class="at">data =</span> evs.slim.gb) <span class="sc">%&gt;%</span> </span>
+<span id="cb55-2"><a href="#cb55-2"></a>  <span class="fu">summary</span>()</span></code></pre></div>
+<pre><code>
+Call:
+lm(formula = trust_in_strangers ~ age + Female + rel.now + rel.as.child + 
+    pol.lr, data = evs.slim.gb)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-8.8447 -1.9556 -0.0883  2.1938  7.0169 
+
+Coefficients:
+               Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)    7.893585   0.307648  25.658  &lt; 2e-16 ***
+age            0.018512   0.004549   4.070 4.95e-05 ***
+Female         0.185632   0.145257   1.278 0.201456    
+rel.now2       0.114766   0.299315   0.383 0.701456    
+rel.now3       0.894921   0.267225   3.349 0.000831 ***
+rel.now4       0.541756   0.269524   2.010 0.044600 *  
+rel.now5      -0.167481   0.331931  -0.505 0.613936    
+rel.now6       0.677399   0.299135   2.265 0.023680 *  
+rel.now7       0.918223   0.368138   2.494 0.012727 *  
+rel.as.child2 -0.142483   0.371989  -0.383 0.701749    
+rel.as.child3  0.038067   0.376712   0.101 0.919524    
+rel.as.child4  0.616028   0.298675   2.063 0.039324 *  
+rel.as.child5  0.514752   0.303407   1.697 0.089980 .  
+rel.as.child6  0.438950   0.200323   2.191 0.028586 *  
+rel.as.child7  0.585605   0.262244   2.233 0.025688 *  
+pol.lr        -0.133893   0.037866  -3.536 0.000418 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 2.831 on 1540 degrees of freedom
+  (225 observations deleted due to missingness)
+Multiple R-squared:  0.04516,   Adjusted R-squared:  0.03586 
+F-statistic: 4.856 on 15 and 1540 DF,  p-value: 2.445e-09</code></pre>
+<p>Our results can then be written as:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\operatorname{\widehat{trust\_in\_strangers}} &amp;= 7.89 + 0.02(\operatorname{age}) + 0.19(\operatorname{Female}) + 0.11(\operatorname{rel.now}_{\operatorname{2}})\ + \\
+&amp;\quad 0.89(\operatorname{rel.now}_{\operatorname{3}}) + 0.54(\operatorname{rel.now}_{\operatorname{4}}) - 0.17(\operatorname{rel.now}_{\operatorname{5}}) + 0.68(\operatorname{rel.now}_{\operatorname{6}})\ + \\
+&amp;\quad 0.92(\operatorname{rel.now}_{\operatorname{7}}) - 0.14(\operatorname{rel.as.child}_{\operatorname{2}}) + 0.04(\operatorname{rel.as.child}_{\operatorname{3}}) + 0.62(\operatorname{rel.as.child}_{\operatorname{4}})\ + \\
+&amp;\quad 0.51(\operatorname{rel.as.child}_{\operatorname{5}}) + 0.44(\operatorname{rel.as.child}_{\operatorname{6}}) + 0.59(\operatorname{rel.as.child}_{\operatorname{7}}) - 0.13(\operatorname{pol.lr})
+\end{aligned}
+\]</span></p>
 </div>
 </div>
 <div class="footnotes">
