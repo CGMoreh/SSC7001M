@@ -2,21 +2,25 @@
 title: "Week 6: Prediction and causality"
 output:
   rmdformats::readthedown:
+      code_download: true
       highlight: tango
+      number_sections: true
 ---
 ```{r include=FALSE}
-knitr::opts_chunk$set(eval=FALSE)
+knitr::opts_chunk$set(
+  fig.width = 10, fig.height = 6, fig.retina = 2,
+  warning = FALSE, message = FALSE, eval=T)
 ```
 
-
+```{r}
+pacman::p_load(tidyverse, haven, kableExtra, knitr, ggformula, jtools, interactions)
+```
 
 # Introduction
 - What are the aims of regression?
   - Regression for prediction
   - Regression for causal analysis
   
-# Prediction
-
 # Causality
 
 ## Example: The effect of media on electoral outcome
@@ -48,6 +52,7 @@ The treatment here is someone reading a paper that switched their endorsement. T
 
 
 ```{r setup}
+library("tidyverse")
 news <- read.csv("https://cgmoreh.github.io/SSC7001M/data/newspapers.csv")
 # LaddLenz <- read_dta("https://cgmoreh.github.io/SSC7001M/data/LaddLenz")
 ```
@@ -104,54 +109,6 @@ Nest, use the method of subclassification to statistically control for this vari
 See QSS Section 2.5.2 for more information if you need it. 
 
 
-## Answer 2
-
-- Compare the sample proportions of men in the treated and control groups:
-
-```{r}
-mean(switched$male)
-## or
-nrow(switched_males) / nrow(switched)
-
-mean(no_change$male)
-# or
-nrow(no_change_males)/nrow(no_change)
-```
-
-
-
-```{r}
-switched_males <- switched[switched$male == 1,]
-## or
-switched_males2 <- switched %>% filter(male == 1)
-
-no_change_males <- no_change[no_change$male == 1,]
-# or 
-no_change_males2 <- no_change %>% filter(male ==1)
-
-mean(switched_males$vote_lab_97) - mean(no_change_males$vote_lab_97)
-```
-
-- For women: 
-
-
-```{r}
-switched_females <- switched[switched$male == 0,]
-no_change_females <- no_change[no_change$male == 0,]
-
-mean(switched_females$vote_lab_97) - mean(no_change_females$vote_lab_97)
-```
-
-```{r}
-gender_reg <- lm(vote_lab_97 ~ male*to_labour, data = news)
-jtools::summ(gender_reg, digits=3)
-```
-
-
-
-- Pick one group to present their results. 
-- What about variables that we didn't measure? 
-
 ## Question 3 (Breakout rooms, 20 mins)
 
 This data set is a panel data set since we have measurements on the same individuals at two different time points. This allows us to conduct new types of observational studies. Review section 2.5.3 of QSS and conduct two analyses on this data set:
@@ -161,30 +118,6 @@ This data set is a panel data set since we have measurements on the same individ
 
 How do these estimates compare to the cross-sectional design? For both of these methods, come up with one possible source of bias. Which of the three methods do you find the most plausible for inferring causal effects?
 
-## Answer 3
-
-### Before-and-after comparison
-
-
-```{r}
-switched_diff <- mean(switched$vote_lab_97) - mean(switched$vote_lab_92)
-switched_diff
-```
-
-### Differences-in-differences
-
-```{r}
-no_change_diff <- mean(no_change$vote_lab_97) - mean(no_change$vote_lab_92)
-switched_diff - no_change_diff
-```
-
-- Pick one group to share. 
-- What are the assumptions that make a before-and-after design valid?
-  - Tony Blair very popular across the board. 
-- What are the assumptions that make a differences-in-differences design valid?
-- Are these assumptions plausible in this case? 
-- Final thing: **we always rely on assumptions to make observational studies causally valid**
-
 
 ## Question 4 (Breakout room, 15 mins)
 
@@ -193,18 +126,3 @@ With continuous covariates, we might want to check different aspects of the dist
 1. Compare the summary statistics from a `summary()` call on the `age` variable in the treated and control group. If we were worried about confounding bias from age, what should we expect to see in this comparison? What do you actually see?
 2. Compare the standard deviation of `age` in the two groups. What does this comparison tell us?
 
-
-## Answer 4
-
-```{r}
-summary(switched$age)
-summary(no_change$age)
-
-sd(switched$age)
-sd(no_change$age)
-```
-
-
-- What does it mean for one group to have a higher standard deviation of age than another group? 
-- Is it possible for an SD to be negative? 
-- Is it possible for an SD to be zero? What would that mean?
