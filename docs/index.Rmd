@@ -25,12 +25,35 @@ d-title {
 <br><br>
 
 <center>
-<img src="pics/logo.png" width="100%">
+
+<img src="pics/logo.png" width="100%"/>
+
 </center>
 
 ### Welcome to **Advanced Research Methods 1**
+
 This is a 10-week course on applied regression modelling for sociologists, first delivered at York St John University (UK). It uses the [`R`](https://www.r-project.org/about.html) programming language and the [`RStudio`](https://www.rstudio.com/) Integrated Development Environment. It takes a [Tidyverse](https://www.tidyverse.org/) approach to coding and relies heavily on [`R Markdown`](https://rmarkdown.rstudio.com/index.html) for scripting and reporting.
+
+### 2021/2022 Schedule
+
+|                 |                                                                      |
+|----------------------|--------------------------------------------------|
+| **04 October**  | Week 1: Introduction to statistical modelling for social researchers |
+| **11 October**  | Week 2: Social measurement                                           |
+| **18 October**  | Week 3: Linear regression with one predictor                         |
+| **25 October**  | Week 4: Linear regression with multiple predictors                   |
+| **01 November** | Week 5: Linear regression with interaction terms                     |
+| **08 November** | Week 6: Prediction and causality                                     |
+| **15 November** | Week 7: Non-teaching week                                            |
+| **22 November** | Week 8: Probability and odds                                         |
+| **29 November** | Week 9: Logistic regression                                          |
+| **06 December** | Week 10: Multicategory logistic regression                           |
+| **03 January**  | Week 11: Multilevel and longitudinal models                          |
+| **10 January**  | Week 12: Assessment clinic                                           |
+| **17 January**  | Week 13: Assessment clinic and submission (20 January, 12:00)        |
 
 ### Try out your `R` code here
 
-<iframe width='100%' height='1000' src='https://rdrr.io/snippets/embed/?code=print(%22Hello%2C%20world!%22)' frameborder='0'></iframe>
+<iframe width="100%" height="1000" src="https://rdrr.io/snippets/embed/?code=print(%22Hello%2C%20world!%22)" frameborder="0">
+
+</iframe>
