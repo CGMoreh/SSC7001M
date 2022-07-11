@@ -29,7 +29,7 @@ d-title {
 </center>
 
 ### Welcome to **Advanced Research Methods 1**
-This is a 10-week course on applied regression modelling for sociologists, first delivered at York St John University (UK) in 2021/2022 It uses the [`R`](https://www.r-project.org/about.html) programming language and the [`RStudio`](https://www.rstudio.com/) Integrated Development Environment. It takes a [Tidyverse](https://www.tidyverse.org/) approach to coding and relies heavily on [`R Markdown`](https://rmarkdown.rstudio.com/index.html) for scripting and reporting.
+This is a 12-week course on applied regression modelling for sociologists, first delivered at York St John University (UK). It uses the [`R`](https://www.r-project.org/about.html) programming language and the [`RStudio`](https://www.rstudio.com/) Integrated Development Environment. It takes a [Tidyverse](https://www.tidyverse.org/) approach to coding and relies heavily on [`R Markdown`](https://rmarkdown.rstudio.com/index.html) for scripting and reporting.
 
 ### Try out your `R` code here
 
