@@ -173,21 +173,6 @@ pacman::p_load(
 
 We'll use data from the Österman (2021) article ["Can We Trust Education for Fostering Trust? Quasi-experimental Evidence on the Effect of Education and Tracking on Social Trust"](http://www.diva-portal.org/smash/get/diva2:1503902/FULLTEXT01.pdf):
 
-```{r, include=FALSE, eval=FALSE}
-set.seed(1234)
-osterman <- haven::read_dta("../data/osterman.dta") %>%
-        select("trustindex3", "cntry", "facntr", "mocntr", "female", "agea", "eduyrs25", "paredu_a_high") %>%
-        filter(cntry %in% c("GB", "IE", "DE", "FR", "HU", "PL", "PT", "ES")) %>%  
-        group_by(cntry) %>% slice_sample(n=50) %>% ungroup() %>%
-        labelled::unlabelled() %>% as_tibble() %>%
-        mutate(cntry = as_factor(cntry),
-               fmnoncntr = ifelse(facntr==0 | mocntr==0, 1, 0)) %>%
-        sjlabelled::var_labels(trustindex3 = "Social trust scale",
-                               eduyrs25 = "Years of full-time education",
-                               paredu_a_high = "High parental education",
-                               fmnoncntr = "Least one parent born abroad")
-```
-
 ```{r, include=TRUE, eval=FALSE}
 ## Load the Österman data using the 'read_dta' function from the 'haven' package
 osterman <- haven::read_dta("https://cgmoreh.github.io/SSC7001M/data/osterman.dta")
@@ -233,10 +218,13 @@ osterman <- osterman %>%
 And we'll do some data wrangling (see Week 4 Notes); we'll also reduce the dataset for the purpose of our demonstrations to make it run faster.
 
 ```{r}
+
+set.seed(1234)
+
 osterman <- osterman %>%
   labelled::unlabelled() %>% as_tibble() %>%
   filter(cntry %in% c("GB", "IE", "DE", "FR", "HU", "PL", "PT", "ES")) %>%  
-  group_by(cntry) %>% slice_sample(n=50) %>%
+  group_by(cntry) %>% slice_sample(n=50) %>% ungroup() %>%
   mutate(cntry = as_factor(cntry),
          fmnoncntr = ifelse(facntr==0 | mocntr==0, 1, 0)) %>%
   sjlabelled::var_labels( trustindex3 = "Social trust scale",
